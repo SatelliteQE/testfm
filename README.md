@@ -24,8 +24,8 @@ However, there are a few other things you need to do before continuing:
 
 ## Running the Tests
 
-Before running any tests, you must add foreman/satellite hostname to
-testfm/inventory file.
+Before running any tests, you must add foreman or satellite hostname to the
+`testfm/inventory` file (first copy it from`testfm/inventory.sample`).
 
 That done, you can run tests using pytest :
 
