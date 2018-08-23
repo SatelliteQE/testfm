@@ -1,7 +1,12 @@
 from testfm.backup import Backup
 from testfm.decorators import capsule
 from testfm.log import logger
+from fauxfactory import gen_string
+
 BACKUP_DIR = '/tmp/'
+NODIR_MSG = "ERROR: parameter 'BACKUP_DIR': no value provided"
+NOPREV_MSG = ("ERROR: option '--incremental': Previous backup "
+              "directory does not exist")
 
 
 @capsule
@@ -458,3 +463,86 @@ def test_positive_backup_offline_all(ansible_module):
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+
+@capsule
+def test_negative_backup_online_nodir(ansible_module):
+    """Take online backup of server with no destination
+
+    :id: 298176a7-ba1d-4fcd-9718-d62c47900bb5
+
+    :setup:
+
+        1. foreman-maintain should be installed.
+    :steps:
+        1. Run foreman-maintain backup online without providing
+        directory
+
+    :expectedresults: backup aborted, relevant message is
+        returned
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Backup.run_online_backup([
+        '-y',
+    ]))
+    for result in contacted.values():
+        logger.info(result['stderr'])
+        assert result['rc'] == 1
+        assert NODIR_MSG in result['stderr']
+
+
+@capsule
+def test_negative_backup_offline_nodir(ansible_module):
+    """Take offline backup of server with no destination
+
+    :id: 9377ebc6-663b-47d4-92e2-744398dba376
+
+    :setup:
+
+        1. foreman-maintain should be installed.
+    :steps:
+        1. Run foreman-maintain backup offline without providing
+        directory
+
+    :expectedresults: backup aborted, relevant message is
+        returned
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Backup.run_offline_backup([
+        '-y',
+    ]))
+    for result in contacted.values():
+        logger.info(result['stderr'])
+        assert result['rc'] == 1
+        assert NODIR_MSG in result['stderr']
+
+
+@capsule
+def test_negative_backup_online_incremental_nodir(ansible_module):
+    """Take online backup of server with no destination
+
+    :id: cfb68cdf-9d27-4a38-bc16-900fc9488ac6
+
+    :setup:
+
+        1. foreman-maintain should be installed.
+    :steps:
+        1. Run foreman-maintain backup offline with nonexistent
+        directory
+
+    :expectedresults: backup aborted, relevant message is
+        returned
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Backup.run_online_backup([
+        '-y',
+        '--incremental',
+        gen_string('alpha'),
+    ]))
+    for result in contacted.values():
+        logger.info(result['stderr'])
+        assert result['rc'] == 1
+        assert NOPREV_MSG in result['stderr']
