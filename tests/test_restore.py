@@ -26,8 +26,10 @@ def test_positive_restore_online_backup(ansible_module):
     for result in setup.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
     contacted = ansible_module.command(Restore._construct_command(
         ['-y', '/tmp/online_backup_restore/']))
     for result in contacted.values():
         logger.info(result)
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0

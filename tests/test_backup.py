@@ -27,6 +27,7 @@ def test_positive_backup_online(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -53,6 +54,7 @@ def test_positive_backup_online_skip_pulp_content(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -79,6 +81,7 @@ def test_positive_backup_online_preserve_directory(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -106,6 +109,7 @@ def test_positive_backup_online_split_pulp_tar(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -133,6 +137,7 @@ def test_positive_backup_online_incremental(ansible_module):
     for result in setup.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y',
         '--incremental',
@@ -142,6 +147,7 @@ def test_positive_backup_online_incremental(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -169,6 +175,7 @@ def test_positive_backup_online_caspule_features(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -196,6 +203,7 @@ def test_positive_backup_online_all(ansible_module):
     for result in setup.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y -f -s -p -t 10M -i',
         '/mnt/',
@@ -206,6 +214,7 @@ def test_positive_backup_online_all(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -231,6 +240,7 @@ def test_positive_backup_offline(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -257,6 +267,7 @@ def test_positive_backup_offline_skip_pulp_content(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -284,6 +295,7 @@ def test_positive_backup_offline_preserve_directory(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -312,6 +324,7 @@ def test_positive_backup_offline_split_pulp_tar(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -339,6 +352,7 @@ def test_positive_backup_offline_incremental(ansible_module):
     for result in setup.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '--incremental',
@@ -348,6 +362,7 @@ def test_positive_backup_offline_incremental(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -376,6 +391,7 @@ def test_positive_backup_offline_capsule_features(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -402,6 +418,7 @@ def test_positive_backup_offline_logical(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
 
 
 @capsule
@@ -429,6 +446,7 @@ def test_positive_backup_offline_all(ansible_module):
     for result in setup.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y -f -s -p -t 10M -i',
         '/mnt/',
@@ -439,3 +457,4 @@ def test_positive_backup_offline_all(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
