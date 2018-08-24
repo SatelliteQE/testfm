@@ -1,0 +1,8 @@
+# Varies per-deployment.
+/testfm/inventory
+
+# Compiled python code.
+*.pyc
+
+# Logs
+/testfm.log
