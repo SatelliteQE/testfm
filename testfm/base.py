@@ -27,7 +27,7 @@ class Base(object):
     @since: 23.Jun.2018
     """
     command_base = None  # each inherited instance should define this
-    command_sub = None  # specific to instance, like: health, upgrade, etc
+    command_sub = ''  # specific to instance, like: health, upgrade, etc
 
     @classmethod
     def _construct_command(cls, options=None):
