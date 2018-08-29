@@ -1,4 +1,9 @@
 # testfm
+
+
+[![Build Status](https://api.travis-ci.org/SatelliteQE/testfm.svg?branch=master)](https://travis-ci.org/SatelliteQE/testfm) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+
 A test suite based on pytest-ansible that exercises The Foreman maintenance tool
 
 # Quickstart
@@ -13,7 +18,7 @@ is implemented by pytest-ansible.
 Get the source code and install dependencies:
 
     $ git clone https://github.com/SatelliteQE/testfm.git
-    $ pip install -r requirements.txt
+    $ pip3 install -r requirements.txt
 
 That’s it! You can now go ahead and start testing The Foreman Maintain.
 However, there are a few other things you need to do before continuing:
