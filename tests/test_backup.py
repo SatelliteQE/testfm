@@ -8,6 +8,33 @@ NODIR_MSG = "ERROR: parameter 'BACKUP_DIR': no value provided"
 NOPREV_MSG = ("ERROR: option '--incremental': Previous backup "
               "directory does not exist")
 
+OFFLINE_BACKUP_FILES = [
+    'config_files.tar.gz',
+    '.config.snar',
+    'metadata.yml',
+    'mongo_data.tar.gz',
+    '.mongo.snar',
+    'pgsql_data.tar.gz',
+    '.postgres.snar',
+]
+
+ONLINE_BACKUP_FILES = [
+    'candlepin.dump',
+    'config_files.tar.gz',
+    '.config.snar',
+    'foreman.dump',
+    'metadata.yml',
+    'mongo_dump',
+    'pg_globals.dump',
+]
+
+CONTENT_FILES = [
+    'pulp_data.tar',
+    '.pulp.snar',
+]
+
+assert_msg = "All required backup files not found"
+
 
 @capsule
 def test_positive_backup_online(ansible_module):
@@ -25,14 +52,24 @@ def test_positive_backup_online(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    # getting created files
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               ONLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -51,15 +88,26 @@ def test_positive_backup_online_skip_pulp_content(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y',
         '--skip-pulp-content',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    # getting created files
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               ONLINE_BACKUP_FILES), assert_msg
+    assert CONTENT_FILES not in files_list, "content not skipped"
 
 
 @capsule
@@ -78,15 +126,27 @@ def test_positive_backup_online_preserve_directory(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    ansible_module.file(
+        path="{}".format(subdir),
+        state="directory",
+        owner="postgres",
+    )
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y',
         '--preserve-directory',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.command(
+                'ls -a {0}'.format(subdir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               ONLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -105,16 +165,25 @@ def test_positive_backup_online_split_pulp_tar(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y',
         '--split-pulp-tar',
         '1M',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               ONLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -171,16 +240,26 @@ def test_positive_backup_online_caspule_features(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y',
         '--features',
         'dns,tftp,openscap,dhcp',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    # getting created files
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               ONLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -238,14 +317,24 @@ def test_positive_backup_offline(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    # getting created files
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               OFFLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -264,15 +353,26 @@ def test_positive_backup_offline_skip_pulp_content(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '--skip-pulp-content',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    # getting created files
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               OFFLINE_BACKUP_FILES), assert_msg
+    assert CONTENT_FILES not in files_list, "content not skipped"
 
 
 @capsule
@@ -292,15 +392,27 @@ def test_positive_backup_offline_preserve_directory(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    ansible_module.file(
+        path="{}".format(subdir),
+        state="directory",
+        owner="postgres",
+    )
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '--preserve-directory',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.command(
+                'ls -a {0}'.format(subdir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               OFFLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -320,16 +432,25 @@ def test_positive_backup_offline_split_pulp_tar(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '--split-pulp-tar',
         '10M',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               OFFLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -387,16 +508,25 @@ def test_positive_backup_offline_capsule_features(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '--features',
         'dns,tftp,dhcp,openscap',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               OFFLINE_BACKUP_FILES + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -415,15 +545,25 @@ def test_positive_backup_offline_logical(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '--include-db-dumps',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    contacted = ansible_module.command(
+                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]['stdout_lines']
+    assert set(files_list).issuperset(
+               OFFLINE_BACKUP_FILES + ONLINE_BACKUP_FILES +
+               CONTENT_FILES), assert_msg
 
 
 @capsule
