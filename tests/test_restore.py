@@ -22,7 +22,7 @@ def test_positive_restore_online_backup(ansible_module):
     :steps:
         1. Run foreman-maintain restore /backup_dir/
 
-    :expectedresults: Restore should successful.
+    :expectedresults: Restore successful.
 
     :CaseImportance: Critical
     """
@@ -37,6 +37,48 @@ def test_positive_restore_online_backup(ansible_module):
     )
     # saving backup to specified dir
     setup = ansible_module.command(Backup.run_online_backup([
+        '-y', '--preserve-directory', '/tmp/{}'.format(backup_dir)]))
+    for result in setup.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
+    # restore from previously saved backup
+    contacted = ansible_module.command(Restore._construct_command(
+        ['-y', '/tmp/{}'.format(backup_dir)]))
+    for result in contacted.values():
+        logger.info(result)
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
+
+
+@capsule
+def test_positive_restore_offline_backup(ansible_module):
+    """Restore offline backup of server
+
+    :id: 1005c983-13d4-451b-8115-8fce504104ee
+
+    :setup:
+
+        1. foreman-maintain should be installed.
+        2. Take offline backup of server.
+    :steps:
+        1. Run foreman-maintain restore /backup_dir/
+
+    :expectedresults: Restore successful.
+
+    :CaseImportance: Critical
+    """
+    # preparing a target dir
+    backup_dir = 'offline_backup_restore'
+    setup = ansible_module.command("rm -rf /tmp/{}".format(backup_dir))
+    assert setup.values()[0]["rc"] == 0
+    setup = ansible_module.file(
+            path="/tmp/{}".format(backup_dir),
+            state="directory",
+            owner="postgres",
+    )
+    # saving backup to specified dir
+    setup = ansible_module.command(Backup.run_offline_backup([
         '-y', '--preserve-directory', '/tmp/{}'.format(backup_dir)]))
     for result in setup.values():
         logger.info(result['stdout'])
