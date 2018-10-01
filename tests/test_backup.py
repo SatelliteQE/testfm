@@ -204,24 +204,34 @@ def test_positive_backup_online_incremental(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    dest_dir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     setup = ansible_module.command(Backup.run_online_backup([
         '-y',
-        '/mnt/'
+        subdir
     ]))
     for result in setup.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    source_dir = contacted.values()[0]['stdout_lines'][0]
     contacted = ansible_module.command(Backup.run_online_backup([
         '-y',
         '--incremental',
-        '/mnt/',
-        BACKUP_DIR
+        '{0}/{1}'.format(subdir, source_dir),
+        dest_dir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.stat(path=subdir)
+    source_size = contacted.values()[0]['stat']['size']
+    contacted = ansible_module.stat(path=dest_dir)
+    dest_size = contacted.values()[0]['stat']['size']
+    assert source_size >= dest_size
 
 
 @capsule
@@ -471,24 +481,34 @@ def test_positive_backup_offline_incremental(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    dest_dir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
     setup = ansible_module.command(Backup.run_offline_backup([
         '-y',
-        '/mnt/'
+        subdir
     ]))
     for result in setup.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+    contacted = ansible_module.command('ls {}'.format(subdir))
+    source_dir = contacted.values()[0]['stdout_lines'][0]
     contacted = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '--incremental',
-        '/mnt/',
-        BACKUP_DIR
+        '{0}/{1}'.format(subdir, source_dir),
+        dest_dir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
+
+    contacted = ansible_module.stat(path=subdir)
+    source_size = contacted.values()[0]['stat']['size']
+    contacted = ansible_module.stat(path=dest_dir)
+    dest_size = contacted.values()[0]['stat']['size']
+    assert source_size >= dest_size
 
 
 @capsule
