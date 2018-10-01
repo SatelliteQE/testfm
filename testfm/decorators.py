@@ -5,6 +5,7 @@ import unittest2
 
 # Run for capsule
 capsule = pytest.mark.capsule
+ansible_host_pattern = pytest.config.getoption("--ansible-host-pattern")
 
 
 def stubbed(reason=None):
