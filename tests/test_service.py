@@ -126,3 +126,59 @@ def test_positive_service_disable(ansible_module):
         teardown = ansible_module.command(Service.service_enable())
         for result in teardown.values():
             assert result['rc'] == 0
+
+
+@capsule
+def test_positive_automate_bz1626651(ansible_module):
+    """Disable services using foreman-maintain service
+
+    :id: dc60e388-f012-4164-a496-b12d6230cdc2
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain service stop.
+        2. Run foreman-maintain service restart
+
+    :expectedresults: service should restart.
+
+    :CaseImportance: Critical
+    """
+    try:
+        contacted = ansible_module.command(Service.service_stop())
+        for result in contacted.values():
+            logger.info(result['stdout'])
+            assert "FAIL" not in result['stdout']
+            assert result['rc'] == 0
+        contacted = ansible_module.command(Service.service_restart())
+        for result in contacted.values():
+            logger.info(result['stdout'])
+            assert "FAIL" not in result['stdout']
+            assert result['rc'] == 0
+    finally:
+        teardown = ansible_module.command(Service.service_start())
+        for result in teardown.values():
+            assert result['rc'] == 0
+
+
+@capsule
+def test_positive_service_status_clocale(ansible_module):
+    """Foreman-maintain service on C locale
+
+    :id: 143dda54-5ab5-478a-b33e-af805bace2d7
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run LC_ALL=C foreman-maintain service stop.
+
+    :expectedresults: service status should display.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.shell("LC_ALL=C " + Service.service_status())
+    for result in contacted.values():
+        logger.info(result)
+        assert result['rc'] == 0
