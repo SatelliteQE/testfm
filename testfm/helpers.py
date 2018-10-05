@@ -9,6 +9,8 @@ def product():
     project = sat_version.splitlines()[0].split(' ')[-1]
     if project.startswith('6.3'):
         return 'sat63'
+    elif project.startswith('6.4'):
+        return 'sat64'
     elif project.startswith('6.2'):
         return 'sat62'
     else:
