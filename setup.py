@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import find_packages, setup
 
-with open('README.md') as handle:
+with open('README.rst', 'r') as handle:
     LONG_DESCRIPTION = handle.read()
 
 with open('VERSION') as handle:

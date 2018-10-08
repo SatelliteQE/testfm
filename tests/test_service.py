@@ -182,3 +182,35 @@ def test_positive_service_status_clocale(ansible_module):
     for result in contacted.values():
         logger.info(result)
         assert result['rc'] == 0
+
+
+@capsule
+def test_positive_failed_service_status(ansible_module):
+    """Verify foreman-maintain service status return error when service stopped
+
+    :id: 74f6e276-1e54-4bf3-9538-19e87059f8b5
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain service stop.
+        2. Run foreman-maintain service status.
+
+    :expectedresults: service status should return error code.
+
+    :CaseImportance: Critical
+    """
+    try:
+        setup = ansible_module.command(Service.service_stop())
+        for result in setup.values():
+            logger.info(result['stdout'])
+            assert result['rc'] == 0
+        contacted = ansible_module.command(Service.service_status())
+        for result in contacted.values():
+            logger.info(result)
+            assert result['rc'] != 0
+    finally:
+        teardown = ansible_module.command(Service.service_start())
+        for result in teardown.values():
+            assert result['rc'] == 0
