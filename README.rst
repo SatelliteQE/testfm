@@ -85,6 +85,7 @@ standards. If the command gives no output, then you have passed. If not, then
 address any corrections recommended.
 
 If you have something great, please submit a pull request anyway!
+The `full documentation <https://testfm.readthedocs.io/en/latest/>`_ is available on ReadTheDocs.
 
 Licensing
 -----------------
