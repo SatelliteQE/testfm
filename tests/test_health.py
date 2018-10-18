@@ -90,6 +90,36 @@ def test_positive_foreman_maintain_health_check(ansible_module):
         assert "FAIL" not in result['stdout']
 
 
+def test_positive_foreman_maintain_health_check_by_tags(ansible_module):
+    """Verify foreman-maintain health check by tags
+
+        :id: 518e19af-2dd4-4fb0-8c90-208cbd354107
+
+        :setup:
+            1. foreman-maintain should be installed.
+
+        :steps:
+            1. Run foreman-maintain health check --tags tag_name
+
+        :expectedresults: Health check should perform.
+
+        :CaseImportance: Critical
+        """
+    contacted = ansible_module.command(Health.list_tags())
+    for result in contacted.values():
+        output = result['stdout']
+    output = [i.split(']\x1b[0m')[0] for i in output.split('\x1b[36m[') if i]
+    for tag in output:
+        contacted = ansible_module.command(Health.check({
+            'tags': tag,
+            'whitelist': 'disk-performance, packages-install'
+        }))
+        for result in contacted.values():
+            logger.info(result['stdout'])
+            assert "FAIL" not in result['stdout']
+            assert result['rc'] == 0
+
+
 def test_positive_check_hammer_ping(ansible_module):
     """Verify hammer ping check
 
