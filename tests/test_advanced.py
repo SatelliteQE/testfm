@@ -1,5 +1,6 @@
 from testfm.advanced import Advanced
-from testfm.decorators import stubbed
+from testfm.advanced_by_tag import AdvancedByTag
+from testfm.decorators import capsule, stubbed
 from testfm.log import logger
 
 
@@ -309,3 +310,67 @@ def test_positive_sync_plan_disable(ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
+
+
+def test_positive_procedure_by_tag_check_migrations(ansible_module):
+    """Run pre-migrations and post-migrations using advanced
+    procedure by-tag
+
+    :id: 65cacca0-f142-4a63-a644-01f76120f16c
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain advanced procedure by-tag
+        pre-migrations
+
+        2. Run foreman-maintain advanced procedure by-tag
+        post-migrations
+
+    :expectedresults: procedures of pre-migrations tag and
+     post-migrations tag should work.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(AdvancedByTag.pre_migrations())
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+    check_iptables = ansible_module.command("iptables -L")
+    for rules in check_iptables.values():
+        logger.info(rules['stdout'])
+        assert "FOREMAN_MAINTAIN" in rules['stdout']
+    teardown = ansible_module.command(AdvancedByTag.post_migrations())
+    for result in teardown.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+    check_iptables = ansible_module.command("iptables -L")
+    for rules in check_iptables.values():
+        logger.info(rules['stdout'])
+        assert "FOREMAN_MAINTAIN" not in rules['stdout']
+
+
+@capsule
+def test_positive_procedure_by_tag_restore_confirmation(ansible_module):
+    """Run restore_confirmation using advanced procedure by-tag
+
+    :id: f9e10352-04fb-49ba-8346-5b02e64fd028
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain advanced procedure by-tag
+        restore
+
+    :expectedresults: procedure restore_confirmation should work.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(AdvancedByTag.restore([
+        '--assumeyes']))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert 'FAIL' not in result['stdout']
+        assert result['rc'] == 0
