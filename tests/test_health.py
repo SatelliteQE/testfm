@@ -236,3 +236,27 @@ def test_positive_check_upstream_repository(ansible_module):
         path='/etc/yum.repos.d/upstream_repo.repo',
         state='absent')
     assert teardown.values()[0]["changed"] == 1
+
+
+def test_positive_available_space(ansible_module):
+    """Verify available-space check
+
+    :id: 7d8798ca-3334-4dda-a9b0-dc3d7c0903e9
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain health check --label available-space
+
+    :expectedresults: Health check should perform.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Health.check({
+        'label': 'available-space'
+    }))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
