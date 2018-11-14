@@ -374,3 +374,39 @@ def test_positive_procedure_by_tag_restore_confirmation(ansible_module):
         logger.info(result['stdout'])
         assert 'FAIL' not in result['stdout']
         assert result['rc'] == 0
+
+
+def test_positive_sync_plan_with_hammer_defaults(ansible_module):
+    """Verify that sync plan is disabled and enabled
+    with hammer defaults set.
+
+    :id: b25734c8-470f-4cad-bc56-5c0f75aa7499
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Setup hammer on system with defaults set
+
+        2. Run foreman-maintain advanced procedure run sync-plans-enable
+
+    :expectedresults: sync plans should get disabled and enabled.
+
+    :CaseImportance: Critical
+    """
+    setup = ansible_module.command(
+        "hammer defaults add --param-name organization_id --param-value 1")
+    assert setup.values()[0]["rc"] == 0
+    contacted = ansible_module.command(Advanced.run_sync_plans_disable())
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
+    contacted = ansible_module.command(Advanced.run_sync_plans_enable())
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
+    teardown = ansible_module.command(
+        "hammer defaults delete --param-name organization_id")
+    assert teardown.values()[0]["rc"] == 0
