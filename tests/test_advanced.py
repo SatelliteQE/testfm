@@ -43,6 +43,13 @@ def test_positive_foreman_maintain_hammer_setup(ansible_module):
     :CaseImportance: Critical
     """
     try:
+        ansible_module.get_url(
+            url='https://bootstrap.pypa.io/get-pip.py',
+            dest='/root'
+        )
+        setup = ansible_module.command("python /root/get-pip.py")
+        for result in setup.values():
+            assert result["rc"] == 0
         setup = ansible_module.command("hammer -u admin -p changeme"
                                        " user update"
                                        " --login admin "
@@ -50,11 +57,13 @@ def test_positive_foreman_maintain_hammer_setup(ansible_module):
         for result in setup.values():
             logger.info(result)
             assert result["rc"] == 0
-        output = ansible_module.command(Advanced.run_hammer_setup())
+        output = ansible_module.expect(
+            command=Advanced.run_hammer_setup(),
+            responses={"Hammer admin password: ": "JMNBzJ*a-4;XH!C~"}
+        )
         for result in output.values():
             logger.info(result)
-            assert "New settings saved into /root/foreman_maintain/config/" \
-                   "foreman-maintain-hammer.yml" in result["stdout_lines"]
+            assert result["rc"] == 0
     finally:
         teardown = ansible_module.command("hammer -u admin "
                                           "-p 'JMNBzJ*a-4;XH!C~'"
@@ -256,6 +265,13 @@ def test_positive_foreman_tasks_ui_investigate(ansible_module):
 
     :CaseImportance: Critical
     """
+    ansible_module.get_url(
+        url='https://bootstrap.pypa.io/get-pip.py',
+        dest='/root'
+    )
+    setup = ansible_module.command("python /root/get-pip.py")
+    for result in setup.values():
+        assert result["rc"] == 0
     setup = ansible_module.command("pip install pexpect")
     for result in setup.values():
         assert result["rc"] == 0
@@ -265,7 +281,7 @@ def test_positive_foreman_tasks_ui_investigate(ansible_module):
     )
     for result in output.values():
         logger.info(result)
-        assert "OK" in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_sync_plan_enable(ansible_module):
