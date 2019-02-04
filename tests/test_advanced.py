@@ -50,6 +50,9 @@ def test_positive_foreman_maintain_hammer_setup(ansible_module):
         setup = ansible_module.command("python /root/get-pip.py")
         for result in setup.values():
             assert result["rc"] == 0
+        setup = ansible_module.command("pip install pexpect")
+        for result in setup.values():
+            assert result["rc"] == 0
         setup = ansible_module.command("hammer -u admin -p changeme"
                                        " user update"
                                        " --login admin "
