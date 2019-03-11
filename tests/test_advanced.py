@@ -1,7 +1,57 @@
+import pytest
 from testfm.advanced import Advanced
 from testfm.advanced_by_tag import AdvancedByTag
+from testfm.constants import (
+    DOGFOOD_ACTIVATIONKEY,
+    DOGFOOD_ORG,
+    katello_ca_consumer,
+    RHN_PASSWORD,
+    RHN_USERNAME,
+    RHN_POOLID,
+    sat_63_repo,
+    sat_64_repo,
+    sat_65_repo,
+)
+
 from testfm.decorators import capsule, stubbed
 from testfm.log import logger
+
+
+@pytest.fixture(scope='function')
+def setup_teardown_repositories_setup(request, ansible_module):
+    subscribed_to = str(ansible_module.command(
+        'subscription-manager identity').values()[0]['stdout'])
+    if "Quality Assurance" in subscribed_to:
+        subscribed_to_cdn = True
+    else:
+            subscribed_to_cdn = False
+    if subscribed_to_cdn is False:
+        ansible_module.command('subscription-manager unregister')
+        ansible_module.command('subscription-manager clean')
+        ca_consumer = ansible_module.command(
+            'yum list katello-ca-consumer*').values()[0]['stdout']
+        if 'katello-ca-consumer' in ca_consumer:
+            pkg_name = [t for t in ca_consumer.split() if t.startswith('katello-ca-consumer')][0]
+            ansible_module.yum(name=pkg_name,
+                               state='absent')
+        ansible_module.command(
+            'subscription-manager register --force --user="{0}" --password="{1}"'.format(
+                RHN_USERNAME, RHN_PASSWORD))
+        for pool_id in RHN_POOLID.split():
+            ansible_module.command(
+                'subscription-manager subscribe --pool={0}'.format(pool_id))
+
+    def teardown_for_testcase():
+        if subscribed_to_cdn is False:
+            ansible_module.command('subscription-manager unregister')
+            ansible_module.command('subscription-manager clean')
+            ansible_module.command(
+                'yum -y localinstall {0}'.format(katello_ca_consumer))
+            ansible_module.command(
+                'subscription-manager register --force --org="{0}" --activationkey="{1}"'.format(
+                    DOGFOOD_ORG, DOGFOOD_ACTIVATIONKEY))
+
+    request.addfinalizer(teardown_for_testcase)
 
 
 def test_positive_foreman_maintain_service_restart(ansible_module):
@@ -48,6 +98,9 @@ def test_positive_foreman_maintain_hammer_setup(ansible_module):
             dest='/root'
         )
         setup = ansible_module.command("python /root/get-pip.py")
+        for result in setup.values():
+            assert result["rc"] == 0
+        setup = ansible_module.command("pip install pexpect")
         for result in setup.values():
             assert result["rc"] == 0
         setup = ansible_module.command("hammer -u admin -p changeme"
@@ -426,3 +479,36 @@ def test_positive_sync_plan_with_hammer_defaults(ansible_module):
     teardown = ansible_module.command(
         "hammer defaults delete --param-name organization_id")
     assert teardown.values()[0]["rc"] == 0
+
+
+def test_positive_repositories_setup(setup_teardown_repositories_setup, ansible_module):
+    """Verify that all required repositories gets enabled.
+    :id: e32fee2d-2a1f-40ed-9f94-515f75511c5a
+    :setup:
+        1. foreman-maintain should be installed.
+    :steps:
+        1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
+    :BZ: 1684730
+    :expectedresults: Required repositories should get enabled
+    :CaseImportance: Critical
+    """
+    for ver in ['6.3', '6.4', '6.5']:
+        contacted = ansible_module.command(Advanced.run_repositories_setup({
+            'version': ver
+        }))
+        for result in contacted.values():
+            logger.info(result['stdout'])
+            assert "FAIL" not in result['stdout']
+            assert result['rc'] == 0
+        contacted = ansible_module.command('yum repolist')
+        for result in contacted.values():
+            logger.info(result['stdout'])
+            if ver == '6.3':
+                for repo in sat_63_repo:
+                    assert repo in result['stdout']
+            if ver == '6.4':
+                for repo in sat_64_repo:
+                    assert repo in result['stdout']
+            if ver == '6.5':
+                for repo in sat_65_repo:
+                    assert repo in result['stdout']
