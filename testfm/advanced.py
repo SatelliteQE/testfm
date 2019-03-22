@@ -205,3 +205,17 @@ class Advanced(Base):
         result = cls._construct_command(options)
 
         return result
+
+    @classmethod
+    def run_repositories_setup(cls, options=None):
+        """Build foreman-maintain advanced procedure run
+         repositories-setup"""
+
+        cls.command_sub = 'repositories-setup'
+
+        if options is None:
+            options = {}
+
+        result = cls._construct_command(options)
+
+        return result
