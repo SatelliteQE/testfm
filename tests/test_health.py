@@ -1,9 +1,35 @@
+from fauxfactory import gen_string
 import pytest
 from testfm.advanced import Advanced
 from testfm.constants import upstream_url
 from testfm.decorators import stubbed
 from testfm.health import Health
 from testfm.log import logger
+
+
+@pytest.fixture(scope='function')
+def setup_install_pexpect(ansible_module):
+    ansible_module.get_url(
+        url='https://bootstrap.pypa.io/get-pip.py',
+        dest='/root'
+    )
+    setup = ansible_module.command("python /root/get-pip.py")
+    for result in setup.values():
+        assert result["rc"] == 0
+    setup = ansible_module.command("pip install pexpect")
+    for result in setup.values():
+        assert result["rc"] == 0
+
+
+@pytest.fixture(scope='function')
+def setup_puppet_empty_cert(setup_install_pexpect, ansible_module):
+    fname = gen_string('alpha')
+    puppet_ssldir_path = ansible_module.command(
+        'puppet master --configprint ssldir').values()[0]['stdout']
+    setup = ansible_module.file(
+        path='{0}/ca/requests/{1}'.format(puppet_ssldir_path, fname),
+        state='touch')
+    assert setup.values()[0]["changed"] == 1
 
 
 @pytest.fixture(scope='function')
@@ -304,3 +330,60 @@ def test_positive_automate_bz1632768(ansible_module):
     teardown = ansible_module.command(
         "hammer defaults delete --param-name organization_id")
     assert teardown.values()[0]["rc"] == 0
+
+
+def test_positive_puppet_check_no_empty_cert_requests(ansible_module):
+    """Verify puppet-check-no-empty-cert-requests
+
+    :id: aad69254-9978-41e7-83a9-122e342a8dc5
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain health check --label puppet-check-no-empty-cert-requests
+
+    :expectedresults: Health check should perform.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Health.check({
+        'label': 'puppet-check-no-empty-cert-requests'}))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
+
+
+def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansible_module):
+    """Verify puppet-check-no-empty-cert-requests
+
+    :id: d4b9f725-d764-475a-9fc0-8db4aa1cb6ce
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. have some empty files in ${puppet-check-no-empty-cert-requests}
+
+    :steps:
+        1. Run foreman-maintain health check --label puppet-check-no-empty-cert-requests
+
+    :expectedresults: Health check should perform.
+
+    :CaseImportance: Critical
+    """
+    response = '.* \[Delete empty CA cert request files\].*] '
+    contacted = ansible_module.expect(
+        command=Health.check({'label': 'puppet-check-no-empty-cert-requests'}),
+        responses={response: "yes"})
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" in result['stdout']
+        assert result['rc'] == 0
+    puppet_ssldir_path = ansible_module.command(
+        'puppet master --configprint ssldir').values()[0]['stdout']
+    contacted = ansible_module.find(
+        paths='{}/ca/requests/'.format(puppet_ssldir_path),
+        file_type='file',
+        size='0'
+    )
+    assert contacted.values()[0]['matched'] == 0
