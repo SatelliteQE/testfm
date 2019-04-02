@@ -18,6 +18,20 @@ from testfm.log import logger
 
 
 @pytest.fixture(scope='function')
+def setup_install_pexpect(ansible_module):
+    ansible_module.get_url(
+        url='https://bootstrap.pypa.io/get-pip.py',
+        dest='/root'
+    )
+    setup = ansible_module.command("python /root/get-pip.py")
+    for result in setup.values():
+        assert result["rc"] == 0
+    setup = ansible_module.command("pip install pexpect")
+    for result in setup.values():
+        assert result["rc"] == 0
+
+
+@pytest.fixture(scope='function')
 def setup_teardown_repositories_setup(request, ansible_module):
     subscribed_to = str(ansible_module.command(
         'subscription-manager identity').values()[0]['stdout'])
@@ -75,7 +89,7 @@ def test_positive_foreman_maintain_service_restart(ansible_module):
         assert "FAIL" not in result['stdout']
 
 
-def test_positive_foreman_maintain_hammer_setup(ansible_module):
+def test_positive_foreman_maintain_hammer_setup(setup_install_pexpect, ansible_module):
     """Hammer setup using advanced procedure
 
     :id: 236171c0-5185-465e-9eec-e15dfefb41c3
@@ -93,16 +107,6 @@ def test_positive_foreman_maintain_hammer_setup(ansible_module):
     :CaseImportance: Critical
     """
     try:
-        ansible_module.get_url(
-            url='https://bootstrap.pypa.io/get-pip.py',
-            dest='/root'
-        )
-        setup = ansible_module.command("python /root/get-pip.py")
-        for result in setup.values():
-            assert result["rc"] == 0
-        setup = ansible_module.command("pip install pexpect")
-        for result in setup.values():
-            assert result["rc"] == 0
         setup = ansible_module.command("hammer -u admin -p changeme"
                                        " user update"
                                        " --login admin "
@@ -302,7 +306,7 @@ def test_positive_foreman_task_resume(ansible_module):
         assert "FAIL" not in result['stdout']
 
 
-def test_positive_foreman_tasks_ui_investigate(ansible_module):
+def test_positive_foreman_tasks_ui_investigate(setup_install_pexpect, ansible_module):
     """Run foreman-tasks-ui-investigate using advanced procedure run
 
     :id: 3b4f69c6-c0a1-42e3-a099-8a6e26280d17
@@ -318,16 +322,6 @@ def test_positive_foreman_tasks_ui_investigate(ansible_module):
 
     :CaseImportance: Critical
     """
-    ansible_module.get_url(
-        url='https://bootstrap.pypa.io/get-pip.py',
-        dest='/root'
-    )
-    setup = ansible_module.command("python /root/get-pip.py")
-    for result in setup.values():
-        assert result["rc"] == 0
-    setup = ansible_module.command("pip install pexpect")
-    for result in setup.values():
-        assert result["rc"] == 0
     output = ansible_module.expect(
         command=Advanced.run_foreman_tasks_ui_investigate(),
         responses={"press ENTER after the tasks are resolved.": " "}
