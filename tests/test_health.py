@@ -1,7 +1,33 @@
+import pytest
 from testfm.advanced import Advanced
 from testfm.constants import upstream_url
+from testfm.decorators import stubbed
 from testfm.health import Health
 from testfm.log import logger
+
+
+@pytest.fixture(scope='function')
+def setup_upstream_repository(request, ansible_module):
+    for name, url in upstream_url.items():
+        ansible_module.yum_repository(
+            name=name,
+            description=name,
+            file="upstream_repo",
+            baseurl=url,
+            enabled="yes",
+            gpgcheck="no"
+            )
+    setup = ansible_module.file(
+        path='/etc/yum.repos.d/upstream_repo.repo',
+        state='present')
+    assert setup.values()[0]["changed"] == 0
+
+    def teardown_upstream_repository():
+        teardown = ansible_module.file(
+            path='/etc/yum.repos.d/upstream_repo.repo',
+            state='absent')
+        assert teardown.values()[0]["changed"] == 1
+    request.addfinalizer(teardown_upstream_repository)
 
 
 def test_positive_foreman_maintain_health_list(ansible_module):
@@ -198,7 +224,8 @@ def test_positive_pre_upgrade_health_check(ansible_module):
         assert "FAIL" not in result['stdout']
 
 
-def test_positive_check_upstream_repository(ansible_module):
+@stubbed
+def test_positive_check_upstream_repository(setup_upstream_repository, ansible_module):
     """Verify upstream repository check
 
     :id: 349fcf33-2d25-4628-a6af-cff53e624b25
@@ -213,29 +240,13 @@ def test_positive_check_upstream_repository(ansible_module):
 
     :CaseImportance: Critical
     """
-    for name, url in upstream_url.items():
-        ansible_module.yum_repository(
-            name=name,
-            description=name,
-            file="upstream_repo",
-            baseurl=url,
-            enabled="yes",
-            gpgcheck="no"
-            )
-    setup = ansible_module.file(
-        path='/etc/yum.repos.d/upstream_repo.repo',
-        state='present')
-    assert setup.values()[0]["changed"] == 0
     contacted = ansible_module.command(Health.check([
             '--label', 'check-upstream-repository', '--assumeyes'
         ]))
     for result in contacted.values():
         logger.info(result['stdout'])
+        assert "FAIL" in result['stdout']
         assert result['rc'] == 0
-    teardown = ansible_module.file(
-        path='/etc/yum.repos.d/upstream_repo.repo',
-        state='absent')
-    assert teardown.values()[0]["changed"] == 1
 
 
 def test_positive_available_space(ansible_module):
