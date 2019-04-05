@@ -1,4 +1,7 @@
+import datetime
 import pytest
+import yaml
+from fauxfactory import gen_string
 from testfm.advanced import Advanced
 from testfm.advanced_by_tag import AdvancedByTag
 from testfm.constants import (
@@ -12,9 +15,33 @@ from testfm.constants import (
     sat_64_repo,
     sat_65_repo,
 )
-
 from testfm.decorators import capsule, stubbed
 from testfm.log import logger
+
+
+@pytest.fixture(scope='function')
+def setup_sync_plan(request, ansible_module):
+    sync_plan_name = gen_string('alpha')
+    sync_date = datetime.datetime.today().strftime('%Y-%m-%d')
+    setup = ansible_module.command(
+        'hammer sync-plan create --name {0} --enabled true \
+        --interval "weekly" --sync-date {1} --organization-id 1'.format(
+            sync_plan_name, sync_date))
+    for result in setup.values():
+        assert result["rc"] == 0
+    setup = ansible_module.command(
+        'hammer --output csv sync-plan info --name {0} --organization-id 1'.format(
+            sync_plan_name))
+    sync_id = setup.values()[0]['stdout_lines'][1].split(',')[0]
+
+    def teardown_sync_plan():
+        teardown = ansible_module.command(
+            'hammer sync-plan delete --name {0} --organization-id 1'.format(
+                sync_plan_name))
+        for result in teardown.values():
+            assert result["rc"] == 0
+    request.addfinalizer(teardown_sync_plan)
+    return int(sync_id)
 
 
 @pytest.fixture(scope='function')
@@ -331,8 +358,9 @@ def test_positive_foreman_tasks_ui_investigate(setup_install_pexpect, ansible_mo
         assert result["rc"] == 0
 
 
-def test_positive_sync_plan_enable(ansible_module):
-    """Run sync-plans-enable using advanced procedure run
+def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
+    """Run sync-plans-enable and sync-plans-disable
+    using advanced procedure run.
 
     :id: 865df1e1-1189-437c-8451-22d772ff97d4
 
@@ -341,38 +369,42 @@ def test_positive_sync_plan_enable(ansible_module):
 
     :steps:
         1. Run foreman-maintain advanced procedure run
+        sync-plans-disable
+        2. Run foreman-maintain advanced procedure run
         sync-plans-enable
 
     :expectedresults: procedure sync-plans-enable should work.
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_sync_plans_enable())
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-
-
-def test_positive_sync_plan_disable(ansible_module):
-    """Run sync-plans-disable using advanced procedure run
-
-    :id: 8690d875-6784-41f3-92cc-06e2bc8b5dc0
-
-    :setup:
-        1. foreman-maintain should be installed.
-
-    :steps:
-        1. Run foreman-maintain advanced procedure run
-        sync-plans-disable
-
-    :expectedresults: procedure sync-plans-disable should work.
-
-    :CaseImportance: Critical
-    """
+    sat_hostname = ''
+    for facts in ansible_module.setup().items():
+        sat_hostname = facts[0]
     contacted = ansible_module.command(Advanced.run_sync_plans_disable())
     for result in contacted.values():
         logger.info(result['stdout'])
+        assert result["rc"] == 0
         assert "FAIL" not in result['stdout']
+    ansible_module.fetch(
+        src="/var/lib/foreman-maintain/data.yml",
+        dest="./"
+    )
+    with open('./{0}/var/lib/foreman-maintain/data.yml'.format(sat_hostname)) as f:
+        data_yml = yaml.safe_load(f)
+    assert setup_sync_plan in data_yml[':default'][':sync_plans'][':disabled']
+
+    contacted = ansible_module.command(Advanced.run_sync_plans_enable())
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert result["rc"] == 0
+        assert "FAIL" not in result['stdout']
+    ansible_module.fetch(
+        src="/var/lib/foreman-maintain/data.yml",
+        dest="./"
+    )
+    with open('./{0}/var/lib/foreman-maintain/data.yml'.format(sat_hostname)) as f:
+        data_yml = yaml.safe_load(f)
+    assert setup_sync_plan in data_yml[':default'][':sync_plans'][':enabled']
 
 
 def test_positive_procedure_by_tag_check_migrations(ansible_module):
