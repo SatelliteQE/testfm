@@ -324,3 +324,59 @@ def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansi
         size='0'
     )
     assert contacted.values()[0]['matched'] == 0
+
+
+def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs, ansible_module):
+    """Verify check-hotfix-installed check.
+
+    :id: d9023293-4173-4223-bbf5-328b41cf87cd
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+        2. modify some files of satellite.
+
+        3. Install hotfix-package, python-kitchen, yum-utils packages.
+
+    :steps:
+        1. Run foreman-maintain health check --label check-hotfix-installed
+
+    :expectedresults: check-hotfix-installed check should detect modified file
+    and installed hotfix.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Health.check({
+        'label': 'check-hotfix-installed'
+    }))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "WARNING" in result['stdout']
+        assert "hotfix-package" in result['stdout']
+        assert setup_hotfix_check in result['stdout']
+        assert result['rc'] == 1
+
+
+def test_positive_check_hotfix_installed_without_hotfix(setup_install_pkgs, ansible_module):
+    """Verify check-hotfix-installed check.
+
+    :id: 3b6fbf3a-5c78-4283-996e-ca8da88a5d1b
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+        2. Install python-kitchen, yum-utils packages.
+    :steps:
+        1. Run foreman-maintain health check --label check-hotfix-installed
+
+    :expectedresults: Health check should perform.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Health.check({
+        'label': 'check-hotfix-installed'
+    }))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "WARNING" not in result['stdout']
+        assert result['rc'] == 0

@@ -9,9 +9,76 @@ from testfm.constants import (
     RHN_PASSWORD,
     RHN_USERNAME,
     RHN_POOLID,
+    HOTFIX_URL,
     upstream_url,
 )
 from testfm.log import logger
+
+
+@pytest.fixture(scope='function')
+def setup_hotfix_check(request, ansible_module):
+    """This fixture is used for installing hofix package and modifying foreman file.
+    This fixture is used in test_positive_check_hotfix_installed_with_hotfix of test_health.py
+    """
+    file = ansible_module.find(
+        paths='/opt/theforeman/tfm/root/usr/share/gems/gems/',
+        patterns='fog-vsphere-*',
+        file_type='directory')
+    dpath = file.values()[0]['files'][0]['path']
+    fpath = dpath + '/lib/fog/vsphere/requests/compute/list_clusters.rb'
+    ansible_module.lineinfile(
+        dest=fpath,
+        insertafter='EOF',
+        line="#modifying_file")
+
+    ansible_module.yum_repository(
+        name='hotfix_repo',
+        description='hotfix_repo',
+        file="hotfix_repo",
+        baseurl=HOTFIX_URL,
+        enabled="yes",
+        gpgcheck="no"
+    )
+    setup = ansible_module.file(
+        path='/etc/yum.repos.d/hotfix_repo.repo',
+        state='present')
+    assert setup.values()[0]["changed"] == 0
+    setup = ansible_module.yum(
+        name='hotfix-package',
+        state='present')
+    for result in setup.values():
+        assert result['rc'] == 0
+
+    def teardown_hotfix_check():
+        teardown = ansible_module.command(
+            'yum -y reinstall tfm-rubygem-fog-vsphere')
+        for result in teardown.values():
+            assert result['rc'] == 0
+        teardown = ansible_module.file(
+            path='/etc/yum.repos.d/hotfix_repo.repo',
+            state='absent')
+        assert teardown.values()[0]["changed"] == 1
+        teardown = ansible_module.yum(
+            name=['hotfix-package'],
+            state='absent')
+        for result in teardown.values():
+            assert result['rc'] == 0
+        ansible_module.command('yum clean all')
+    request.addfinalizer(teardown_hotfix_check)
+    return fpath
+
+
+@pytest.fixture(scope='function')
+def setup_install_pkgs(ansible_module):
+    """This fixture installs necessary packages required by Testfm testcases to run properly.
+    This fixture is used in test_positive_check_hotfix_installed_with_hotfix and
+    test_positive_check_hotfix_installed_without_hotfix of test_health.py
+    """
+    setup = ansible_module.yum(
+        name=['python-kitchen', 'yum-utils'],
+        state='present')
+    for result in setup.values():
+        assert result['rc'] == 0
 
 
 @pytest.fixture(scope='function')
@@ -133,6 +200,7 @@ def setup_upstream_repository(request, ansible_module):
             path='/etc/yum.repos.d/upstream_repo.repo',
             state='absent')
         assert teardown.values()[0]["changed"] == 1
+        ansible_module.command('yum clean all')
     request.addfinalizer(teardown_upstream_repository)
 
 
