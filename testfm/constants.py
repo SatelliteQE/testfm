@@ -29,5 +29,5 @@ sat_64_repo = ['rhel-7-server-ansible-2.6-rpms', 'rhel-7-server-rpms',
                'rhel-7-server-satellite-6.4-rpms', 'rhel-7-server-satellite-maintenance-6-rpms',
                'rhel-7-server-satellite-tools-6.4-rpms', 'rhel-server-rhscl-7-rpms']
 sat_65_repo = ['rhel-7-server-ansible-2.6-rpms', 'rhel-7-server-rpms',
-               'rhel-7-server-satellite-maintenance-6-beta-rpms', 'rhel-server-rhscl-7-rpms',
-               'rhel-7-server-satellite-tools-6-beta-rpms', 'rhel-server-7-satellite-6-beta-rpms']
+               'rhel-7-server-satellite-6.5-rpms', 'rhel-7-server-satellite-maintenance-6-rpms',
+               'rhel-7-server-satellite-tools-6.5-rpms', 'rhel-server-rhscl-7-rpms']
