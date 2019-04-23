@@ -1,98 +1,13 @@
-import datetime
-import pytest
 import yaml
-from fauxfactory import gen_string
 from testfm.advanced import Advanced
 from testfm.advanced_by_tag import AdvancedByTag
 from testfm.constants import (
-    DOGFOOD_ACTIVATIONKEY,
-    DOGFOOD_ORG,
-    katello_ca_consumer,
-    RHN_PASSWORD,
-    RHN_USERNAME,
-    RHN_POOLID,
     sat_63_repo,
     sat_64_repo,
     sat_65_repo,
 )
 from testfm.decorators import capsule, stubbed
 from testfm.log import logger
-
-
-@pytest.fixture(scope='function')
-def setup_sync_plan(request, ansible_module):
-    sync_plan_name = gen_string('alpha')
-    sync_date = datetime.datetime.today().strftime('%Y-%m-%d')
-    setup = ansible_module.command(
-        'hammer sync-plan create --name {0} --enabled true \
-        --interval "weekly" --sync-date {1} --organization-id 1'.format(
-            sync_plan_name, sync_date))
-    for result in setup.values():
-        assert result["rc"] == 0
-    setup = ansible_module.command(
-        'hammer --output csv sync-plan info --name {0} --organization-id 1'.format(
-            sync_plan_name))
-    sync_id = setup.values()[0]['stdout_lines'][1].split(',')[0]
-
-    def teardown_sync_plan():
-        teardown = ansible_module.command(
-            'hammer sync-plan delete --name {0} --organization-id 1'.format(
-                sync_plan_name))
-        for result in teardown.values():
-            assert result["rc"] == 0
-    request.addfinalizer(teardown_sync_plan)
-    return int(sync_id)
-
-
-@pytest.fixture(scope='function')
-def setup_install_pexpect(ansible_module):
-    ansible_module.get_url(
-        url='https://bootstrap.pypa.io/get-pip.py',
-        dest='/root'
-    )
-    setup = ansible_module.command("python /root/get-pip.py")
-    for result in setup.values():
-        assert result["rc"] == 0
-    setup = ansible_module.command("pip install pexpect")
-    for result in setup.values():
-        assert result["rc"] == 0
-
-
-@pytest.fixture(scope='function')
-def setup_teardown_repositories_setup(request, ansible_module):
-    subscribed_to = str(ansible_module.command(
-        'subscription-manager identity').values()[0]['stdout'])
-    if "Quality Assurance" in subscribed_to:
-        subscribed_to_cdn = True
-    else:
-            subscribed_to_cdn = False
-    if subscribed_to_cdn is False:
-        ansible_module.command('subscription-manager unregister')
-        ansible_module.command('subscription-manager clean')
-        ca_consumer = ansible_module.command(
-            'yum list katello-ca-consumer*').values()[0]['stdout']
-        if 'katello-ca-consumer' in ca_consumer:
-            pkg_name = [t for t in ca_consumer.split() if t.startswith('katello-ca-consumer')][0]
-            ansible_module.yum(name=pkg_name,
-                               state='absent')
-        ansible_module.command(
-            'subscription-manager register --force --user="{0}" --password="{1}"'.format(
-                RHN_USERNAME, RHN_PASSWORD))
-        for pool_id in RHN_POOLID.split():
-            ansible_module.command(
-                'subscription-manager subscribe --pool={0}'.format(pool_id))
-
-    def teardown_for_testcase():
-        if subscribed_to_cdn is False:
-            ansible_module.command('subscription-manager unregister')
-            ansible_module.command('subscription-manager clean')
-            ansible_module.command(
-                'yum -y localinstall {0}'.format(katello_ca_consumer))
-            ansible_module.command(
-                'subscription-manager register --force --org="{0}" --activationkey="{1}"'.format(
-                    DOGFOOD_ORG, DOGFOOD_ACTIVATIONKEY))
-
-    request.addfinalizer(teardown_for_testcase)
 
 
 def test_positive_foreman_maintain_service_restart(ansible_module):
@@ -231,7 +146,7 @@ def test_positive_foreman_maintain_enable_maintenance_mode(ansible_module):
         assert "FAIL" not in result['stdout']
     check_iptables = ansible_module.command("iptables -L")
     for rules in check_iptables.values():
-        logger.info(result['stdout'])
+        logger.info(rules['stdout'])
         assert "FOREMAN_MAINTAIN" in rules['stdout']
     teardown = ansible_module.command(Advanced.run_disable_maintenance_mode())
     for result in teardown.values():
@@ -471,7 +386,7 @@ def test_positive_procedure_by_tag_restore_confirmation(ansible_module):
         assert result['rc'] == 0
 
 
-def test_positive_sync_plan_with_hammer_defaults(ansible_module):
+def test_positive_sync_plan_with_hammer_defaults(setup_for_hammer_defaults, ansible_module):
     """Verify that sync plan is disabled and enabled
     with hammer defaults set.
 
@@ -489,9 +404,6 @@ def test_positive_sync_plan_with_hammer_defaults(ansible_module):
 
     :CaseImportance: Critical
     """
-    setup = ansible_module.command(
-        "hammer defaults add --param-name organization_id --param-value 1")
-    assert setup.values()[0]["rc"] == 0
     contacted = ansible_module.command(Advanced.run_sync_plans_disable())
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -502,12 +414,9 @@ def test_positive_sync_plan_with_hammer_defaults(ansible_module):
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
-    teardown = ansible_module.command(
-        "hammer defaults delete --param-name organization_id")
-    assert teardown.values()[0]["rc"] == 0
 
 
-def test_positive_repositories_setup(setup_teardown_repositories_setup, ansible_module):
+def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
     """Verify that all required repositories gets enabled.
     :id: e32fee2d-2a1f-40ed-9f94-515f75511c5a
     :setup:
