@@ -1,59 +1,6 @@
-from fauxfactory import gen_string
-import pytest
-from testfm.advanced import Advanced
-from testfm.constants import upstream_url
 from testfm.decorators import stubbed
 from testfm.health import Health
 from testfm.log import logger
-
-
-@pytest.fixture(scope='function')
-def setup_install_pexpect(ansible_module):
-    ansible_module.get_url(
-        url='https://bootstrap.pypa.io/get-pip.py',
-        dest='/root'
-    )
-    setup = ansible_module.command("python /root/get-pip.py")
-    for result in setup.values():
-        assert result["rc"] == 0
-    setup = ansible_module.command("pip install pexpect")
-    for result in setup.values():
-        assert result["rc"] == 0
-
-
-@pytest.fixture(scope='function')
-def setup_puppet_empty_cert(setup_install_pexpect, ansible_module):
-    fname = gen_string('alpha')
-    puppet_ssldir_path = ansible_module.command(
-        'puppet master --configprint ssldir').values()[0]['stdout']
-    setup = ansible_module.file(
-        path='{0}/ca/requests/{1}'.format(puppet_ssldir_path, fname),
-        state='touch')
-    assert setup.values()[0]["changed"] == 1
-
-
-@pytest.fixture(scope='function')
-def setup_upstream_repository(request, ansible_module):
-    for name, url in upstream_url.items():
-        ansible_module.yum_repository(
-            name=name,
-            description=name,
-            file="upstream_repo",
-            baseurl=url,
-            enabled="yes",
-            gpgcheck="no"
-            )
-    setup = ansible_module.file(
-        path='/etc/yum.repos.d/upstream_repo.repo',
-        state='present')
-    assert setup.values()[0]["changed"] == 0
-
-    def teardown_upstream_repository():
-        teardown = ansible_module.file(
-            path='/etc/yum.repos.d/upstream_repo.repo',
-            state='absent')
-        assert teardown.values()[0]["changed"] == 1
-    request.addfinalizer(teardown_upstream_repository)
 
 
 def test_positive_foreman_maintain_health_list(ansible_module):
@@ -196,7 +143,7 @@ def test_positive_check_hammer_ping(ansible_module):
         assert "FAIL" not in result['stdout']
 
 
-def test_negative_check_hammer_ping(ansible_module):
+def test_negative_check_hammer_ping(setup_katello_service_stop, ansible_module):
     """Verify hammer ping check
 
     :id: ecdc5bfb-2adf-49f6-948d-995dae34bcd3
@@ -213,18 +160,12 @@ def test_negative_check_hammer_ping(ansible_module):
 
     :CaseImportance: Critical
     """
-    setup = ansible_module.command(Advanced.run_katello_service_stop())
-    for result in setup.values():
-        assert result['rc'] == 0
     contacted = ansible_module.command(Health.check({
         'label': 'hammer-ping'
     }))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" in result['stdout']
-    teardown = ansible_module.command(Advanced.run_service_start())
-    for result in teardown.values():
-        logger.info(result['stdout'])
 
 
 def test_positive_pre_upgrade_health_check(ansible_module):
@@ -319,17 +260,11 @@ def test_positive_automate_bz1632768(ansible_module):
 
     :CaseImportance: Critical
     """
-    setup = ansible_module.command(
-        "hammer defaults add --param-name organization_id --param-value 1")
-    assert setup.values()[0]["rc"] == 0
     contacted = ansible_module.command(Health.check())
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result['rc'] == 0
-    teardown = ansible_module.command(
-        "hammer defaults delete --param-name organization_id")
-    assert teardown.values()[0]["rc"] == 0
 
 
 @stubbed
