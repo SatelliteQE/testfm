@@ -9,6 +9,7 @@ RHN_POOLID = config['subscription']['RHN_POOLID']
 DOGFOOD_ORG = config['subscription']['DOGFOOD_ORG']
 DOGFOOD_ACTIVATIONKEY = config['subscription']['DOGFOOD_ACTIVATIONKEY']
 DOGFOOD_URL = config['subscription']['DOGFOOD_URL']
+HOTFIX_URL = config['URLS']['HOTFIX_URL']
 katello_ca_consumer = DOGFOOD_URL + '/pub/katello-ca-consumer-latest.noarch.rpm'
 upstream_url = {
     'candlepin_repo': (
