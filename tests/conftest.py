@@ -75,7 +75,7 @@ def setup_install_pkgs(ansible_module):
     test_positive_check_hotfix_installed_without_hotfix of test_health.py
     """
     setup = ansible_module.yum(
-        name=['python-kitchen', 'yum-utils'],
+        name=['python-kitchen', 'yum-utils', 'yum-plugin-versionlock'],
         state='present')
     for result in setup.values():
         assert result['rc'] == 0
