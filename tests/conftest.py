@@ -1,6 +1,7 @@
 import datetime
-from fauxfactory import gen_string
 import pytest
+import yaml
+from fauxfactory import gen_string
 from testfm.advanced import Advanced
 from testfm.constants import (
     DOGFOOD_ACTIVATIONKEY,
@@ -139,17 +140,45 @@ def setup_sync_plan(request, ansible_module):
     It is used by test test_positive_sync_plan_disable_enable of test_advanced.py.
     """
     sync_plan_name = gen_string('alpha')
-    sync_date = datetime.datetime.today().strftime('%Y-%m-%d')
-    setup = ansible_module.command(
-        'hammer sync-plan create --name {0} --enabled true \
-        --interval "weekly" --sync-date {1} --organization-id 1'.format(
-            sync_plan_name, sync_date))
-    for result in setup.values():
-        assert result["rc"] == 0
-    setup = ansible_module.command(
-        'hammer --output csv sync-plan info --name {0} --organization-id 1'.format(
-            sync_plan_name))
-    sync_id = setup.values()[0]['stdout_lines'][1].split(',')[0]
+
+    def sync_plan():
+        org_ids = []
+        sync_ids = []
+        sat_hostname = ''
+        sync_date = datetime.datetime.today().strftime('%Y-%m-%d')
+        setup = ansible_module.command(
+            'hammer sync-plan create --name {0} --enabled true \
+            --interval "weekly" --sync-date {1} --organization-id 1'.format(
+                sync_plan_name, sync_date))
+        for result in setup.values():
+            assert result["rc"] == 0
+        # Find all sync-plan id present in satellite
+        for facts in ansible_module.setup().items():
+            sat_hostname = facts[0]
+        setup = ansible_module.shell(
+            'hammer --output json organization list > /tmp/orgs.yaml')
+        ansible_module.fetch(
+            src="/tmp/orgs.yaml",
+            dest="./"
+        )
+        with open('./{0}/tmp/orgs.yaml'.format(sat_hostname)) as f:
+            org_yml = yaml.safe_load(f)
+        for id in org_yml:
+            org_ids.append(id['Id'])
+        for id in org_ids:
+            ansible_module.shell(
+                "hammer --output yaml sync-plan list --organization-id {} | sed -n '1!p' >> /tmp/sync_id.yaml".format(id))
+        ansible_module.fetch(
+            src="/tmp/sync_id.yaml",
+            dest="./"
+        )
+        with open('./{0}/tmp/sync_id.yaml'.format(sat_hostname)) as f:
+            sync_yml = yaml.safe_load(f)
+            for id in sync_yml:
+                if id['Enabled']:
+                    sync_ids.append(id['ID'])
+        request.addfinalizer(teardown_sync_plan)
+        return list(set(sync_ids)), sat_hostname
 
     def teardown_sync_plan():
         teardown = ansible_module.command(
@@ -157,8 +186,12 @@ def setup_sync_plan(request, ansible_module):
                 sync_plan_name))
         for result in teardown.values():
             assert result["rc"] == 0
-    request.addfinalizer(teardown_sync_plan)
-    return int(sync_id)
+        for path in ['/tmp/sync_id.yaml', '/tmp/orgs.yaml']:
+            ansible_module.file(
+                path=path,
+                state='absent',
+            )
+    return sync_plan
 
 
 @pytest.fixture(scope='function')

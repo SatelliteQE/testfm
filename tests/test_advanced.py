@@ -292,9 +292,7 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
 
     :CaseImportance: Critical
     """
-    sat_hostname = ''
-    for facts in ansible_module.setup().items():
-        sat_hostname = facts[0]
+    sync_ids, sat_hostname = setup_sync_plan()
     contacted = ansible_module.command(Advanced.run_sync_plans_disable())
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -306,7 +304,8 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
     )
     with open('./{0}/var/lib/foreman-maintain/data.yml'.format(sat_hostname)) as f:
         data_yml = yaml.safe_load(f)
-    assert setup_sync_plan in data_yml[':default'][':sync_plans'][':disabled']
+    assert len(sync_ids) == len(data_yml[':default'][':sync_plans'][':disabled'])
+    assert sorted(sync_ids) == sorted(data_yml[':default'][':sync_plans'][':disabled'])
 
     contacted = ansible_module.command(Advanced.run_sync_plans_enable())
     for result in contacted.values():
@@ -319,7 +318,8 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
     )
     with open('./{0}/var/lib/foreman-maintain/data.yml'.format(sat_hostname)) as f:
         data_yml = yaml.safe_load(f)
-    assert setup_sync_plan in data_yml[':default'][':sync_plans'][':enabled']
+    assert len(sync_ids) == len(data_yml[':default'][':sync_plans'][':enabled'])
+    assert sorted(sync_ids) == sorted(data_yml[':default'][':sync_plans'][':enabled'])
 
 
 def test_positive_procedure_by_tag_check_migrations(ansible_module):
