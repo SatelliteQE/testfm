@@ -17,11 +17,13 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
 
     :CaseImportance: Critical
     """
-    satellite_version = str(ansible_module.command(
+    satellite_version = ansible_module.command(
         "rpm -q 'satellite' --queryformat='%{VERSION}'"
-    ).values()[0]['stdout'])
-    if satellite_version.startswith('6.5'):
-        versions = ['6.5.z']
+    ).values()[0]['stdout']
+    if satellite_version.startswith('6.6'):
+        versions = []
+    elif satellite_version.startswith('6.5'):
+        versions = ['6.5.z', '6.6']
     elif satellite_version.startswith('6.4'):
         versions = ['6.4.z', '6.5']
     elif satellite_version.startswith('6.3'):
@@ -35,4 +37,4 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         for ver in versions:
-            assert ver in result['stdout']
+            assert ver in result['stdout_lines']

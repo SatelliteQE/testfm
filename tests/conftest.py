@@ -167,7 +167,8 @@ def setup_sync_plan(request, ansible_module):
             org_ids.append(id['Id'])
         for id in org_ids:
             ansible_module.shell(
-                "hammer --output yaml sync-plan list --organization-id {} | sed -n '1!p' >> /tmp/sync_id.yaml".format(id))
+                "hammer --output yaml sync-plan list --organization-id {} | "
+                "sed -n '1!p' >> /tmp/sync_id.yaml".format(id))
         ansible_module.fetch(
             src="/tmp/sync_id.yaml",
             dest="./"
