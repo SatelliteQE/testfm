@@ -32,3 +32,4 @@ sat_64_repo = ['rhel-7-server-ansible-2.6-rpms', 'rhel-7-server-rpms',
 sat_65_repo = ['rhel-7-server-ansible-2.6-rpms', 'rhel-7-server-rpms',
                'rhel-7-server-satellite-6.5-rpms', 'rhel-7-server-satellite-maintenance-6-rpms',
                'rhel-7-server-satellite-tools-6.5-rpms', 'rhel-server-rhscl-7-rpms']
+foreman_maintain_yml = '/etc/foreman-maintain/foreman_maintain.yml'
