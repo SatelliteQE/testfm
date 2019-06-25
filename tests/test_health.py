@@ -380,3 +380,54 @@ def test_positive_check_hotfix_installed_without_hotfix(setup_install_pkgs, ansi
         logger.info(result['stdout'])
         assert "WARNING" not in result['stdout']
         assert result['rc'] == 0
+
+
+def test_positive_check_yum_exclude_list(setup_yum_exclude, ansible_module):
+    """Verify check-yum-exclude-list
+
+    :id: b50c8866-6175-4286-8106-561945726023
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. configure yum exclude.
+
+    :steps:
+        1. configure yum exclude.
+        2. Run foreman-maintain health check --label check-yum-exclude-list
+        3. Assert that excluded packages are listed in output.
+        4. remove yum exclude configured in step 1.
+
+    :expectedresults: check-yum-exclude-list should work.
+
+    :CaseImportance: Critical
+    """
+    yum_exclude = setup_yum_exclude(exclude='cat* bear*')
+    contacted = ansible_module.command(Health.check({
+        'label': 'check-yum-exclude-list'}))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert yum_exclude in result['stdout']
+        assert result["rc"] == 1
+
+
+def test_positive_check_yum_exclude_list_without_excludes(ansible_module):
+    """Verify check-yum-exclude-list
+
+    :id: 12ed3d41-abc7-45bb-8234-6e3a45229254
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain health check --label check-yum-exclude-list
+        2.Assert that no packages are listed in output.
+
+    :expectedresults: check-yum-exclude-list should work.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Health.check({
+        'label': 'check-yum-exclude-list'}))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert result["rc"] == 0
