@@ -95,65 +95,6 @@ def test_positive_foreman_maintain_packages_update(ansible_module):
         assert "FAIL" not in result['stdout']
 
 
-def test_positive_foreman_maintain_disable_maintenance_mode(ansible_module):
-    """Disable maintenance mode using advanced procedure run
-
-    :id: 3a58ce93-631e-42b6-9b41-1cb620f351e6
-
-    :setup:
-        1. foreman-maintain should be installed.
-        2. maintenance mode should be enabled.
-
-    :steps:
-        1. Run foreman-maintain advanced procedure run maintenance-mode-disable
-
-    :expectedresults: iptables rules should remove.
-
-    :CaseImportance: Critical
-    """
-    setup = ansible_module.command(Advanced.run_enable_maintenance_mode())
-    for result in setup.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-    contacted = ansible_module.command(Advanced.run_disable_maintenance_mode())
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-    check_iptables = ansible_module.command("iptables -L")
-    for rules in check_iptables.values():
-        logger.info(rules['stdout'])
-        assert "FOREMAN_MAINTAIN" not in rules['stdout']
-
-
-def test_positive_foreman_maintain_enable_maintenance_mode(ansible_module):
-    """Enable maintenance mode using advanced procedure run
-
-    :id: a37c78da-430d-48be-b94a-c25699bddb02
-
-    :setup:
-        1. foreman-maintain should be installed.
-
-    :steps:
-        1. Run foreman-maintain advanced procedure run maintenance-mode-enable
-
-    :expectedresults: iptables rules should add.
-
-    :CaseImportance: Critical
-    """
-    contacted = ansible_module.command(Advanced.run_enable_maintenance_mode())
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-    check_iptables = ansible_module.command("iptables -L")
-    for rules in check_iptables.values():
-        logger.info(rules['stdout'])
-        assert "FOREMAN_MAINTAIN" in rules['stdout']
-    teardown = ansible_module.command(Advanced.run_disable_maintenance_mode())
-    for result in teardown.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-
-
 def test_positive_foreman_taks_delete_old(ansible_module):
     """Delete old foreman-tasks using advanced procedure run
 

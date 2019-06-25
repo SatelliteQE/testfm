@@ -6,6 +6,7 @@ from testfm.advanced import Advanced
 from testfm.constants import (
     DOGFOOD_ACTIVATIONKEY,
     DOGFOOD_ORG,
+    foreman_maintain_yml,
     katello_ca_consumer,
     RHN_PASSWORD,
     RHN_USERNAME,
@@ -13,6 +14,7 @@ from testfm.constants import (
     HOTFIX_URL,
     upstream_url,
 )
+from testfm.maintenance_mode import MaintenanceMode
 from testfm.log import logger
 
 
@@ -160,9 +162,13 @@ def setup_install_pexpect(ansible_module):
 @pytest.fixture(scope='function')
 def setup_sync_plan(request, ansible_module):
     """This fixture is used to create/delete sync-plan.
-    It is used by test test_positive_sync_plan_disable_enable of test_advanced.py.
+    It is used by tests test_positive_sync_plan_disable_enable and test_positive_maintenance_mode.
     """
     sync_plan_name = gen_string('alpha')
+    ansible_module.lineinfile(
+        dest=foreman_maintain_yml,
+        insertafter='EOF',
+        line=":manage_crond: true")
 
     def sync_plan():
         org_ids = []
@@ -205,9 +211,7 @@ def setup_sync_plan(request, ansible_module):
         return list(set(sync_ids)), sat_hostname
 
     def teardown_sync_plan():
-        teardown = ansible_module.command(
-            'hammer sync-plan delete --name {0} --organization-id 1'.format(
-                sync_plan_name))
+        teardown = ansible_module.command(MaintenanceMode.stop())
         for result in teardown.values():
             assert result["rc"] == 0
         for path in ['/tmp/sync_id.yaml', '/tmp/orgs.yaml']:
@@ -215,6 +219,10 @@ def setup_sync_plan(request, ansible_module):
                 path=path,
                 state='absent',
             )
+        ansible_module.lineinfile(
+            dest=foreman_maintain_yml,
+            state='absent',
+            line=":manage_crond: true")
     return sync_plan
 
 
