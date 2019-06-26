@@ -26,7 +26,7 @@ def run_only_on(*server):
         def test_health_check():
             # test code continues here
 
-    :param str project: Enter 'sat65' , 'sat64' , 'sat63' , 'sat62' and 'sat61'
+    :param str project: Enter 'sat66', 'sat65' , 'sat64' , 'sat63' , 'sat62' and 'sat61'
     for specific version
     """
     return pytest.mark.skipif(

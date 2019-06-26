@@ -1,3 +1,4 @@
+from testfm.decorators import run_only_on
 from testfm.packages import Packages
 from testfm.log import logger
 
@@ -83,6 +84,7 @@ def test_positive_foreman_maintain_packages_lock(setup_install_pkgs, ansible_mod
         assert int(result['stdout']) == 0, 'No package should be locked.'
 
 
+@run_only_on('sat66')
 def test_positive_lock_package_versions(setup_install_pkgs, ansible_module):
     """Verify whether satellite related packages get locked
 
