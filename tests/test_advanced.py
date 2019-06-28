@@ -5,6 +5,8 @@ from testfm.constants import (
     sat_63_repo,
     sat_64_repo,
     sat_65_repo,
+    sat_66_repo,
+    sat_beta_repo,
 )
 from testfm.decorators import capsule, stubbed
 from testfm.log import logger
@@ -368,23 +370,56 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
     :expectedresults: Required repositories should get enabled
     :CaseImportance: Critical
     """
-    for ver in ['6.3', '6.4', '6.5']:
+    for ver in ['6.3', '6.4', '6.5', '6.6']:
         contacted = ansible_module.command(Advanced.run_repositories_setup({
             'version': ver
         }))
         for result in contacted.values():
             logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
-        contacted = ansible_module.command('yum repolist')
-        for result in contacted.values():
-            logger.info(result['stdout'])
-            if ver == '6.3':
-                for repo in sat_63_repo:
+            if ver == '6.6':  # till Satellite 6.6 is GA
+                assert "FAIL" in result['stdout']
+                assert result['rc'] == 1
+                for repo in sat_66_repo:
                     assert repo in result['stdout']
-            if ver == '6.4':
-                for repo in sat_64_repo:
-                    assert repo in result['stdout']
-            if ver == '6.5':
-                for repo in sat_65_repo:
-                    assert repo in result['stdout']
+            else:
+                assert "FAIL" not in result['stdout']
+                assert result['rc'] == 0
+                contacted = ansible_module.command('yum repolist')
+                for result in contacted.values():
+                    logger.info(result['stdout'])
+                    if ver == '6.3':
+                        for repo in sat_63_repo:
+                            assert repo in result['stdout']
+                    if ver == '6.4':
+                        for repo in sat_64_repo:
+                            assert repo in result['stdout']
+                    if ver == '6.5':
+                        for repo in sat_65_repo:
+                            assert repo in result['stdout']
+
+
+def test_positive_beta_repositories(
+        beta_env_setup,
+        setup_subscribe_to_cdn_dogfood,
+        ansible_module):
+    """Verify that all required beta repositories gets enabled.
+    :id: 2d544863-ebd1-4a60-b189-395b5cd82104
+    :setup:
+        1. foreman-maintain should be installed.
+    :steps:
+        1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
+    :BZ: 1684730
+    :expectedresults: Required beta repositories should get enabled
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Advanced.run_repositories_setup({
+        'version': '6.6'
+    }))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
+    contacted = ansible_module.command('yum repolist')
+    for result in contacted.values():
+        for repo in sat_beta_repo:
+            assert repo in result['stdout']

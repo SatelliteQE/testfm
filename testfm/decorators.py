@@ -30,7 +30,7 @@ def run_only_on(*server):
     for specific version
     """
     return pytest.mark.skipif(
-        product() not in server,
+        product()[0] not in server,
         reason="Server version is '{0}' and this test will run only "
-               "on '{1}' version".format(product(), server)
+               "on '{1}' version".format(product()[0], server)
     )

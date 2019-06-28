@@ -14,6 +14,7 @@ from testfm.constants import (
     HOTFIX_URL,
     upstream_url,
 )
+from testfm.helpers import product
 from testfm.maintenance_mode import MaintenanceMode
 from testfm.log import logger
 
@@ -306,5 +307,18 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
             ansible_module.command(
                 'subscription-manager register --force --org="{0}" --activationkey="{1}"'.format(
                     DOGFOOD_ORG, DOGFOOD_ACTIVATIONKEY))
-
+        else:
+            contacted = ansible_module.command(Advanced.run_repositories_setup({
+                'version': product()[1]  # Satellite minor version
+            }))
+            for result in contacted.values():
+                logger.info(result['stdout'])
+                assert "FAIL" not in result['stdout']
+                assert result['rc'] == 0
     request.addfinalizer(teardown_subscribe_to_cdn_dogfood)
+
+
+@pytest.fixture(scope='function')
+def beta_env_setup(monkeypatch):
+    # This fixture is used to set FOREMAN_MAINTAIN_USE_BETA env_var
+    monkeypatch.setenv('FOREMAN_MAINTAIN_USE_BETA', '1')
