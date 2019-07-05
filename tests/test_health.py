@@ -120,8 +120,8 @@ def test_positive_foreman_maintain_health_check_by_tags(ansible_module):
             assert result['rc'] == 0
 
 
-def test_positive_check_hammer_ping(ansible_module):
-    """Verify hammer ping check
+def test_positive_check_server_ping(ansible_module):
+    """Verify server ping check
 
     :id: b1eec8cb-9f94-439a-b5e7-8621cb35501f
 
@@ -129,21 +129,21 @@ def test_positive_check_hammer_ping(ansible_module):
         1. foreman-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --label hammer-ping
+        1. Run foreman-maintain health check --label server-ping
 
     :expectedresults: Health check should perform.
 
     :CaseImportance: Critical
     """
     contacted = ansible_module.command(Health.check({
-        'label': 'hammer-ping'
+        'label': 'server-ping'
     }))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
 
 
-def test_negative_check_hammer_ping(setup_katello_service_stop, ansible_module):
+def test_negative_check_server_ping(setup_katello_service_stop, ansible_module):
     """Verify hammer ping check
 
     :id: ecdc5bfb-2adf-49f6-948d-995dae34bcd3
@@ -153,7 +153,7 @@ def test_negative_check_hammer_ping(setup_katello_service_stop, ansible_module):
 
     :steps:
         1. Run Katello-service stop
-        2. Run foreman-maintain health check --label hammer-ping
+        2. Run foreman-maintain health check --label server-ping
         3. Run Katello-service start
 
     :expectedresults: Health check should perform.
@@ -161,7 +161,7 @@ def test_negative_check_hammer_ping(setup_katello_service_stop, ansible_module):
     :CaseImportance: Critical
     """
     contacted = ansible_module.command(Health.check({
-        'label': 'hammer-ping'
+        'label': 'server-ping'
     }))
     for result in contacted.values():
         logger.info(result['stdout'])
