@@ -127,7 +127,7 @@ def setup_for_hammer_defaults(request, ansible_module):
 @pytest.fixture(scope='function')
 def setup_katello_service_stop(request, ansible_module):
     """This fixture is used to stop/start katello services.
-    It is used by test test_negative_check_hammer_ping of test_health.py.
+    It is used by test test_negative_check_server_ping of test_health.py.
     """
     setup = ansible_module.command(Advanced.run_katello_service_stop())
     for result in setup.values():
