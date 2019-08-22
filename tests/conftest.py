@@ -15,8 +15,9 @@ from testfm.constants import (
     upstream_url,
 )
 from testfm.helpers import product
-from testfm.maintenance_mode import MaintenanceMode
 from testfm.log import logger
+from testfm.maintenance_mode import MaintenanceMode
+from testfm.packages import Packages
 
 
 @pytest.fixture(scope='function')
@@ -77,10 +78,22 @@ def setup_hotfix_check(request, ansible_module):
         assert result['rc'] == 0
 
     def teardown_hotfix_check():
+        if float(product()[1]) >= 6.6:
+            teardown = ansible_module.command(Packages.unlock())
+            for result in teardown.values():
+                logger.info(result['stdout'])
+                assert "FAIL" not in result['stdout']
+                assert result["rc"] == 0
         teardown = ansible_module.command(
             'yum -y reinstall tfm-rubygem-fog-vsphere')
         for result in teardown.values():
             assert result['rc'] == 0
+        if float(product()[1]) >= 6.6:
+            teardown = ansible_module.command(Packages.lock())
+            for result in teardown.values():
+                logger.info(result['stdout'])
+                assert "FAIL" not in result['stdout']
+                assert result["rc"] == 0
         teardown = ansible_module.file(
             path='/etc/yum.repos.d/hotfix_repo.repo',
             state='absent')

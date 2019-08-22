@@ -27,7 +27,7 @@ def test_positive_foreman_maintain_packages_lock(setup_install_pkgs, ansible_mod
 
     :CaseImportance: Critical
     """
-    sat_pkgs = 0
+    # Test Package lock command
     contacted = ansible_module.command(Packages.lock())
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -48,16 +48,7 @@ def test_positive_foreman_maintain_packages_lock(setup_install_pkgs, ansible_mod
     for result in contacted.values():
         logger.info(result['stdout'])
         assert 'satellite' in result['stdout']
-    contacted = ansible_module.shell("yum repolist")
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        sat_pkgs = int(contacted.values()[0]['stdout_lines'][-1][-3:])
-    contacted = ansible_module.shell("yum versionlock list | wc -l")
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert int(result['stdout']) == sat_pkgs, 'number of packages locked is not ' \
-                                                  'equal to packages provided by satellite repo'
-
+    # Test package unlock command
     contacted = ansible_module.command(Packages.unlock())
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -82,6 +73,12 @@ def test_positive_foreman_maintain_packages_lock(setup_install_pkgs, ansible_mod
     for result in contacted.values():
         logger.info(result['stdout'])
         assert int(result['stdout']) == 0, 'No package should be locked.'
+    # lock packages
+    teardown = ansible_module.command(Packages.lock())
+    for result in teardown.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result["rc"] == 0
 
 
 @run_only_on('sat66')
@@ -109,7 +106,7 @@ def test_positive_lock_package_versions(setup_install_pkgs, ansible_module):
 
     :CaseImportance: Critical
     """
-    sat_pkgs = 0
+    # Test whether packages are locked or not
     contacted = ansible_module.command('satellite-installer --lock-package-versions')
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -129,16 +126,7 @@ def test_positive_lock_package_versions(setup_install_pkgs, ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert 'satellite' in result['stdout']
-    contacted = ansible_module.shell("yum repolist")
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        sat_pkgs = int(contacted.values()[0]['stdout_lines'][-1][-3:])
-    contacted = ansible_module.shell("yum versionlock list | wc -l")
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert int(result['stdout']) == sat_pkgs, 'number of packages locked is not ' \
-                                                  'equal to packages provided by satellite repo'
-
+    # Test whether packages are unlocked or not
     contacted = ansible_module.command('satellite-installer --no-lock-package-versions')
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -162,3 +150,8 @@ def test_positive_lock_package_versions(setup_install_pkgs, ansible_module):
     for result in contacted.values():
         logger.info(result['stdout'])
         assert int(result['stdout']) == 0, 'No package should be locked.'
+    # lock packages
+    teardown = ansible_module.command('satellite-installer --lock-package-versions')
+    for result in teardown.values():
+        logger.info(result['stdout'])
+        assert result["rc"] == 0
