@@ -10,6 +10,7 @@ DOGFOOD_ORG = config['subscription']['DOGFOOD_ORG']
 DOGFOOD_ACTIVATIONKEY = config['subscription']['DOGFOOD_ACTIVATIONKEY']
 DOGFOOD_URL = config['subscription']['DOGFOOD_URL']
 HOTFIX_URL = config['URLS']['HOTFIX_URL']
+SAT_HOSTNAME = config['SATELLITE']['SAT_HOSTNAME']
 katello_ca_consumer = DOGFOOD_URL + '/pub/katello-ca-consumer-latest.noarch.rpm'
 upstream_url = {
     'candlepin_repo': (

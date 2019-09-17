@@ -8,13 +8,12 @@ Parameters:
     [ARG] ...                     subcommand arguments
 
 Subcommands:
-    lock                          Prevent Foreman-related packages from automatic update
-
-    unlock                        Enable Foreman-related packages for automatic update
-
-    status                        Check if Foreman-related packages are protected against update
-
-    is-locked                     Check if update of Foreman-related packages is allowed
+    lock                          Prevent packages from automatic update
+    unlock                        Enable packages for automatic update
+    status                        Check if packages are protected against update
+    install                       Install packages in an unlocked session
+    update                        Update packages in an unlocked session
+    is-locked                     Check if update of packages is allowed
 
 Options:
     -h, --help                    print help
@@ -91,6 +90,54 @@ class Packages(Base):
         -h, --help                    print help
         """
         cls.command_sub = 'status'
+
+        if options is None:
+            options = {}
+
+        result = cls._construct_command(options)
+
+        return result
+
+    @classmethod
+    def install(cls, options=None):
+        """
+    Usage:
+        foreman-maintain packages install [OPTIONS] PACKAGES ...
+
+    Options:
+        -y, --assumeyes               Automatically answer yes for all questions
+
+        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+
+        -f, --force                   Force steps that would be skipped as they were already run
+
+        -h, --help                    print help
+        """
+        cls.command_sub = 'install'
+
+        if options is None:
+            options = {}
+
+        result = cls._construct_command(options)
+
+        return result
+
+    @classmethod
+    def update(cls, options=None):
+        """
+    Usage:
+        foreman-maintain packages update [OPTIONS] PACKAGES ...
+
+    Options:
+        -y, --assumeyes               Automatically answer yes for all questions
+
+        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+
+        -f, --force                   Force steps that would be skipped as they were already run
+
+        -h, --help                    print help
+        """
+        cls.command_sub = 'update'
 
         if options is None:
             options = {}

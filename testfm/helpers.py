@@ -1,4 +1,6 @@
 # helpers required for TestFM
+from fabric import Connection
+from testfm.constants import SAT_HOSTNAME
 import os
 
 
@@ -19,3 +21,8 @@ def product():
         return ['sat62', '6.2']
     else:
         return ['sat61', '6.1']
+
+
+def run(command):
+    """ Use this helper to execute shell command on Satellite"""
+    return Connection(SAT_HOSTNAME, 'root').run(command)
