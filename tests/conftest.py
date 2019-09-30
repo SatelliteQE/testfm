@@ -8,10 +8,12 @@ from testfm.constants import (
     DOGFOOD_ORG,
     epel_repo,
     foreman_maintain_yml,
+    fm_hammer_yml,
     katello_ca_consumer,
     RHN_PASSWORD,
     RHN_USERNAME,
     RHN_POOLID,
+    satellite_answer_file,
     HOTFIX_URL,
     upstream_url,
 )
@@ -72,24 +74,32 @@ def setup_hotfix_check(request, ansible_module):
         path='/etc/yum.repos.d/hotfix_repo.repo',
         state='present')
     assert setup.values()[0]["changed"] == 0
-    setup = ansible_module.yum(
-        name='hotfix-package',
-        state='present')
-    for result in setup.values():
-        assert result['rc'] == 0
+    if float(product()) >= 6.6:
+        pkgs_locked = ansible_module.command(Packages.is_locked()).values()[0]['rc']
+        if pkgs_locked == 0:
+            ansible_module.command(Packages.unlock())
+        setup = ansible_module.yum(
+            name='hotfix-package',
+            state='present')
+        for result in setup.values():
+            assert result['rc'] == 0
+        if pkgs_locked == 0:
+            ansible_module.command(Packages.lock())
 
     def teardown_hotfix_check():
-        if float(product()[1]) >= 6.6:
+        if float(product()) >= 6.6:
             teardown = ansible_module.command(Packages.unlock())
             for result in teardown.values():
                 logger.info(result['stdout'])
                 assert "FAIL" not in result['stdout']
                 assert result["rc"] == 0
+        if pkgs_locked == 0:
+            ansible_module.command(Packages.unlock())
         teardown = ansible_module.command(
             'yum -y reinstall tfm-rubygem-fog-vsphere')
         for result in teardown.values():
             assert result['rc'] == 0
-        if float(product()[1]) >= 6.6:
+        if float(product()) >= 6.6:
             teardown = ansible_module.command(Packages.lock())
             for result in teardown.values():
                 logger.info(result['stdout'])
@@ -104,6 +114,8 @@ def setup_hotfix_check(request, ansible_module):
             state='absent')
         for result in teardown.values():
             assert result['rc'] == 0
+        if pkgs_locked == 0:
+            ansible_module.command(Packages.lock())
         ansible_module.command('yum clean all')
     request.addfinalizer(teardown_hotfix_check)
     return fpath
@@ -330,7 +342,7 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
                     DOGFOOD_ORG, DOGFOOD_ACTIVATIONKEY))
         else:
             contacted = ansible_module.command(Advanced.run_repositories_setup({
-                'version': product()[1]  # Satellite minor version
+                'version': product()  # Satellite minor version
             }))
             for result in contacted.values():
                 logger.info(result['stdout'])
@@ -379,9 +391,7 @@ def setup_bz_1696862(request, ansible_module):
     """ This fixture is used by test test_positive_fm_service_restart_bz_1696862
     for setup/teardown.
     """
-    satellite_answer_file = '/etc/foreman-installer/scenarios.d/satellite-answers.yaml'
-    fm_hammer = '/etc/foreman-maintain/foreman-maintain-hammer.yml'
-    if float(product()[1]) >= 6.6:
+    if float(product()) >= 6.6:
         contacted = ansible_module.lineinfile(
             dest=satellite_answer_file,
             regexp='  initial_admin_password:',
@@ -394,11 +404,11 @@ def setup_bz_1696862(request, ansible_module):
             line='  admin_password: invalid_password',
             backup='yes')
     ansible_module.command('mv .hammer/cli.modules.d/foreman.yml /tmp/foreman.yml')
-    ansible_module.command('mv {} /tmp/foreman-maintain-hammer.yml'.format(fm_hammer))
+    ansible_module.command('mv {} /tmp/foreman-maintain-hammer.yml'.format(fm_hammer_yml))
 
     def teardown_bz_1696862():
         ansible_module.command('mv /tmp/foreman.yml .hammer/cli.modules.d/foreman.yml')
-        ansible_module.command('mv /tmp/foreman-maintain-hammer.yml {}'.format(fm_hammer))
+        ansible_module.command('mv /tmp/foreman-maintain-hammer.yml {}'.format(fm_hammer_yml))
         ansible_module.command(
             'mv {} {}'.format(contacted.values()[0]['backup'], satellite_answer_file))
     request.addfinalizer(teardown_bz_1696862)

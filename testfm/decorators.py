@@ -22,15 +22,59 @@ def run_only_on(*server):
 
         from TestFM.decorators import run_only_on
 
-        @run_only_on('sat63')
+        @run_only_on('6.4')
         def test_health_check():
             # test code continues here
 
-    :param str project: Enter 'sat66', 'sat65' , 'sat64' , 'sat63' , 'sat62' and 'sat61'
+    :param str project: Enter '6.7', '6.6' , '6.5' , '6.4' , '6.3' and '6.2'
     for specific version
     """
     return pytest.mark.skipif(
-        product()[0] not in server,
+        product() not in server,
         reason="Server version is '{0}' and this test will run only "
-               "on '{1}' version".format(product()[0], server)
+               "on '{1}' version".format(product(), server)
     )
+
+
+def starts_in(version):
+    """Decorator to select tests based on minimum Satellite version.
+
+    Usage:
+
+    To select a specific test based on minimum Satellite version.::
+
+        from TestFM.decorators import starts_in
+
+        @starts_in(6.6)
+        def test_health_check():
+            # test code continues here
+
+    :param float version: Enter 6.7, 6.6, 6.5 , 6.4 , 6.3 , 6.2 and 6.1
+    for specific version
+    """
+    return pytest.mark.skipif(
+        float(product()) < version,
+        reason="Server version is '{0}' and this test will run only "
+               "on {1} '{2}' onward".format(product(), ansible_host_pattern, version))
+
+
+def ends_in(version):
+    """Decorator to select tests based on maximum Satellite version.
+
+    Usage:
+
+    To select a specific test based on maximum Satellite version.::
+
+        from TestFM.decorators import ends_in
+
+        @ends_in(6.6)
+        def test_health_check():
+            # test code continues here
+
+    :param float version: Enter 6.7, 6.6, 6.5 , 6.4 , 6.3 , 6.2 and 6.1
+    for specific version
+    """
+    return pytest.mark.skipif(
+        float(product()) > version,
+        reason="Server version is '{0}' and this test will run only "
+               "on {1} <= '{2}'".format(product(), ansible_host_pattern, version))

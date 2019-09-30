@@ -62,7 +62,7 @@ def test_positive_repositories_validate(ansible_module):
     skip_message = "Your system is subscribed using custom activation key"
     export_command = 'export EXTERNAL_SAT_ORG=Sat6-CI;export EXTERNAL_SAT_ACTIVATION_KEY=Ext_AK;'
     fm_command = Upgrade.check([
-        '--target-version', '{}.z'.format(product()[1]), '--whitelist',
+        '--target-version', '{}.z'.format(product()), '--whitelist',
         '"disk-performance,check-epel-repository,check-hotfix-installed,'
         'check-upstream-repository"', '--assumeyes'])
     contacted = ansible_module.shell(export_command + fm_command)

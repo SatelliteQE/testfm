@@ -1,5 +1,5 @@
 from testfm.backup import Backup
-from testfm.decorators import capsule, ansible_host_pattern, run_only_on
+from testfm.decorators import capsule, ansible_host_pattern, starts_in
 from testfm.log import logger
 from testfm.service import Service
 from fauxfactory import gen_string
@@ -774,7 +774,7 @@ def test_negative_backup_online_incremental_nodir(ansible_module):
         assert NOPREV_MSG in result['stderr']
 
 
-@run_only_on('sat64')
+@starts_in(6.4)
 def test_positive_backup_stopped_dynflowd(ansible_module):
     """Take online backup of server when dynflowd is not running
 
@@ -828,7 +828,7 @@ def test_positive_backup_stopped_dynflowd(ansible_module):
             assert result['rc'] == 0
 
 
-@run_only_on('sat63')
+@starts_in(6.3)
 def test_positive_backup_stopped_foreman_tasks(ansible_module):
     """Take online backup of server when foreman-tasks is not running
 

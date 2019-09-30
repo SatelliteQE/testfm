@@ -1,5 +1,2 @@
-[satellite]
+[server]
 <server_hostname>
-
-[capsule]
-<capsule_hostname>
