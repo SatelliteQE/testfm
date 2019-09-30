@@ -10,7 +10,7 @@ DOGFOOD_ORG = config['subscription']['DOGFOOD_ORG']
 DOGFOOD_ACTIVATIONKEY = config['subscription']['DOGFOOD_ACTIVATIONKEY']
 DOGFOOD_URL = config['subscription']['DOGFOOD_URL']
 HOTFIX_URL = config['URLS']['HOTFIX_URL']
-SAT_HOSTNAME = config['SATELLITE']['SAT_HOSTNAME']
+SERVER_HOSTNAME = config['SERVER']['SERVER_HOSTNAME']
 katello_ca_consumer = DOGFOOD_URL + '/pub/katello-ca-consumer-latest.noarch.rpm'
 upstream_url = {
     'candlepin_repo': (
@@ -41,3 +41,5 @@ sat_beta_repo = ['rhel-server-7-satellite-6-beta-rpms', 'rhel-7-server-ansible-2
                  'rhel-7-server-rpms', 'rhel-7-server-satellite-tools-6-beta-rpms']
 foreman_maintain_yml = '/etc/foreman-maintain/foreman_maintain.yml'
 epel_repo = 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
+satellite_answer_file = '/etc/foreman-installer/scenarios.d/satellite-answers.yaml'
+fm_hammer_yml = '/etc/foreman-maintain/foreman-maintain-hammer.yml'

@@ -111,10 +111,10 @@ def test_positive_foreman_maintain_health_check_by_tags(ansible_module):
         output = result['stdout']
     output = [i.split(']\x1b[0m')[0] for i in output.split('\x1b[36m[') if i]
     for tag in output:
-        contacted = ansible_module.command(Health.check({
-            'tags': tag,
-            'whitelist': 'disk-performance, packages-install'
-        }))
+        contacted = ansible_module.command(Health.check([
+            '--tags', tag,
+            '--whitelist', '"disk-performance, packages-install"',
+            '--assumeyes']))
         for result in contacted.values():
             logger.info(result['stdout'])
             assert "FAIL" not in result['stdout']
