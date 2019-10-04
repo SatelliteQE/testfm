@@ -40,3 +40,4 @@ sat_beta_repo = ['rhel-server-7-satellite-6-beta-rpms', 'rhel-7-server-ansible-2
                  'rhel-7-server-satellite-maintenance-6-beta-rpms', 'rhel-server-rhscl-7-rpms',
                  'rhel-7-server-rpms', 'rhel-7-server-satellite-tools-6-beta-rpms']
 foreman_maintain_yml = '/etc/foreman-maintain/foreman_maintain.yml'
+epel_repo = 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'

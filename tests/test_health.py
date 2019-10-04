@@ -1,3 +1,4 @@
+from testfm.decorators import capsule, stubbed
 from testfm.health import Health
 from testfm.log import logger
 
@@ -408,7 +409,7 @@ def test_positive_check_yum_exclude_list(setup_yum_exclude, ansible_module):
 
 
 def test_positive_check_yum_exclude_list_without_excludes(ansible_module):
-    """Verify check-yum-exclude-list
+    """Verify check-yum-exclude-list.
 
     :id: 12ed3d41-abc7-45bb-8234-6e3a45229254
 
@@ -427,4 +428,65 @@ def test_positive_check_yum_exclude_list_without_excludes(ansible_module):
         'label': 'check-yum-exclude-list'}))
     for result in contacted.values():
         logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
         assert result["rc"] == 0
+
+
+@capsule
+def test_positive_check_epel_repository(setup_epel_repository, ansible_module):
+    """Verify check-epel-repository.
+
+    :id: ce2d7278-d7b7-4f76-9923-79be831c0368
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Configure epel repository.
+        2. Run foreman-maintain health check --label check-epel-repository.
+        2. Assert that EPEL repos are enabled on system.
+
+    :BZ: 1755755
+
+    :expectedresults: check-epel-repository should work.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Health.check({
+        'label': 'check-epel-repository'}))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "System is subscribed to EPEL repository" in result['stdout']
+        assert "FAIL" in result['stdout']
+        assert result["rc"] == 1
+
+
+@stubbed
+@capsule
+def test_positive_check_epel_repository_with_invalid_repo(
+        setup_epel_repository, setup_invalid_repository, ansible_module):
+    """Verify check-epel-repository.
+
+    :id: e41648f4-ada6-4e7e-9112-45146d308410
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Configure epel repository and a repository with invalid baseurl.
+        2. Run foreman-maintain health check --label check-epel-repository.
+        2. Assert that EPEL repos are enabled on system.
+
+    :BZ: 1755755
+
+    :expectedresults: check-epel-repository should work.
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Health.check({
+        'label': 'check-epel-repository'}))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "System is subscribed to EPEL repository" in result['stdout']
+        assert "FAIL" in result['stdout']
+        assert result["rc"] == 1

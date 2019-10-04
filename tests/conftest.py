@@ -6,6 +6,7 @@ from testfm.advanced import Advanced
 from testfm.constants import (
     DOGFOOD_ACTIVATIONKEY,
     DOGFOOD_ORG,
+    epel_repo,
     foreman_maintain_yml,
     katello_ca_consumer,
     RHN_PASSWORD,
@@ -292,7 +293,7 @@ def setup_upstream_repository(request, ansible_module):
 @pytest.fixture(scope='function')
 def setup_subscribe_to_cdn_dogfood(request, ansible_module):
     """This fixture is used to subscribe host to CDN if it's subscribed to dogfood
-    and unsubscribe from CDN after test finishes and subscribe back to doogfood.
+    and unsubscribe from CDN after test finishes and subscribe back to dogfood.
     It is used by test test_positive_repositories_setup of test_health.py.
     """
     subscribed_to = str(ansible_module.command(
@@ -341,3 +342,38 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
 def beta_env_setup(monkeypatch):
     # This fixture is used to set FOREMAN_MAINTAIN_USE_BETA env_var
     monkeypatch.setenv('FOREMAN_MAINTAIN_USE_BETA', '1')
+
+
+@pytest.fixture(scope='function')
+def setup_epel_repository(request, ansible_module):
+    setup = ansible_module.yum(
+        name=epel_repo,
+        state='present')
+    assert setup.values()[0]["rc"] == 0
+
+    def teardown_epel_repository():
+        teardown = ansible_module.yum(
+            name='epel-release',
+            state='absent',
+            update_cache='yes')
+        assert teardown.values()[0]["rc"] == 0
+    request.addfinalizer(teardown_epel_repository)
+
+
+@pytest.fixture(scope='function')
+def setup_invalid_repository(request, ansible_module):
+    ansible_module.yum_repository(
+        name='test_repo',
+        description='repo with invalid baseurl',
+        file="test_repo",
+        baseurl="https://fedorapeople.org/invalid/repodata/repomd.xml",
+        enabled="yes",
+        gpgcheck="no"
+    )
+
+    def teardown_invalid_repository():
+        teardown = ansible_module.file(
+            path='/etc/yum.repos.d/test_repo.repo',
+            state='absent')
+        assert teardown.values()[0]["changed"] == 1
+    request.addfinalizer(teardown_invalid_repository)

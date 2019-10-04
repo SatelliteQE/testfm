@@ -139,7 +139,7 @@ def test_positive_lock_package_versions(ansible_module):
 def test_positive_fm_packages_install(ansible_module):
     """Verify whether packages install/update work as expected.
 
-    :id: 9218a718-038c-48bb-b4a4-d4cb74859ddb
+    :id: 645a3d84-34cb-469c-8b79-105b889aac78
 
     :setup:
         1. foreman-maintain should be installed.
