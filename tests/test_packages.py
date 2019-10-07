@@ -16,13 +16,11 @@ def test_positive_fm_packages_lock(ansible_module):
         1. Run foreman-maintain packages lock
         2. Run foreman-maintain packages status
         3. Run foreman-maintain packages is-locked
-        4. check 'satellite' is mentioned
-        in /etc/yum/pluginconf.d/versionlock.list
+        4. check 'satellite' is mentioned in /etc/yum/pluginconf.d/versionlock.list
         5. Run foreman-maintain packages unlock
         6. Run foreman-maintain packages status
         7. Run foreman-maintain packages is-locked
-        8. check 'satellite' is not mentioned
-        in /etc/yum/pluginconf.d/versionlock.list
+        8. check 'satellite' is not mentioned in /etc/yum/pluginconf.d/versionlock.list
 
     :expectedresults: expected packages get locked and unlocked.
 

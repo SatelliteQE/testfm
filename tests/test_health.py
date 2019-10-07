@@ -340,7 +340,7 @@ def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs,
         1. Run foreman-maintain health check --label check-hotfix-installed
 
     :expectedresults: check-hotfix-installed check should detect modified file
-    and installed hotfix.
+        and installed hotfix.
 
     :CaseImportance: Critical
     """
@@ -444,7 +444,7 @@ def test_positive_check_epel_repository(setup_epel_repository, ansible_module):
     :steps:
         1. Configure epel repository.
         2. Run foreman-maintain health check --label check-epel-repository.
-        2. Assert that EPEL repos are enabled on system.
+        3. Assert that EPEL repos are enabled on system.
 
     :BZ: 1755755
 
@@ -475,7 +475,7 @@ def test_positive_check_epel_repository_with_invalid_repo(
     :steps:
         1. Configure epel repository and a repository with invalid baseurl.
         2. Run foreman-maintain health check --label check-epel-repository.
-        2. Assert that EPEL repos are enabled on system.
+        3. Assert that EPEL repos are enabled on system.
 
     :BZ: 1755755
 
