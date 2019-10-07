@@ -229,7 +229,7 @@ def test_positive_backup_online_incremental(ansible_module):
         2. Take backup of server.
     :steps:
         1. Run foreman-maintain backup online --incremental
-         /previous_backup_dir/ /backup_dir/
+        /previous_backup_dir/ /backup_dir/
 
     :expectedresults: Backup should successful.
 
@@ -442,7 +442,7 @@ def test_positive_backup_offline_preserve_directory(ansible_module):
         1. foreman-maintain should be installed.
     :steps:
         1. Run foreman-maintain backup offline --preserve-directory
-         /backup_dir/
+        /backup_dir/
 
     :expectedresults: Backup should successful.
 
@@ -487,7 +487,7 @@ def test_positive_backup_offline_split_pulp_tar(ansible_module):
         1. foreman-maintain should be installed.
     :steps:
         1. Run foreman-maintain backup offline --split-pulp-tar 10M
-         /backup_dir/
+        /backup_dir/
 
     :expectedresults: Backup should successful.
 
@@ -531,7 +531,7 @@ def test_positive_backup_offline_incremental(ansible_module):
         2. Take offline backup of server
     :steps:
         1. Run foreman-maintain backup offline --incremental /previous_backup/
-         /backup_dir/
+        /backup_dir/
 
     :expectedresults: Backup should successful.
 
@@ -578,7 +578,7 @@ def test_positive_backup_offline_capsule_features(ansible_module):
         1. foreman-maintain should be installed.
     :steps:
         1. Run foreman-maintain backup offline --features dns,tftp
-         /backup_dir/
+        /backup_dir/
 
     :expectedresults: Backup should successful.
 
@@ -661,9 +661,10 @@ def test_positive_backup_offline_all(ansible_module):
 
         1. foreman-maintain should be installed.
         2. Take offline backup of server.
+
     :steps:
         1. Run foreman-maintain backup offline -y -f -s -p -t 10M -i
-         /prevoius_backup/ --features dns,tfp --include-db-dumps /backup_dir/
+        /prevoius_backup/ --features dns,tfp --include-db-dumps /backup_dir/
 
     :expectedresults: Backup should successful.
 

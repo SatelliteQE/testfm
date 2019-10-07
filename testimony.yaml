@@ -1,0 +1,16 @@
+BZ: {}
+CaseImportance:
+    casesensitive: false
+    choices:
+    - Critical
+    - High
+    - Medium
+    - Low
+    required: true
+    type: choice
+ExpectedResults: {}
+Id:
+    required: true
+Setup: {}
+Steps: {}
+Teardown: {}

@@ -361,13 +361,19 @@ def test_positive_sync_plan_with_hammer_defaults(setup_for_hammer_defaults, ansi
 
 def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
     """Verify that all required repositories gets enabled.
+
     :id: e32fee2d-2a1f-40ed-9f94-515f75511c5a
+
     :setup:
         1. foreman-maintain should be installed.
+
     :steps:
         1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
+
     :BZ: 1684730
+
     :expectedresults: Required repositories should get enabled
+
     :CaseImportance: Critical
     """
     for ver in ['6.3', '6.4', '6.5', '6.6']:
@@ -403,13 +409,19 @@ def test_positive_beta_repositories(
         setup_subscribe_to_cdn_dogfood,
         ansible_module):
     """Verify that all required beta repositories gets enabled.
+
     :id: 2d544863-ebd1-4a60-b189-395b5cd82104
+
     :setup:
         1. foreman-maintain should be installed.
+
     :steps:
         1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
+
     :BZ: 1684730
+
     :expectedresults: Required beta repositories should get enabled
+
     :CaseImportance: Critical
     """
     contacted = ansible_module.command(Advanced.run_repositories_setup({

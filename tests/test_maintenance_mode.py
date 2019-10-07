@@ -29,8 +29,8 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
         13. Validate maintenance-mode is-enabled command's output.
 
     :expectedresults: foreman-maintain maintenance-mode start/stop able
-    to disable/enable sync-plan, stop/start crond.service and is able to add
-    FOREMAN_MAINTAIN chain rule in iptables.
+        to disable/enable sync-plan, stop/start crond.service and is able to add
+        FOREMAN_MAINTAIN chain rule in iptables.
 
     :CaseImportance: Critical
     """
