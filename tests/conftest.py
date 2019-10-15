@@ -377,3 +377,33 @@ def setup_invalid_repository(request, ansible_module):
             state='absent')
         assert teardown.values()[0]["changed"] == 1
     request.addfinalizer(teardown_invalid_repository)
+
+
+@pytest.fixture(scope='function')
+def setup_bz_1696862(request, ansible_module):
+    """ This fixture is used by test test_positive_fm_service_restart_bz_1696862
+    for setup/teardown.
+    """
+    satellite_answer_file = '/etc/foreman-installer/scenarios.d/satellite-answers.yaml'
+    fm_hammer = '/etc/foreman-maintain/foreman-maintain-hammer.yml'
+    if float(product()[1]) >= 6.6:
+        contacted = ansible_module.lineinfile(
+            dest=satellite_answer_file,
+            regexp='  initial_admin_password:',
+            line='  initial_admin_password: invalid_password',
+            backup='yes')
+    else:
+        contacted = ansible_module.lineinfile(
+            dest=satellite_answer_file,
+            regexp='  admin_password:',
+            line='  admin_password: invalid_password',
+            backup='yes')
+    ansible_module.command('mv .hammer/cli.modules.d/foreman.yml /tmp/foreman.yml')
+    ansible_module.command('mv {} /tmp/foreman-maintain-hammer.yml'.format(fm_hammer))
+
+    def teardown_bz_1696862():
+        ansible_module.command('mv /tmp/foreman.yml .hammer/cli.modules.d/foreman.yml')
+        ansible_module.command('mv /tmp/foreman-maintain-hammer.yml {}'.format(fm_hammer))
+        ansible_module.command(
+            'mv {} {}'.format(contacted.values()[0]['backup'], satellite_answer_file))
+    request.addfinalizer(teardown_bz_1696862)
