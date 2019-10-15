@@ -214,3 +214,29 @@ def test_positive_failed_service_status(ansible_module):
         teardown = ansible_module.command(Service.service_start())
         for result in teardown.values():
             assert result['rc'] == 0
+
+
+def test_positive_fm_service_restart_bz_1696862(setup_bz_1696862, ansible_module):
+    """Restart services using service restart
+
+    :id: c7518650-d72a-47b1-8d38-42b862f474fc
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. Run setup_bz_1696862 from conftest.py
+
+    :steps:
+        1. Run foreman-maintain service restart
+
+    :expectedresults: Katello-services should restart even
+     if hammer credentials are not available.
+
+    :BZ: 1632768
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Service.service_restart())
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result['rc'] == 0
