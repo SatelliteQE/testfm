@@ -407,3 +407,22 @@ def setup_bz_1696862(request, ansible_module):
         ansible_module.command(
             'mv {} {}'.format(contacted.values()[0]['backup'], satellite_answer_file))
     request.addfinalizer(teardown_bz_1696862)
+
+
+@pytest.fixture(scope='function')
+def setup_hammer_defaults(request, ansible_module):
+    """ This fixture is used by test test_positive_automate_bz1632768
+    for setup/teardown.
+    """
+    ansible_module.command(
+        'hammer defaults add --param-name organization_id --param-value 1')
+    setup = ansible_module.command('hammer defaults list')
+    assert 'organization_id' in setup.values()[0]['stdout']
+
+    def teardown_hammer_defaults():
+        ansible_module.command(
+            'hammer defaults delete --param-name organization_id')
+        teardown = ansible_module.command('hammer defaults list')
+        assert 'organization_id' not in teardown.values()[0]['stdout']
+
+    request.addfinalizer(teardown_hammer_defaults)
