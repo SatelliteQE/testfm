@@ -240,7 +240,7 @@ def test_positive_available_space(ansible_module):
         assert result['rc'] == 0
 
 
-def test_positive_automate_bz1632768(ansible_module):
+def test_positive_automate_bz1632768(teardown_hammer_defaults, ansible_module):
     """Verify that health check is performed when
      hammer on system have defaults set.
 
@@ -260,7 +260,8 @@ def test_positive_automate_bz1632768(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check())
+    contacted = ansible_module.command(Health.check([
+        '--assumeyes']))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
