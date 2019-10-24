@@ -404,10 +404,7 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
                             assert repo in result['stdout']
 
 
-def test_positive_beta_repositories(
-        beta_env_setup,
-        setup_subscribe_to_cdn_dogfood,
-        ansible_module):
+def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_module):
     """Verify that all required beta repositories gets enabled.
 
     :id: 2d544863-ebd1-4a60-b189-395b5cd82104
@@ -424,9 +421,9 @@ def test_positive_beta_repositories(
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_repositories_setup({
-        'version': '6.6'
-    }))
+    export_command = 'export FOREMAN_MAINTAIN_USE_BETA=1;'
+    contacted = ansible_module.shell(export_command + Advanced.run_repositories_setup({
+        'version': '6.6'}))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']

@@ -339,12 +339,6 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
 
 
 @pytest.fixture(scope='function')
-def beta_env_setup(monkeypatch):
-    # This fixture is used to set FOREMAN_MAINTAIN_USE_BETA env_var
-    monkeypatch.setenv('FOREMAN_MAINTAIN_USE_BETA', '1')
-
-
-@pytest.fixture(scope='function')
 def setup_epel_repository(request, ansible_module):
     setup = ansible_module.yum(
         name=epel_repo,
