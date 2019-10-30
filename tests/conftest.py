@@ -15,7 +15,7 @@ from testfm.constants import (
     HOTFIX_URL,
     upstream_url,
 )
-from testfm.helpers import product
+from testfm.helpers import product, run
 from testfm.log import logger
 from testfm.maintenance_mode import MaintenanceMode
 from testfm.packages import Packages
@@ -165,7 +165,8 @@ def setup_katello_service_stop(request, ansible_module):
 def setup_install_pexpect(ansible_module):
     """This fixture is used to install pexpect on host.
     It is used by test test_positive_foreman_maintain_hammer_setup,
-    test_positive_foreman_tasks_ui_investigate of test_advanced.py and in
+    test_positive_foreman_tasks_ui_investigate,
+    test_positive_check_old_foreman_tasks of test_advanced.py and in
     fixture setup_puppet_empty_cert.
     """
     ansible_module.get_url(
@@ -420,3 +421,12 @@ def setup_hammer_defaults(request, ansible_module):
         assert 'organization_id' not in teardown.values()[0]['stdout']
 
     request.addfinalizer(teardown_hammer_defaults)
+
+
+@pytest.fixture(scope='function')
+def setup_old_foreman_tasks(ansible_module):
+    """ This fixture is for creating old foreman task."""
+    rake_command = "foreman-rake console <<< "
+    find_task = "'t = ForemanTasks::Task.where(state: \"stopped\").first;"
+    update_task = "t.started_at = t.started_at - 31.day;t.save(:validate => false)'"
+    run(rake_command + find_task + update_task)

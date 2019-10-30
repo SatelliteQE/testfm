@@ -491,3 +491,44 @@ def test_positive_check_epel_repository_with_invalid_repo(
         assert "System is subscribed to EPEL repository" in result['stdout']
         assert "FAIL" in result['stdout']
         assert result["rc"] == 1
+
+
+def test_positive_check_old_foreman_tasks(setup_old_foreman_tasks, ansible_module):
+    """Verify check-old-foreman-tasks.
+
+    :id: 156350c4-b55b-40b3-b8f2-202bd5ed9fb6
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. Run setup_old_foreman_tasks from conftest.py
+
+    :steps:
+        1. Configure epel repository.
+        2. Run foreman-maintain health check --label check-epel-repository.
+        3. Assert that old tasks are found on system.
+        4. Assert that old tasks are deleted from system.
+
+    :BZ: 1745489
+
+    :expectedresults: check-old-foreman-tasks should work.
+
+    :CaseImportance: Critical
+    """
+    error_message = 'paused or stopped task(s) older than 30 days'
+    delete_message = 'Deleted old stopped and paused tasks:'
+    contacted = ansible_module.command(Health.check([
+        '--label', 'check-old-foreman-tasks', '--assumeyes'
+    ]))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" in result['stdout']
+        assert result["rc"] == 0
+        assert error_message in result['stdout']
+        assert delete_message in result['stdout']
+    contacted = ansible_module.command(Health.check([
+        '--label', 'check-old-foreman-tasks'
+    ]))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result["rc"] == 0
