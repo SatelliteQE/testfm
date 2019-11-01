@@ -532,3 +532,43 @@ def test_positive_check_old_foreman_tasks(setup_old_foreman_tasks, ansible_modul
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
         assert result["rc"] == 0
+
+
+def test_positive_check_tmout_variable(ansible_module):
+    """Verify check-tmout-variable. Upstream issue #23430.
+
+    :id: e0eea928-0ffb-4692-adb9-fc4bf041f301
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. export TMOUT environment variable.
+
+    :steps:
+        1. Run foreman-maintain health check --label check-tmout-variable.
+        2. Assert that check-tmout-variable pass.
+        3. export TMOUT environment variable.
+        4. Run foreman-maintain health check --label check-tmout-variable.
+        5. Assert that check-tmout-variable fails.
+
+    :expectedresults: check-tmout-variable should work.
+
+    :CaseImportance: Critical
+    """
+    export = "export TMOUT=100;"
+    error_message = "The TMOUT environment variable is set with value 100. " \
+                    "Run 'unset TMOUT' command to unset this variable."
+    # Run check without setting TMOUT environment variable.
+    contacted = ansible_module.command(Health.check({
+        'label': 'check-tmout-variable'}))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" not in result['stdout']
+        assert result["rc"] == 0
+    # Run check with TMOUT environment variable set.
+    contacted = ansible_module.shell(export + Health.check({
+        'label': 'check-tmout-variable'}))
+    for result in contacted.values():
+        logger.info(result['stdout'])
+        assert "FAIL" in result['stdout']
+        assert error_message in result['stdout']
+        assert result["rc"] == 1
