@@ -127,6 +127,11 @@ def setup_install_pkgs(ansible_module):
     This fixture is used in test_positive_check_hotfix_installed_with_hotfix and
     test_positive_check_hotfix_installed_without_hotfix of test_health.py
     """
+    setup = ansible_module.yum(
+        name='fio',
+        state='present')
+    for result in setup.values():
+        assert result['rc'] == 0
     setup = ansible_module.command(Packages.unlock())
     for result in setup.values():
         assert result['rc'] == 0
