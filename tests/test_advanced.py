@@ -6,6 +6,7 @@ from testfm.constants import (
     sat_64_repo,
     sat_65_repo,
     sat_66_repo,
+    sat_67_repo,
     sat_beta_repo,
 )
 from testfm.decorators import capsule, stubbed
@@ -376,16 +377,16 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
 
     :CaseImportance: Critical
     """
-    for ver in ['6.3', '6.4', '6.5', '6.6']:
+    for ver in ['6.3', '6.4', '6.5', '6.6', '6.7']:
         contacted = ansible_module.command(Advanced.run_repositories_setup({
             'version': ver
         }))
         for result in contacted.values():
             logger.info(result['stdout'])
-            if ver == '6.6':  # till Satellite 6.6 is GA
+            if ver == '6.7':  # till Satellite 6.6 is GA
                 assert "FAIL" in result['stdout']
                 assert result['rc'] == 1
-                for repo in sat_66_repo:
+                for repo in sat_67_repo:
                     assert repo in result['stdout']
             else:
                 assert "FAIL" not in result['stdout']
@@ -401,6 +402,9 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
                             assert repo in result['stdout']
                     if ver == '6.5':
                         for repo in sat_65_repo:
+                            assert repo in result['stdout']
+                    if ver == '6.6':
+                        for repo in sat_66_repo:
                             assert repo in result['stdout']
 
 
@@ -423,7 +427,7 @@ def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_modu
     """
     export_command = 'export FOREMAN_MAINTAIN_USE_BETA=1;'
     contacted = ansible_module.shell(export_command + Advanced.run_repositories_setup({
-        'version': '6.6'}))
+        'version': '6.7'}))
     for result in contacted.values():
         logger.info(result['stdout'])
         assert "FAIL" not in result['stdout']
