@@ -1,5 +1,6 @@
 from testfm.backup import Backup
-from testfm.decorators import capsule, ansible_host_pattern, starts_in
+from testfm.decorators import capsule, starts_in
+from testfm.helpers import server
 from testfm.log import logger
 from testfm.service import Service
 from fauxfactory import gen_string
@@ -82,7 +83,7 @@ def test_positive_backup_online(ansible_module):
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = ONLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -124,7 +125,7 @@ def test_positive_backup_online_skip_pulp_content(ansible_module):
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = ONLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files), assert_msg
@@ -169,7 +170,7 @@ def test_positive_backup_online_preserve_directory(ansible_module):
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = ONLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -211,7 +212,7 @@ def test_positive_backup_online_split_pulp_tar(ansible_module):
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = ONLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -300,9 +301,8 @@ def test_positive_backup_online_caspule_features(ansible_module):
                 'ls -a {0}/{1}'.format(subdir, timestamped_dir))
     files_list = contacted.values()[0]['stdout_lines']
     expected_files = ONLINE_BACKUP_FILES
-
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = ONLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -382,7 +382,7 @@ def test_positive_backup_offline(ansible_module):
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = OFFLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -424,7 +424,7 @@ def test_positive_backup_offline_skip_pulp_content(ansible_module):
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = OFFLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files), assert_msg
@@ -470,7 +470,7 @@ def test_positive_backup_offline_preserve_directory(ansible_module):
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = OFFLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -513,7 +513,7 @@ def test_positive_backup_offline_split_pulp_tar(ansible_module):
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = OFFLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -604,7 +604,7 @@ def test_positive_backup_offline_capsule_features(ansible_module):
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = OFFLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -645,7 +645,7 @@ def test_positive_backup_offline_logical(ansible_module):
     expected_files = OFFLINE_BACKUP_FILES + ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if ansible_host_pattern == 'capsule':
+    if server() == 'capsule':
         expected_files = OFFLINE_CAPS_FILES + ONLINE_CAPS_FILES
     assert set(files_list).issuperset(
                expected_files + CONTENT_FILES), assert_msg
@@ -818,7 +818,7 @@ def test_positive_backup_stopped_dynflowd(ansible_module):
         expected_files = ONLINE_BACKUP_FILES
 
         # capsule-specific file list
-        if ansible_host_pattern == 'capsule':
+        if server() == 'capsule':
             expected_files = ONLINE_CAPS_FILES
         assert set(files_list).issuperset(
             expected_files + CONTENT_FILES), assert_msg
