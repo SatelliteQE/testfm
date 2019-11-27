@@ -17,3 +17,12 @@ def product():
 def run(command):
     """ Use this helper to execute shell command on Satellite"""
     return Connection(SERVER_HOSTNAME, 'root').run(command)
+
+
+def server():
+    """ Use this to find whether server on which tests are running is capsule or satellite."""
+    contacted = run('rpm -q satellite | echo $?')
+    if contacted == '0':
+        return 'satellite'
+    else:
+        return 'capsule'
