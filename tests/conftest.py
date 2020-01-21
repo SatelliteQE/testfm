@@ -21,6 +21,7 @@ from testfm.helpers import product, run
 from testfm.log import logger
 from testfm.maintenance_mode import MaintenanceMode
 from testfm.packages import Packages
+from testfm.service import Service
 
 
 @pytest.fixture(scope='function')
@@ -445,3 +446,18 @@ def setup_old_foreman_tasks(ansible_module):
     find_task = "'t = ForemanTasks::Task.where(state: \"stopped\").first;"
     update_task = "t.started_at = t.started_at - 31.day;t.save(:validate => false)'"
     run(rake_command + find_task + update_task)
+
+
+@pytest.fixture(scope='function')
+def setup_backup_tests(request, ansible_module):
+    """ Teardown for backup/restore tests."""
+    setup = ansible_module.shell("rm -rf /tmp/backup-*; rm -rf /mnt/satellite-backup-*")
+    assert setup.values()[0]["rc"] == 0
+    ansible_module.command(Service.service_start())
+
+    def teardown_backup_tests():
+        teardown = ansible_module.shell("rm -rf /tmp/backup-*; rm -rf /mnt/satellite-backup-*")
+        assert teardown.values()[0]["rc"] == 0
+        ansible_module.command(Service.service_start())
+
+    request.addfinalizer(teardown_backup_tests)
