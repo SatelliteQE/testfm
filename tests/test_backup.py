@@ -49,7 +49,7 @@ assert_msg = "All required backup files not found"
 
 
 @capsule
-def test_positive_backup_online(ansible_module):
+def test_positive_backup_online(setup_backup_tests, ansible_module):
     """Take online backup of server
 
     :id: 962d21de-04bc-43fd-9076-cdbfdb9d798e
@@ -90,7 +90,7 @@ def test_positive_backup_online(ansible_module):
 
 
 @capsule
-def test_positive_backup_online_skip_pulp_content(ansible_module):
+def test_positive_backup_online_skip_pulp_content(setup_backup_tests, ansible_module):
     """Take online backup skipping pulp content of server
 
     :id: 0a041aed-8578-40d9-8044-6a1db0daba59
@@ -133,7 +133,7 @@ def test_positive_backup_online_skip_pulp_content(ansible_module):
 
 
 @capsule
-def test_positive_backup_online_preserve_directory(ansible_module):
+def test_positive_backup_online_preserve_directory(setup_backup_tests, ansible_module):
     """Take online backup of server preserving directory
 
     :id: 343c79fd-5fd3-45a3-bb75-c807817f2970
@@ -177,7 +177,7 @@ def test_positive_backup_online_preserve_directory(ansible_module):
 
 
 @capsule
-def test_positive_backup_online_split_pulp_tar(ansible_module):
+def test_positive_backup_online_split_pulp_tar(setup_backup_tests, ansible_module):
     """Take online backup of server spliting pulp tar
 
     :id: f2c7173f-a955-4c0c-a232-60f6161fda81
@@ -219,7 +219,7 @@ def test_positive_backup_online_split_pulp_tar(ansible_module):
 
 
 @capsule
-def test_positive_backup_online_incremental(ansible_module):
+def test_positive_backup_online_incremental(setup_backup_tests, ansible_module):
     """Take incremental online backup of server
 
     :id: e4af1804-8479-47c0-9f50-460b6edbe9e0
@@ -267,7 +267,7 @@ def test_positive_backup_online_incremental(ansible_module):
 
 
 @capsule
-def test_positive_backup_online_caspule_features(ansible_module):
+def test_positive_backup_online_caspule_features(setup_backup_tests, ansible_module):
     """Take online backup of server including capsule features dns, tftp, etc.
 
     :id: a36f8a53-a233-4bc8-bd0f-c4629e383cb9
@@ -309,7 +309,7 @@ def test_positive_backup_online_caspule_features(ansible_module):
 
 
 @capsule
-def test_positive_backup_online_all(ansible_module):
+def test_positive_backup_online_all(setup_backup_tests, ansible_module):
     """Take online backup of server providing all options
 
     :id: 86a93e4f-61e3-4206-ae28-ce01136c5518
@@ -326,6 +326,12 @@ def test_positive_backup_online_all(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    ansible_module.file(
+        path=subdir,
+        state='directory',
+        mode='0777'
+    )
     setup = ansible_module.command(Backup.run_online_backup([
         '-y',
         '/mnt/'
@@ -339,7 +345,7 @@ def test_positive_backup_online_all(ansible_module):
         '/mnt/',
         '--features',
         'dns,tftp,openscap,dhcp',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -348,7 +354,7 @@ def test_positive_backup_online_all(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline(ansible_module):
+def test_positive_backup_offline(setup_backup_tests, ansible_module):
     """Take offline backup of server
 
     :id: 2bbd15de-59f4-4ea0-8016-4cc951c6e4b9
@@ -389,7 +395,7 @@ def test_positive_backup_offline(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline_skip_pulp_content(ansible_module):
+def test_positive_backup_offline_skip_pulp_content(setup_backup_tests, ansible_module):
     """Take offline backup of server skipping pulp content
 
     :id: 8c31620f-a1f1-4422-8609-3fd8e05d6056
@@ -432,7 +438,7 @@ def test_positive_backup_offline_skip_pulp_content(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline_preserve_directory(ansible_module):
+def test_positive_backup_offline_preserve_directory(setup_backup_tests, ansible_module):
     """Take offline backup of server preserving directory
 
     :id: 99fc9319-d495-481a-b345-5f6ca12c4225
@@ -477,7 +483,7 @@ def test_positive_backup_offline_preserve_directory(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline_split_pulp_tar(ansible_module):
+def test_positive_backup_offline_split_pulp_tar(setup_backup_tests, ansible_module):
     """Take offline backup of server splitting pulp tar
 
     :id: bdd19e11-89b6-471c-af65-359046686473
@@ -520,7 +526,7 @@ def test_positive_backup_offline_split_pulp_tar(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline_incremental(ansible_module):
+def test_positive_backup_offline_incremental(setup_backup_tests, ansible_module):
     """Take offline incremental backup of server
 
     :id: 27df1544-0bc6-4922-a45c-3c7f3b805a1d
@@ -568,7 +574,7 @@ def test_positive_backup_offline_incremental(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline_capsule_features(ansible_module):
+def test_positive_backup_offline_capsule_features(setup_backup_tests, ansible_module):
     """Take offline backup of server including capsule features dns, tftp, etc.
 
     :id: 31f93423-affb-4f41-a666-993aa0a56e12
@@ -611,7 +617,7 @@ def test_positive_backup_offline_capsule_features(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline_logical(ansible_module):
+def test_positive_backup_offline_logical(setup_backup_tests, ansible_module):
     """Take offline backup of server include-db-dumps
 
     :id: 26c9b3cb-f96a-44bb-828b-69865099af39
@@ -652,7 +658,7 @@ def test_positive_backup_offline_logical(ansible_module):
 
 
 @capsule
-def test_positive_backup_offline_all(ansible_module):
+def test_positive_backup_offline_all(setup_backup_tests, ansible_module):
     """Take offline backup of server providing all options
 
     :id: 2065e58a-4710-4315-af9e-e7049fabf323
@@ -670,6 +676,12 @@ def test_positive_backup_offline_all(ansible_module):
 
     :CaseImportance: Critical
     """
+    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    ansible_module.file(
+        path=subdir,
+        state='directory',
+        mode='0777'
+    )
     setup = ansible_module.command(Backup.run_offline_backup([
         '-y',
         '/mnt/'
@@ -683,7 +695,7 @@ def test_positive_backup_offline_all(ansible_module):
         '/mnt/',
         '--features dns,tfp,dhcp,openscap',
         '--include-db-dumps',
-        BACKUP_DIR
+        subdir
     ]))
     for result in contacted.values():
         logger.info(result['stdout'])
@@ -775,7 +787,7 @@ def test_negative_backup_online_incremental_nodir(ansible_module):
 
 
 @starts_in(6.4)
-def test_positive_backup_stopped_dynflowd(ansible_module):
+def test_positive_backup_stopped_dynflowd(setup_backup_tests, ansible_module):
     """Take online backup of server when dynflowd is not running
 
     :id: 321b5f16-337c-4370-87b6-cfe1c78c9139
@@ -829,7 +841,7 @@ def test_positive_backup_stopped_dynflowd(ansible_module):
 
 
 @starts_in(6.3)
-def test_positive_backup_stopped_foreman_tasks(ansible_module):
+def test_positive_backup_stopped_foreman_tasks(setup_backup_tests, ansible_module):
     """Take online backup of server when foreman-tasks is not running
 
     :id: 3def9d00-f9be-4817-adf0-acd7cf68460b
