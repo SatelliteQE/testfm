@@ -24,7 +24,7 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
     if satellite_version.startswith('6.7'):
         versions = ['6.7.z']
     elif satellite_version.startswith('6.6'):
-        versions = ['6.6.z, 6.7']
+        versions = ['6.6.z', '6.7']
     elif satellite_version.startswith('6.5'):
         versions = ['6.5.z', '6.6']
     elif satellite_version.startswith('6.4'):
