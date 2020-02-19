@@ -23,25 +23,31 @@ upstream_url = {
     'puppet_repo': 'http://yum.puppetlabs.com/el/6.4/x86_64/',
     'releases_repo': 'https://yum.theforeman.org/releases/latest/el7/x86_64/'
 }
-sat_63_repo = ['rhel-7-server-rpms', 'rhel-7-server-satellite-6.3-rpms',
-               'rhel-7-server-satellite-maintenance-6-rpms', 'rhel-server-rhscl-7-rpms',
-               'rhel-7-server-satellite-tools-6.3-rpms',
-               ]
-sat_64_repo = ['rhel-7-server-ansible-2.6-rpms', 'rhel-7-server-rpms',
-               'rhel-7-server-satellite-6.4-rpms', 'rhel-7-server-satellite-maintenance-6-rpms',
-               'rhel-7-server-satellite-tools-6.4-rpms', 'rhel-server-rhscl-7-rpms']
-sat_65_repo = ['rhel-7-server-ansible-2.6-rpms', 'rhel-7-server-rpms',
-               'rhel-7-server-satellite-6.5-rpms', 'rhel-7-server-satellite-maintenance-6-rpms',
-               'rhel-7-server-satellite-tools-6.5-rpms', 'rhel-server-rhscl-7-rpms']
-sat_66_repo = ['rhel-7-server-rpms', 'rhel-server-rhscl-7-rpms', 'rhel-7-server-ansible-2.8-rpms',
-               'rhel-7-server-satellite-tools-6.6-rpms', 'rhel-7-server-satellite-6.6-rpms',
-               'rhel-7-server-satellite-maintenance-6-rpms']
-sat_67_repo = ['rhel-7-server-rpms', 'rhel-server-rhscl-7-rpms', 'rhel-7-server-ansible-2.8-rpms',
-               'rhel-7-server-satellite-tools-6.7-rpms', 'rhel-7-server-satellite-6.7-rpms',
-               'rhel-7-server-satellite-maintenance-6-rpms']
+common_repos = ['rhel-7-server-rpms', 'rhel-server-rhscl-7-rpms',
+                'rhel-7-server-satellite-maintenance-6-rpms']
+sat_63_repos = ['rhel-7-server-satellite-6.3-rpms',
+                'rhel-7-server-satellite-tools-6.3-rpms'] + common_repos
+sat_64_repos = ['rhel-7-server-ansible-2.6-rpms',
+                'rhel-7-server-satellite-6.4-rpms',
+                'rhel-7-server-satellite-tools-6.4-rpms'] + common_repos
+sat_65_repos = ['rhel-7-server-ansible-2.6-rpms',
+                'rhel-7-server-satellite-6.5-rpms',
+                'rhel-7-server-satellite-tools-6.5-rpms'] + common_repos
+sat_66_repos = ['rhel-7-server-ansible-2.8-rpms',
+                'rhel-7-server-satellite-tools-6.6-rpms',
+                'rhel-7-server-satellite-6.6-rpms'] + common_repos
+sat_67_repos = ['rhel-7-server-ansible-2.8-rpms',
+                'rhel-7-server-satellite-tools-6.7-rpms',
+                'rhel-7-server-satellite-6.7-rpms'] + common_repos
 sat_beta_repo = ['rhel-server-7-satellite-6-beta-rpms', 'rhel-7-server-ansible-2.8-rpms',
                  'rhel-7-server-satellite-maintenance-6-beta-rpms', 'rhel-server-rhscl-7-rpms',
                  'rhel-7-server-rpms', 'rhel-7-server-satellite-tools-6-beta-rpms']
+sat_repos = {'6.3': sat_63_repos,
+             '6.4': sat_64_repos,
+             '6.5': sat_65_repos,
+             '6.6': sat_66_repos,
+             '6.7': sat_67_repos
+             }
 foreman_maintain_yml = '/etc/foreman-maintain/foreman_maintain.yml'
 epel_repo = 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
 satellite_answer_file = '/etc/foreman-installer/scenarios.d/satellite-answers.yaml'
