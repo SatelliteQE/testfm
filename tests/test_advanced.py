@@ -2,11 +2,7 @@ import yaml
 from testfm.advanced import Advanced
 from testfm.advanced_by_tag import AdvancedByTag
 from testfm.constants import (
-    sat_63_repo,
-    sat_64_repo,
-    sat_65_repo,
-    sat_66_repo,
-    sat_67_repo,
+    sat_repos,
     sat_beta_repo,
 )
 from testfm.decorators import capsule, stubbed
@@ -383,29 +379,13 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
         }))
         for result in contacted.values():
             logger.info(result['stdout'])
-            if ver == '6.7':  # till Satellite 6.6 is GA
-                assert "FAIL" in result['stdout']
-                assert result['rc'] == 1
-                for repo in sat_67_repo:
-                    assert repo in result['stdout']
-            else:
-                assert "FAIL" not in result['stdout']
-                assert result['rc'] == 0
-                contacted = ansible_module.command('yum repolist')
-                for result in contacted.values():
-                    logger.info(result['stdout'])
-                    if ver == '6.3':
-                        for repo in sat_63_repo:
-                            assert repo in result['stdout']
-                    if ver == '6.4':
-                        for repo in sat_64_repo:
-                            assert repo in result['stdout']
-                    if ver == '6.5':
-                        for repo in sat_65_repo:
-                            assert repo in result['stdout']
-                    if ver == '6.6':
-                        for repo in sat_66_repo:
-                            assert repo in result['stdout']
+            assert "FAIL" not in result['stdout']
+            assert result['rc'] == 0
+        contacted = ansible_module.command('yum repolist')
+        for result in contacted.values():
+            logger.info(result['stdout'])
+            for repo in sat_repos[ver]:
+                assert repo in result['stdout']
 
 
 def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_module):
