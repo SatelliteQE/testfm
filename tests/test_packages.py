@@ -1,7 +1,7 @@
 from testfm.decorators import starts_in
 from testfm.helpers import run
-from testfm.packages import Packages
 from testfm.log import logger
+from testfm.packages import Packages
 
 
 def test_positive_fm_packages_lock(ansible_module):
@@ -27,46 +27,46 @@ def test_positive_fm_packages_lock(ansible_module):
     :CaseImportance: Critical
     """
     # Test Package lock command
-    contacted = ansible_module.command(Packages.lock((['--assumeyes'])))
+    contacted = ansible_module.command(Packages.lock(["--assumeyes"]))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.status())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are locked.' in result['stdout']
-        assert 'Automatic locking of package versions is enabled in installer.' in result['stdout']
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are locked." in result["stdout"]
+        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are locked' in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are locked" in result["stdout"]
         assert result["rc"] == 0
     # Test package unlock command
     contacted = ansible_module.command(Packages.unlock())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.status())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert 'Packages are not locked.' in result['stdout']
-        assert 'Automatic locking of package versions is enabled in installer.' in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert "Packages are not locked." in result["stdout"]
+        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are not locked' in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are not locked" in result["stdout"]
         assert result["rc"] == 1
     # lock packages
     teardown = ansible_module.command(Packages.lock())
     for result in teardown.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
 
@@ -93,44 +93,45 @@ def test_positive_lock_package_versions(ansible_module):
     :CaseImportance: Critical
     """
     # Test whether packages are locked or not
-    contacted = ansible_module.command('satellite-installer --lock-package-versions')
+    contacted = ansible_module.command("satellite-installer --lock-package-versions")
     for result in contacted.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.status())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are locked.' in result['stdout']
-        assert 'Automatic locking of package versions is enabled in installer.' in result['stdout']
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are locked." in result["stdout"]
+        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are locked' in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are locked" in result["stdout"]
         assert result["rc"] == 0
     # Test whether packages are unlocked or not
-    contacted = ansible_module.command('satellite-installer --no-lock-package-versions')
+    contacted = ansible_module.command("satellite-installer --no-lock-package-versions")
     for result in contacted.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.status())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert 'Packages are not locked.' in result['stdout']
-        assert 'Automatic locking of package versions is disabled in installer.' in result[
-            'stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert "Packages are not locked." in result["stdout"]
+        assert (
+            "Automatic locking of package versions is disabled in installer." in result["stdout"]
+        )
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are not locked' in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are not locked" in result["stdout"]
         assert result["rc"] == 1
     # lock packages
-    teardown = ansible_module.command('satellite-installer --lock-package-versions')
+    teardown = ansible_module.command("satellite-installer --lock-package-versions")
     for result in teardown.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
 
 
@@ -159,73 +160,68 @@ def test_positive_fm_packages_install(ansible_module):
     :CaseImportance: Critical
     """
     # Test whether packages are locked or not
-    contacted = ansible_module.command('satellite-installer --lock-package-versions')
+    contacted = ansible_module.command("satellite-installer --lock-package-versions")
     for result in contacted.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.status())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are locked.' in result['stdout']
-        assert 'Automatic locking of package versions is enabled in installer.' in result['stdout']
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are locked." in result["stdout"]
+        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are locked' in result['stdout']
+        logger.info(result["stdout"])
+        assert "Packages are locked" in result["stdout"]
         assert result["rc"] == 0
-    contacted = ansible_module.yum(
-        name='zsh',
-        state='absent'
-    )
+    contacted = ansible_module.yum(name="zsh", state="absent")
     for result in contacted.values():
-        assert result['rc'] == 0
-    contacted = ansible_module.command('yum install -y zsh')
-    for result in contacted.values():
-        assert result['rc'] == 1
-        assert "Use foreman-maintain packages install/update <package>" in result['stdout']
-    # Test whether FM packages install/ update command works as expected.
-    contacted = run(Packages.install(['--assumeyes', 'zsh-5.0.2-31.el7.x86_64 elinks']))
-    logger.info(contacted.stdout)
-    assert "FAIL" not in contacted.stdout
-    assert 'Packages are locked.' in contacted.stdout
-    assert 'Automatic locking of package versions is enabled in installer.' in contacted.stdout
-    contacted = run(Packages.update(['--assumeyes', 'zsh']))
-    logger.info(contacted.stdout)
-    assert "FAIL" not in contacted.stdout
-    assert 'Packages are locked.' in contacted.stdout
-    assert 'Automatic locking of package versions is enabled in installer.' in contacted.stdout
-    # Test whether packages are unlocked or not
-    contacted = ansible_module.command('satellite-installer --no-lock-package-versions')
-    for result in contacted.values():
-        logger.info(result['stdout'])
         assert result["rc"] == 0
-    contacted = ansible_module.command(Packages.status())
+    contacted = ansible_module.command("yum install -y zsh")
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert 'Packages are not locked.' in result['stdout']
-        assert 'Automatic locking of package versions is disabled in installer.' in result[
-            'stdout']
-        assert result["rc"] == 0
-    contacted = ansible_module.command(Packages.is_locked())
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'Packages are not locked' in result['stdout']
         assert result["rc"] == 1
-    contacted = ansible_module.yum(
-        name='zsh',
-        state='absent'
-    )
+        assert "Use foreman-maintain packages install/update <package>" in result["stdout"]
+    # Test whether FM packages install/ update command works as expected.
+    contacted = run(Packages.install(["--assumeyes", "zsh-5.0.2-31.el7.x86_64 elinks"]))
+    logger.info(contacted.stdout)
+    assert "FAIL" not in contacted.stdout
+    assert "Packages are locked." in contacted.stdout
+    assert "Automatic locking of package versions is enabled in installer." in contacted.stdout
+    contacted = run(Packages.update(["--assumeyes", "zsh"]))
+    logger.info(contacted.stdout)
+    assert "FAIL" not in contacted.stdout
+    assert "Packages are locked." in contacted.stdout
+    assert "Automatic locking of package versions is enabled in installer." in contacted.stdout
+    # Test whether packages are unlocked or not
+    contacted = ansible_module.command("satellite-installer --no-lock-package-versions")
     for result in contacted.values():
-        assert result['rc'] == 0
-    contacted = ansible_module.command('yum install -y zsh')
+        logger.info(result["stdout"])
+        assert result["rc"] == 0
+    contacted = ansible_module.command(Packages.status())
     for result in contacted.values():
-        assert result['rc'] == 0
-        assert "Use foreman-maintain packages install/update <package>" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert "Packages are not locked." in result["stdout"]
+        assert (
+            "Automatic locking of package versions is disabled in installer." in result["stdout"]
+        )
+        assert result["rc"] == 0
+    contacted = ansible_module.command(Packages.is_locked())
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "Packages are not locked" in result["stdout"]
+        assert result["rc"] == 1
+    contacted = ansible_module.yum(name="zsh", state="absent")
+    for result in contacted.values():
+        assert result["rc"] == 0
+    contacted = ansible_module.command("yum install -y zsh")
+    for result in contacted.values():
+        assert result["rc"] == 0
+        assert "Use foreman-maintain packages install/update <package>" not in result["stdout"]
     # lock packages
-    teardown = ansible_module.command('satellite-installer --lock-package-versions')
+    teardown = ansible_module.command("satellite-installer --lock-package-versions")
     for result in teardown.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0

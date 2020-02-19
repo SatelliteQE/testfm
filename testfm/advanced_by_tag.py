@@ -24,14 +24,14 @@ from testfm.base import Base
 class AdvancedByTag(Base):
     """Manipulates Foreman-maintain's advanced procedure by-tag command"""
 
-    command_base = 'advanced procedure by-tag'
+    command_base = "advanced procedure by-tag"
 
     @classmethod
     def post_migrations(cls, options=None):
         """Build foreman-maintain advanced procedure by-tag
          post-migrations"""
 
-        cls.command_sub = 'post-migrations'
+        cls.command_sub = "post-migrations"
 
         if options is None:
             options = {}
@@ -45,7 +45,7 @@ class AdvancedByTag(Base):
         """Build foreman-maintain advanced procedure by-tag
          pre-migrations"""
 
-        cls.command_sub = 'pre-migrations'
+        cls.command_sub = "pre-migrations"
 
         if options is None:
             options = {}
@@ -59,7 +59,7 @@ class AdvancedByTag(Base):
         """Build foreman-maintain advanced procedure by-tag
          backup"""
 
-        cls.command_sub = 'restore'
+        cls.command_sub = "restore"
 
         if options is None:
             options = {}

@@ -1,0 +1,41 @@
+repos:
+- repo: https://github.com/asottile/reorder_python_imports
+  rev: v1.9.0
+  hooks:
+  - id: reorder-python-imports
+    language_version: python3
+- repo: https://github.com/ambv/black
+  rev: 19.10b0
+  hooks:
+  - id: black
+    args: [--safe, --quiet, --line-length, "99"]
+    language_version: python3
+    require_serial: true
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.5.0
+  hooks:
+  - id: trailing-whitespace
+    language_version: python3
+  - id: end-of-file-fixer
+    language_version: python3
+  - id: check-yaml
+    language_version: python3
+  - id: debug-statements
+    language_version: python3
+  - id: flake8
+    language_version: python3
+- repo: local
+  hooks:
+    - id: fix-uuids
+      name: Custom Fix UUIDs script
+      description: This hook runs the scripts/fix_uuids.sh script
+      language: script
+      entry: scripts/fix_uuids.sh
+      verbose: true
+      types: [text]
+      require_serial: true
+- repo: https://github.com/asottile/pyupgrade
+  rev: v1.26.2
+  hooks:
+  - id: pyupgrade
+    language_version: python3

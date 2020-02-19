@@ -1,12 +1,12 @@
+from fauxfactory import gen_string
+
 from testfm.backup import Backup
 from testfm.decorators import capsule
 from testfm.log import logger
 from testfm.restore import Restore
-from fauxfactory import gen_string
 
 NODIR_MSG = "ERROR: parameter 'BACKUP_DIR': no value provided"
-BADDIR_MSG = ("The given directory does not contain the "
-              "required files or has too many files")
+BADDIR_MSG = "The given directory does not contain the " "required files or has too many files"
 
 
 @capsule
@@ -27,28 +27,28 @@ def test_positive_restore_online_backup(ansible_module):
     :CaseImportance: Critical
     """
     # preparing a target dir
-    backup_dir = 'online_backup_restore'
+    backup_dir = "online_backup_restore"
     setup = ansible_module.command("rm -rf /tmp/{}".format(backup_dir))
     assert setup.values()[0]["rc"] == 0
     setup = ansible_module.file(
-            path="/tmp/{}".format(backup_dir),
-            state="directory",
-            owner="postgres",
+        path="/tmp/{}".format(backup_dir), state="directory", owner="postgres",
     )
     # saving backup to specified dir
-    setup = ansible_module.command(Backup.run_online_backup([
-        '-y', '--preserve-directory', '/tmp/{}'.format(backup_dir)]))
+    setup = ansible_module.command(
+        Backup.run_online_backup(["-y", "--preserve-directory", "/tmp/{}".format(backup_dir)])
+    )
     for result in setup.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
     # restore from previously saved backup
-    contacted = ansible_module.command(Restore._construct_command(
-        ['-y', '/tmp/{}'.format(backup_dir)]))
+    contacted = ansible_module.command(
+        Restore._construct_command(["-y", "/tmp/{}".format(backup_dir)])
+    )
     for result in contacted.values():
         logger.info(result)
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 @capsule
@@ -69,28 +69,28 @@ def test_positive_restore_offline_backup(ansible_module):
     :CaseImportance: Critical
     """
     # preparing a target dir
-    backup_dir = 'offline_backup_restore'
+    backup_dir = "offline_backup_restore"
     setup = ansible_module.command("rm -rf /tmp/{}".format(backup_dir))
     assert setup.values()[0]["rc"] == 0
     setup = ansible_module.file(
-            path="/tmp/{}".format(backup_dir),
-            state="directory",
-            owner="postgres",
+        path="/tmp/{}".format(backup_dir), state="directory", owner="postgres",
     )
     # saving backup to specified dir
-    setup = ansible_module.command(Backup.run_offline_backup([
-        '-y', '--preserve-directory', '/tmp/{}'.format(backup_dir)]))
+    setup = ansible_module.command(
+        Backup.run_offline_backup(["-y", "--preserve-directory", "/tmp/{}".format(backup_dir)])
+    )
     for result in setup.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
     # restore from previously saved backup
-    contacted = ansible_module.command(Restore._construct_command(
-        ['-y', '/tmp/{}'.format(backup_dir)]))
+    contacted = ansible_module.command(
+        Restore._construct_command(["-y", "/tmp/{}".format(backup_dir)])
+    )
     for result in contacted.values():
         logger.info(result)
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 @capsule
@@ -111,12 +111,11 @@ def test_negative_restore_nodir(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Restore._construct_command(
-        ['-y']))
+    contacted = ansible_module.command(Restore._construct_command(["-y"]))
     for result in contacted.values():
         logger.info(result)
-        assert result['rc'] == 1
-        assert NODIR_MSG in result['stderr']
+        assert result["rc"] == 1
+        assert NODIR_MSG in result["stderr"]
 
 
 @capsule
@@ -137,10 +136,8 @@ def test_negative_restore_baddir(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Restore._construct_command([
-        '-y', gen_string('alpha')
-    ]))
+    contacted = ansible_module.command(Restore._construct_command(["-y", gen_string("alpha")]))
     for result in contacted.values():
-        logger.info(result['stderr'])
-        assert result['rc'] == 1
-        assert BADDIR_MSG in result['stdout']
+        logger.info(result["stderr"])
+        assert result["rc"] == 1
+        assert BADDIR_MSG in result["stdout"]

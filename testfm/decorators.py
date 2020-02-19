@@ -1,7 +1,8 @@
-from testfm.helpers import product, server
-
 import pytest
 import unittest2
+
+from testfm.helpers import product
+from testfm.helpers import server
 
 # Run for capsule
 capsule = pytest.mark.capsule
@@ -30,8 +31,8 @@ def run_only_on(*server_version):
     """
     return pytest.mark.skipif(
         product() not in server,
-        reason="Server version is '{0}' and this test will run only "
-               "on '{1}' version".format(product(), server_version)
+        reason="Server version is '{}' and this test will run only "
+        "on '{}' version".format(product(), server_version),
     )
 
 
@@ -53,8 +54,9 @@ def starts_in(version):
     """
     return pytest.mark.skipif(
         float(product()) < version,
-        reason="Server version is '{0}' and this test will run only "
-               "on {1} '{2}' onward".format(product(), server(), version))
+        reason="Server version is '{}' and this test will run only "
+        "on {} '{}' onward".format(product(), server(), version),
+    )
 
 
 def ends_in(version):
@@ -75,5 +77,6 @@ def ends_in(version):
     """
     return pytest.mark.skipif(
         float(product()) > version,
-        reason="Server version is '{0}' and this test will run only "
-               "on {1} <= '{2}'".format(product(), server(), version))
+        reason="Server version is '{}' and this test will run only "
+        "on {} <= '{}'".format(product(), server(), version),
+    )

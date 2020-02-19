@@ -21,4 +21,4 @@ from testfm.base import Base
 class Restore(Base):
     """Manipulates Foreman-maintain's restore command"""
 
-    command_base = 'restore'
+    command_base = "restore"

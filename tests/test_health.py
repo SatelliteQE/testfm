@@ -1,4 +1,5 @@
-from testfm.decorators import capsule, stubbed
+from testfm.decorators import capsule
+from testfm.decorators import stubbed
 from testfm.health import Health
 from testfm.log import logger
 
@@ -20,7 +21,7 @@ def test_positive_foreman_maintain_health_list(ansible_module):
     """
     contacted = ansible_module.command(Health.list())
     for result in contacted.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
 
 
@@ -41,7 +42,7 @@ def test_positive_foreman_maintain_health_list_tags(ansible_module):
     """
     contacted = ansible_module.command(Health.list_tags())
     for result in contacted.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
 
 
@@ -60,12 +61,10 @@ def test_positive_list_health_check_by_tags(ansible_module):
 
     :CaseImportance: Critical
     """
-    for tags in ['default', 'pre-upgrade']:
-        contacted = ansible_module.command(Health.list({
-            'tags': tags
-        }))
+    for tags in ["default", "pre-upgrade"]:
+        contacted = ansible_module.command(Health.list({"tags": tags}))
         for result in contacted.values():
-            logger.info(result['stdout'])
+            logger.info(result["stdout"])
             assert result["rc"] == 0
 
 
@@ -84,11 +83,12 @@ def test_positive_foreman_maintain_health_check(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check([
-        '-w', 'puppet-check-no-empty-cert-requests', '-y']))
+    contacted = ansible_module.command(
+        Health.check(["-w", "puppet-check-no-empty-cert-requests", "-y"])
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_foreman_maintain_health_check_by_tags(setup_install_pkgs, ansible_module):
@@ -108,17 +108,16 @@ def test_positive_foreman_maintain_health_check_by_tags(setup_install_pkgs, ansi
         """
     contacted = ansible_module.command(Health.list_tags())
     for result in contacted.values():
-        output = result['stdout']
-    output = [i.split(']\x1b[0m')[0] for i in output.split('\x1b[36m[') if i]
+        output = result["stdout"]
+    output = [i.split("]\x1b[0m")[0] for i in output.split("\x1b[36m[") if i]
     for tag in output:
-        contacted = ansible_module.command(Health.check([
-            '--tags', tag,
-            '--whitelist', '"disk-performance"',
-            '--assumeyes']))
+        contacted = ansible_module.command(
+            Health.check(["--tags", tag, "--whitelist", '"disk-performance"', "--assumeyes"])
+        )
         for result in contacted.values():
-            logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
 
 
 def test_positive_check_server_ping(ansible_module):
@@ -136,12 +135,10 @@ def test_positive_check_server_ping(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'server-ping'
-    }))
+    contacted = ansible_module.command(Health.check({"label": "server-ping"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_negative_check_server_ping(setup_katello_service_stop, ansible_module):
@@ -161,12 +158,10 @@ def test_negative_check_server_ping(setup_katello_service_stop, ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'server-ping'
-    }))
+    contacted = ansible_module.command(Health.check({"label": "server-ping"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
 
 
 def test_positive_pre_upgrade_health_check(ansible_module):
@@ -184,12 +179,10 @@ def test_positive_pre_upgrade_health_check(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'tag': 'pre-upgrade'
-    }))
+    contacted = ansible_module.command(Health.check({"tag": "pre-upgrade"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_check_upstream_repository(setup_upstream_repository, ansible_module):
@@ -207,13 +200,13 @@ def test_positive_check_upstream_repository(setup_upstream_repository, ansible_m
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check([
-            '--label', 'check-upstream-repository', '--assumeyes'
-        ]))
+    contacted = ansible_module.command(
+        Health.check(["--label", "check-upstream-repository", "--assumeyes"])
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_available_space(ansible_module):
@@ -231,13 +224,11 @@ def test_positive_available_space(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'available-space'
-    }))
+    contacted = ansible_module.command(Health.check({"label": "available-space"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_automate_bz1632768(setup_hammer_defaults, ansible_module):
@@ -260,12 +251,11 @@ def test_positive_automate_bz1632768(setup_hammer_defaults, ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check([
-        '--assumeyes']))
+    contacted = ansible_module.command(Health.check(["--assumeyes"]))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_puppet_check_no_empty_cert_requests(ansible_module):
@@ -283,12 +273,13 @@ def test_positive_puppet_check_no_empty_cert_requests(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'puppet-check-no-empty-cert-requests'}))
+    contacted = ansible_module.command(
+        Health.check({"label": "puppet-check-no-empty-cert-requests"})
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansible_module):
@@ -307,22 +298,22 @@ def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansi
 
     :CaseImportance: Critical
     """
-    response = '.* \[Delete empty CA cert request files\].*] '
+    response = r".* \[Delete empty CA cert request files\].*] "
     contacted = ansible_module.expect(
-        command=Health.check({'label': 'puppet-check-no-empty-cert-requests'}),
-        responses={response: "yes"})
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" in result['stdout']
-        assert result['rc'] == 0
-    puppet_ssldir_path = ansible_module.command(
-        'puppet master --configprint ssldir').values()[0]['stdout']
-    contacted = ansible_module.find(
-        paths='{}/ca/requests/'.format(puppet_ssldir_path),
-        file_type='file',
-        size='0'
+        command=Health.check({"label": "puppet-check-no-empty-cert-requests"}),
+        responses={response: "yes"},
     )
-    assert contacted.values()[0]['matched'] == 0
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] == 0
+    puppet_ssldir_path = ansible_module.command("puppet master --configprint ssldir").values()[0][
+        "stdout"
+    ]
+    contacted = ansible_module.find(
+        paths="{}/ca/requests/".format(puppet_ssldir_path), file_type="file", size="0"
+    )
+    assert contacted.values()[0]["matched"] == 0
 
 
 def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs, ansible_module):
@@ -345,15 +336,13 @@ def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs,
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'check-hotfix-installed'
-    }))
+    contacted = ansible_module.command(Health.check({"label": "check-hotfix-installed"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "WARNING" in result['stdout']
-        assert "hotfix-package" in result['stdout']
-        assert setup_hotfix_check in result['stdout']
-        assert result['rc'] == 1
+        logger.info(result["stdout"])
+        assert "WARNING" in result["stdout"]
+        assert "hotfix-package" in result["stdout"]
+        assert setup_hotfix_check in result["stdout"]
+        assert result["rc"] == 1
 
 
 def test_positive_check_hotfix_installed_without_hotfix(setup_install_pkgs, ansible_module):
@@ -372,13 +361,11 @@ def test_positive_check_hotfix_installed_without_hotfix(setup_install_pkgs, ansi
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'check-hotfix-installed'
-    }))
+    contacted = ansible_module.command(Health.check({"label": "check-hotfix-installed"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "WARNING" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "WARNING" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_check_yum_exclude_list(setup_yum_exclude, ansible_module):
@@ -400,12 +387,11 @@ def test_positive_check_yum_exclude_list(setup_yum_exclude, ansible_module):
 
     :CaseImportance: Critical
     """
-    yum_exclude = setup_yum_exclude(exclude='cat* bear*')
-    contacted = ansible_module.command(Health.check({
-        'label': 'check-yum-exclude-list'}))
+    yum_exclude = setup_yum_exclude(exclude="cat* bear*")
+    contacted = ansible_module.command(Health.check({"label": "check-yum-exclude-list"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert yum_exclude in result['stdout']
+        logger.info(result["stdout"])
+        assert yum_exclude in result["stdout"]
         assert result["rc"] == 1
 
 
@@ -425,11 +411,10 @@ def test_positive_check_yum_exclude_list_without_excludes(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'check-yum-exclude-list'}))
+    contacted = ansible_module.command(Health.check({"label": "check-yum-exclude-list"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
 
@@ -453,19 +438,19 @@ def test_positive_check_epel_repository(setup_epel_repository, ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'check-epel-repository'}))
+    contacted = ansible_module.command(Health.check({"label": "check-epel-repository"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "System is subscribed to EPEL repository" in result['stdout']
-        assert "FAIL" in result['stdout']
+        logger.info(result["stdout"])
+        assert "System is subscribed to EPEL repository" in result["stdout"]
+        assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
 
 
 @stubbed
 @capsule
 def test_positive_check_epel_repository_with_invalid_repo(
-        setup_epel_repository, setup_invalid_repository, ansible_module):
+    setup_epel_repository, setup_invalid_repository, ansible_module
+):
     """Verify check-epel-repository.
 
     :id: e41648f4-ada6-4e7e-9112-45146d308410
@@ -484,12 +469,11 @@ def test_positive_check_epel_repository_with_invalid_repo(
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({
-        'label': 'check-epel-repository'}))
+    contacted = ansible_module.command(Health.check({"label": "check-epel-repository"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "System is subscribed to EPEL repository" in result['stdout']
-        assert "FAIL" in result['stdout']
+        logger.info(result["stdout"])
+        assert "System is subscribed to EPEL repository" in result["stdout"]
+        assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
 
 
@@ -514,23 +498,21 @@ def test_positive_check_old_foreman_tasks(setup_old_foreman_tasks, ansible_modul
 
     :CaseImportance: Critical
     """
-    error_message = 'paused or stopped task(s) older than 30 days'
-    delete_message = 'Deleted old stopped and paused tasks:'
-    contacted = ansible_module.command(Health.check([
-        '--label', 'check-old-foreman-tasks', '--assumeyes'
-    ]))
+    error_message = "paused or stopped task(s) older than 30 days"
+    delete_message = "Deleted old stopped and paused tasks:"
+    contacted = ansible_module.command(
+        Health.check(["--label", "check-old-foreman-tasks", "--assumeyes"])
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
         assert result["rc"] == 0
-        assert error_message in result['stdout']
-        assert delete_message in result['stdout']
-    contacted = ansible_module.command(Health.check([
-        '--label', 'check-old-foreman-tasks'
-    ]))
+        assert error_message in result["stdout"]
+        assert delete_message in result["stdout"]
+    contacted = ansible_module.command(Health.check(["--label", "check-old-foreman-tasks"]))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
 
@@ -555,20 +537,20 @@ def test_positive_check_tmout_variable(ansible_module):
     :CaseImportance: Critical
     """
     export = "export TMOUT=100;"
-    error_message = "The TMOUT environment variable is set with value 100. " \
-                    "Run 'unset TMOUT' command to unset this variable."
+    error_message = (
+        "The TMOUT environment variable is set with value 100. "
+        "Run 'unset TMOUT' command to unset this variable."
+    )
     # Run check without setting TMOUT environment variable.
-    contacted = ansible_module.command(Health.check({
-        'label': 'check-tmout-variable'}))
+    contacted = ansible_module.command(Health.check({"label": "check-tmout-variable"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     # Run check with TMOUT environment variable set.
-    contacted = ansible_module.shell(export + Health.check({
-        'label': 'check-tmout-variable'}))
+    contacted = ansible_module.shell(export + Health.check({"label": "check-tmout-variable"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" in result['stdout']
-        assert error_message in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
+        assert error_message in result["stdout"]
         assert result["rc"] == 1

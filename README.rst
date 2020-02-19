@@ -78,11 +78,10 @@ In order to ensure you are able to pass the Travis CI build,
 it is recommended that you run the following commands in the base of your
 testfm directory ::
 
-    flake8
+    pre-commit autoupdate && pre-commit run -a
 
-flake8 will ensure that the changes you made are not in violation of PEP8
-standards. If the command gives no output, then you have passed. If not, then
-address any corrections recommended.
+Pre-commit will ensure that the changes you made are not in violation of PEP8
+standards.
 
 If you have something great, please submit a pull request anyway!
 The `full documentation <https://testfm.readthedocs.io/en/latest/>`_ is available on ReadTheDocs.

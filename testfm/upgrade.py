@@ -16,19 +16,18 @@ Subcommands:
 Options:
     -h, --help                    print help
 """
-
 from testfm.base import Base
 
 
 class Upgrade(Base):
     """Manipulates Foreman-maintain's health command"""
 
-    command_base = 'upgrade'
+    command_base = "upgrade"
 
     @classmethod
     def list_versions(cls, options=None):
         """Build foreman-maintain upgrade list-versions"""
-        cls.command_sub = 'list-versions'
+        cls.command_sub = "list-versions"
 
         if options is None:
             options = {}
@@ -40,7 +39,7 @@ class Upgrade(Base):
     @classmethod
     def check(cls, options=None):
         """Build foreman-maintain upgrade check"""
-        cls.command_sub = 'check'
+        cls.command_sub = "check"
 
         if options is None:
             options = {}
@@ -52,7 +51,7 @@ class Upgrade(Base):
     @classmethod
     def run(cls, options=None):
         """Build foreman-maintain upgrade run"""
-        cls.command_sub = 'run'
+        cls.command_sub = "run"
 
         if options is None:
             options = {}

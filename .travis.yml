@@ -9,5 +9,5 @@ addons:
 install:
   - pip install -r requirements.txt
 script:
-  - flake8 --max-line-length=99 testfm tests
+  - pre-commit run -a
   - make test-docstrings

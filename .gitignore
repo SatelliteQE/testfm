@@ -6,3 +6,15 @@
 
 # Logs
 /testfm.log
+
+#env
+env/
+.env/
+.venv/
+.idea/
+.pytest_cache/
+testfm.egg-info/
+
+#Packaging
+build/
+dist/

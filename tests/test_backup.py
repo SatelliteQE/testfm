@@ -1,48 +1,49 @@
+from fauxfactory import gen_string
+
 from testfm.backup import Backup
-from testfm.decorators import capsule, starts_in
+from testfm.decorators import capsule
+from testfm.decorators import starts_in
 from testfm.helpers import server
 from testfm.log import logger
 from testfm.service import Service
-from fauxfactory import gen_string
 
-BACKUP_DIR = '/tmp/'
+BACKUP_DIR = "/tmp/"
 NODIR_MSG = "ERROR: parameter 'BACKUP_DIR': no value provided"
-NOPREV_MSG = ("ERROR: option '--incremental': Previous backup "
-              "directory does not exist")
+NOPREV_MSG = "ERROR: option '--incremental': Previous backup " "directory does not exist"
 
 OFFLINE_CAPS_FILES = [
-    'config_files.tar.gz',
-    '.config.snar',
-    'metadata.yml',
-    'mongo_data.tar.gz',
-    '.mongo.snar',
+    "config_files.tar.gz",
+    ".config.snar",
+    "metadata.yml",
+    "mongo_data.tar.gz",
+    ".mongo.snar",
 ]
 
 OFFLINE_SAT_FILES = [
-    'pgsql_data.tar.gz',
-    '.postgres.snar',
+    "pgsql_data.tar.gz",
+    ".postgres.snar",
 ]
 
 OFFLINE_BACKUP_FILES = OFFLINE_CAPS_FILES + OFFLINE_SAT_FILES
 
 ONLINE_CAPS_FILES = [
-    'config_files.tar.gz',
-    '.config.snar',
-    'metadata.yml',
-    'mongo_dump',
+    "config_files.tar.gz",
+    ".config.snar",
+    "metadata.yml",
+    "mongo_dump",
 ]
 
 ONLINE_SAT_FILES = [
-    'candlepin.dump',
-    'foreman.dump',
-    'pg_globals.dump',
+    "candlepin.dump",
+    "foreman.dump",
+    "pg_globals.dump",
 ]
 
 ONLINE_BACKUP_FILES = ONLINE_CAPS_FILES + ONLINE_SAT_FILES
 
 CONTENT_FILES = [
-    'pulp_data.tar',
-    '.pulp.snar',
+    "pulp_data.tar",
+    ".pulp.snar",
 ]
 
 assert_msg = "All required backup files not found"
@@ -64,29 +65,24 @@ def test_positive_backup_online(setup_backup_tests, ansible_module):
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        subdir
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    contacted = ansible_module.command(Backup.run_online_backup(["-y", subdir]))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
-    contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = ONLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -105,30 +101,26 @@ def test_positive_backup_online_skip_pulp_content(setup_backup_tests, ansible_mo
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        '--skip-pulp-content',
-        subdir
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    contacted = ansible_module.command(
+        Backup.run_online_backup(["-y", "--skip-pulp-content", subdir])
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
-    contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = ONLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files), assert_msg
+    assert set(files_list).issuperset(expected_files), assert_msg
     assert CONTENT_FILES not in files_list, "content not skipped"
 
 
@@ -148,32 +140,26 @@ def test_positive_backup_online_preserve_directory(setup_backup_tests, ansible_m
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     ansible_module.file(
-        path="{}".format(subdir),
-        state="directory",
-        owner="postgres",
+        path="{}".format(subdir), state="directory", owner="postgres",
     )
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        '--preserve-directory',
-        subdir
-    ]))
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-
     contacted = ansible_module.command(
-                'ls -a {0}'.format(subdir))
-    files_list = contacted.values()[0]['stdout_lines']
+        Backup.run_online_backup(["-y", "--preserve-directory", subdir])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+    contacted = ansible_module.command("ls -a {}".format(subdir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = ONLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -192,30 +178,25 @@ def test_positive_backup_online_split_pulp_tar(setup_backup_tests, ansible_modul
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        '--split-pulp-tar',
-        '1M',
-        subdir
-    ]))
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+        Backup.run_online_backup(["-y", "--split-pulp-tar", "1M", subdir])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = ONLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -236,33 +217,29 @@ def test_positive_backup_online_incremental(setup_backup_tests, ansible_module):
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    dest_dir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    setup = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        subdir
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    dest_dir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    setup = ansible_module.command(Backup.run_online_backup(["-y", subdir]))
     for result in setup.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    source_dir = contacted.values()[0]['stdout_lines'][0]
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        '--incremental',
-        '{0}/{1}'.format(subdir, source_dir),
-        dest_dir
-    ]))
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command("ls {}".format(subdir))
+    source_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command(
+        Backup.run_online_backup(
+            ["-y", "--incremental", "{}/{}".format(subdir, source_dir), dest_dir]
+        )
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
     contacted = ansible_module.stat(path=subdir)
-    source_size = contacted.values()[0]['stat']['size']
+    source_size = contacted.values()[0]["stat"]["size"]
     contacted = ansible_module.stat(path=dest_dir)
-    dest_size = contacted.values()[0]['stat']['size']
+    dest_size = contacted.values()[0]["stat"]["size"]
     assert source_size >= dest_size
 
 
@@ -282,30 +259,25 @@ def test_positive_backup_online_caspule_features(setup_backup_tests, ansible_mod
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        '--features',
-        'dns,tftp,openscap,dhcp',
-        subdir
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    contacted = ansible_module.command(
+        Backup.run_online_backup(["-y", "--features", "dns,tftp,openscap,dhcp", subdir])
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
-    contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = ONLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -326,31 +298,22 @@ def test_positive_backup_online_all(setup_backup_tests, ansible_module):
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    ansible_module.file(
-        path=subdir,
-        state='directory',
-        mode='0777'
-    )
-    setup = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        '/mnt/'
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    ansible_module.file(path=subdir, state="directory", mode="0777")
+    setup = ansible_module.command(Backup.run_online_backup(["-y", "/mnt/"]))
     for result in setup.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y -f -s -p -t 10M -i',
-        '/mnt/',
-        '--features',
-        'dns,tftp,openscap,dhcp',
-        subdir
-    ]))
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command(
+        Backup.run_online_backup(
+            ["-y -f -s -p -t 10M -i", "/mnt/", "--features", "dns,tftp,openscap,dhcp", subdir]
+        )
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 @capsule
@@ -369,29 +332,24 @@ def test_positive_backup_offline(setup_backup_tests, ansible_module):
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        subdir
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    contacted = ansible_module.command(Backup.run_offline_backup(["-y", subdir]))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
-    contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = OFFLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -410,30 +368,26 @@ def test_positive_backup_offline_skip_pulp_content(setup_backup_tests, ansible_m
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        '--skip-pulp-content',
-        subdir
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    contacted = ansible_module.command(
+        Backup.run_offline_backup(["-y", "--skip-pulp-content", subdir])
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
-    contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = OFFLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files), assert_msg
+    assert set(files_list).issuperset(expected_files), assert_msg
     assert CONTENT_FILES not in files_list, "content not skipped"
 
 
@@ -454,32 +408,26 @@ def test_positive_backup_offline_preserve_directory(setup_backup_tests, ansible_
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     ansible_module.file(
-        path="{}".format(subdir),
-        state="directory",
-        owner="postgres",
+        path="{}".format(subdir), state="directory", owner="postgres",
     )
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        '--preserve-directory',
-        subdir
-    ]))
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-
     contacted = ansible_module.command(
-                'ls -a {0}'.format(subdir))
-    files_list = contacted.values()[0]['stdout_lines']
+        Backup.run_offline_backup(["-y", "--preserve-directory", subdir])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+    contacted = ansible_module.command("ls -a {}".format(subdir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = OFFLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -499,30 +447,25 @@ def test_positive_backup_offline_split_pulp_tar(setup_backup_tests, ansible_modu
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        '--split-pulp-tar',
-        '10M',
-        subdir
-    ]))
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+        Backup.run_offline_backup(["-y", "--split-pulp-tar", "10M", subdir])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = OFFLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -543,33 +486,29 @@ def test_positive_backup_offline_incremental(setup_backup_tests, ansible_module)
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    dest_dir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    setup = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        subdir
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    dest_dir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    setup = ansible_module.command(Backup.run_offline_backup(["-y", subdir]))
     for result in setup.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    source_dir = contacted.values()[0]['stdout_lines'][0]
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        '--incremental',
-        '{0}/{1}'.format(subdir, source_dir),
-        dest_dir
-    ]))
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command("ls {}".format(subdir))
+    source_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command(
+        Backup.run_offline_backup(
+            ["-y", "--incremental", "{}/{}".format(subdir, source_dir), dest_dir]
+        )
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
     contacted = ansible_module.stat(path=subdir)
-    source_size = contacted.values()[0]['stat']['size']
+    source_size = contacted.values()[0]["stat"]["size"]
     contacted = ansible_module.stat(path=dest_dir)
-    dest_size = contacted.values()[0]['stat']['size']
+    dest_size = contacted.values()[0]["stat"]["size"]
     assert source_size >= dest_size
 
 
@@ -590,30 +529,25 @@ def test_positive_backup_offline_capsule_features(setup_backup_tests, ansible_mo
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        '--features',
-        'dns,tftp,dhcp,openscap',
-        subdir
-    ]))
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+        Backup.run_offline_backup(["-y", "--features", "dns,tftp,dhcp,openscap", subdir])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = OFFLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -632,29 +566,25 @@ def test_positive_backup_offline_logical(setup_backup_tests, ansible_module):
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        '--include-db-dumps',
-        subdir
-    ]))
-    for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-
-    contacted = ansible_module.command('ls {}'.format(subdir))
-    timestamped_dir = contacted.values()[0]['stdout_lines'][0]
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     contacted = ansible_module.command(
-                'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-    files_list = contacted.values()[0]['stdout_lines']
+        Backup.run_offline_backup(["-y", "--include-db-dumps", subdir])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+    contacted = ansible_module.command("ls {}".format(subdir))
+    timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES + ONLINE_BACKUP_FILES
 
     # capsule-specific file list
-    if server() == 'capsule':
+    if server() == "capsule":
         expected_files = OFFLINE_CAPS_FILES + ONLINE_CAPS_FILES
-    assert set(files_list).issuperset(
-               expected_files + CONTENT_FILES), assert_msg
+    assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
 @capsule
@@ -676,31 +606,28 @@ def test_positive_backup_offline_all(setup_backup_tests, ansible_module):
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
-    ansible_module.file(
-        path=subdir,
-        state='directory',
-        mode='0777'
-    )
-    setup = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-        '/mnt/'
-    ]))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
+    ansible_module.file(path=subdir, state="directory", mode="0777")
+    setup = ansible_module.command(Backup.run_offline_backup(["-y", "/mnt/"]))
     for result in setup.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y -f -s -p -t 10M -i',
-        '/mnt/',
-        '--features dns,tfp,dhcp,openscap',
-        '--include-db-dumps',
-        subdir
-    ]))
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command(
+        Backup.run_offline_backup(
+            [
+                "-y -f -s -p -t 10M -i",
+                "/mnt/",
+                "--features dns,tfp,dhcp,openscap",
+                "--include-db-dumps",
+                subdir,
+            ]
+        )
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 @capsule
@@ -721,13 +648,11 @@ def test_negative_backup_online_nodir(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-    ]))
+    contacted = ansible_module.command(Backup.run_online_backup(["-y"]))
     for result in contacted.values():
-        logger.info(result['stderr'])
-        assert result['rc'] == 1
-        assert NODIR_MSG in result['stderr']
+        logger.info(result["stderr"])
+        assert result["rc"] == 1
+        assert NODIR_MSG in result["stderr"]
 
 
 @capsule
@@ -748,13 +673,11 @@ def test_negative_backup_offline_nodir(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Backup.run_offline_backup([
-        '-y',
-    ]))
+    contacted = ansible_module.command(Backup.run_offline_backup(["-y"]))
     for result in contacted.values():
-        logger.info(result['stderr'])
-        assert result['rc'] == 1
-        assert NODIR_MSG in result['stderr']
+        logger.info(result["stderr"])
+        assert result["rc"] == 1
+        assert NODIR_MSG in result["stderr"]
 
 
 @capsule
@@ -775,15 +698,13 @@ def test_negative_backup_online_incremental_nodir(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Backup.run_online_backup([
-        '-y',
-        '--incremental',
-        gen_string('alpha'),
-    ]))
+    contacted = ansible_module.command(
+        Backup.run_online_backup(["-y", "--incremental", gen_string("alpha")])
+    )
     for result in contacted.values():
-        logger.info(result['stderr'])
-        assert result['rc'] == 1
-        assert NOPREV_MSG in result['stderr']
+        logger.info(result["stderr"])
+        assert result["rc"] == 1
+        assert NOPREV_MSG in result["stderr"]
 
 
 @starts_in(6.4)
@@ -804,40 +725,33 @@ def test_positive_backup_stopped_dynflowd(setup_backup_tests, ansible_module):
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     try:
-        setup = ansible_module.command(Service.service_stop({
-            u'only': 'dynflowd'
-        }))
+        setup = ansible_module.command(Service.service_stop({u"only": "dynflowd"}))
         for result in setup.values():
             logger.info(result)
-            assert result['rc'] == 0
-        contacted = ansible_module.command(Backup.run_online_backup([
-            '-y',
-            subdir
-        ]))
+            assert result["rc"] == 0
+        contacted = ansible_module.command(Backup.run_online_backup(["-y", subdir]))
         for result in contacted.values():
-            logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
 
         # getting created files
-        contacted = ansible_module.command('ls {}'.format(subdir))
-        timestamped_dir = contacted.values()[0]['stdout_lines'][0]
-        contacted = ansible_module.command(
-            'ls -a {0}/{1}'.format(subdir, timestamped_dir))
-        files_list = contacted.values()[0]['stdout_lines']
+        contacted = ansible_module.command("ls {}".format(subdir))
+        timestamped_dir = contacted.values()[0]["stdout_lines"][0]
+        contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+        files_list = contacted.values()[0]["stdout_lines"]
         expected_files = ONLINE_BACKUP_FILES
 
         # capsule-specific file list
-        if server() == 'capsule':
+        if server() == "capsule":
             expected_files = ONLINE_CAPS_FILES
-        assert set(files_list).issuperset(
-            expected_files + CONTENT_FILES), assert_msg
+        assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
     finally:
         teardown = ansible_module.command(Service.service_start())
         for result in teardown.values():
-            assert result['rc'] == 0
+            assert result["rc"] == 0
 
 
 @starts_in(6.3)
@@ -858,23 +772,18 @@ def test_positive_backup_stopped_foreman_tasks(setup_backup_tests, ansible_modul
 
     :CaseImportance: Critical
     """
-    subdir = "{0}backup-{1}".format(BACKUP_DIR, gen_string('alpha'))
+    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     try:
-        setup = ansible_module.command(Service.service_stop({
-            u'only': 'foreman-tasks'
-        }))
+        setup = ansible_module.command(Service.service_stop({u"only": "foreman-tasks"}))
         for result in setup.values():
             logger.info(result)
-            assert result['rc'] == 0
-        contacted = ansible_module.command(Backup.run_online_backup([
-            '-y',
-            subdir
-        ]))
+            assert result["rc"] == 0
+        contacted = ansible_module.command(Backup.run_online_backup(["-y", subdir]))
         for result in contacted.values():
-            logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
     finally:
         teardown = ansible_module.command(Service.service_start())
         for result in teardown.values():
-            assert result['rc'] == 0
+            assert result["rc"] == 0

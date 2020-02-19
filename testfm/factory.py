@@ -1,6 +1,6 @@
+from testfm.advanced import Advanced
 from testfm.health import Health
 from testfm.upgrade import Upgrade
-from testfm.advanced import Advanced
 
 
 def check_health():

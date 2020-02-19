@@ -21,12 +21,13 @@ from testfm.base import Base
 
 class MaintenanceMode(Base):
     """Manipulates Foreman-maintain's maintenance-mode command"""
-    command_base = 'maintenance-mode'
+
+    command_base = "maintenance-mode"
 
     @classmethod
     def start(cls, options=None):
         """foreman-maintain maintenance-mode start [OPTIONS]"""
-        cls.command_sub = 'start'
+        cls.command_sub = "start"
 
         if options is None:
             options = {}
@@ -38,7 +39,7 @@ class MaintenanceMode(Base):
     @classmethod
     def stop(cls, options=None):
         """foreman-maintain maintenance-mode stop [OPTIONS]"""
-        cls.command_sub = 'stop'
+        cls.command_sub = "stop"
 
         if options is None:
             options = {}
@@ -50,7 +51,7 @@ class MaintenanceMode(Base):
     @classmethod
     def status(cls, options=None):
         """foreman-maintain maintenance-mode status [OPTIONS]"""
-        cls.command_sub = 'status'
+        cls.command_sub = "status"
 
         if options is None:
             options = {}
@@ -62,7 +63,7 @@ class MaintenanceMode(Base):
     @classmethod
     def is_enabled(cls, options=None):
         """foreman-maintain maintenance-mode is-enabled [OPTIONS]"""
-        cls.command_sub = 'is-enabled'
+        cls.command_sub = "is-enabled"
 
         if options is None:
             options = {}
