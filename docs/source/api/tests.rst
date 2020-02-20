@@ -12,4 +12,3 @@ Submodules
    tests.test_restore
    tests.test_service
    tests.test_upgrade
-

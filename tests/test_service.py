@@ -1,7 +1,7 @@
 from testfm.decorators import capsule
+from testfm.health import Health
 from testfm.log import logger
 from testfm.service import Service
-from testfm.health import Health
 
 
 @capsule
@@ -22,9 +22,9 @@ def test_positive_foreman_maintain_service_restart(ansible_module):
     """
     contacted = ansible_module.command(Service.service_restart())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 @capsule
@@ -45,9 +45,9 @@ def test_positive_foreman_maintain_service_start(ansible_module):
     """
     contacted = ansible_module.command(Service.service_start())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_automate_bz1624699(ansible_module):
@@ -66,15 +66,13 @@ def test_positive_automate_bz1624699(ansible_module):
 
     :CaseImportance: Critical
     """
-    setup = ansible_module.command(Service.service_stop({
-        u'only': 'dynflowd'
-    }))
+    setup = ansible_module.command(Service.service_stop({u"only": "dynflowd"}))
     for result in setup.values():
-        assert result['rc'] == 0
-    contacted = ansible_module.command(Health.check(['-y']))
+        assert result["rc"] == 0
+    contacted = ansible_module.command(Health.check(["-y"]))
     for result in contacted.values():
         logger.info(result)
-        assert result['rc'] == 0
+        assert result["rc"] == 0
 
 
 @capsule
@@ -95,9 +93,9 @@ def test_positive_service_enable(ansible_module):
     """
     contacted = ansible_module.command(Service.service_enable())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 @capsule
@@ -119,13 +117,13 @@ def test_positive_service_disable(ansible_module):
     try:
         contacted = ansible_module.command(Service.service_disable())
         for result in contacted.values():
-            logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
     finally:
         teardown = ansible_module.command(Service.service_enable())
         for result in teardown.values():
-            assert result['rc'] == 0
+            assert result["rc"] == 0
 
 
 @capsule
@@ -148,18 +146,18 @@ def test_positive_automate_bz1626651(ansible_module):
     try:
         contacted = ansible_module.command(Service.service_stop())
         for result in contacted.values():
-            logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
         contacted = ansible_module.command(Service.service_restart())
         for result in contacted.values():
-            logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
     finally:
         teardown = ansible_module.command(Service.service_start())
         for result in teardown.values():
-            assert result['rc'] == 0
+            assert result["rc"] == 0
 
 
 @capsule
@@ -181,7 +179,7 @@ def test_positive_service_status_clocale(ansible_module):
     contacted = ansible_module.shell("LC_ALL=C " + Service.service_status())
     for result in contacted.values():
         logger.info(result)
-        assert result['rc'] == 0
+        assert result["rc"] == 0
 
 
 @capsule
@@ -204,16 +202,16 @@ def test_positive_failed_service_status(ansible_module):
     try:
         setup = ansible_module.command(Service.service_stop())
         for result in setup.values():
-            logger.info(result['stdout'])
-            assert result['rc'] == 0
+            logger.info(result["stdout"])
+            assert result["rc"] == 0
         contacted = ansible_module.command(Service.service_status())
         for result in contacted.values():
             logger.info(result)
-            assert result['rc'] != 0
+            assert result["rc"] != 0
     finally:
         teardown = ansible_module.command(Service.service_start())
         for result in teardown.values():
-            assert result['rc'] == 0
+            assert result["rc"] == 0
 
 
 def test_positive_fm_service_restart_bz_1696862(setup_bz_1696862, ansible_module):
@@ -237,6 +235,6 @@ def test_positive_fm_service_restart_bz_1696862(setup_bz_1696862, ansible_module
     """
     contacted = ansible_module.command(Service.service_restart())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0

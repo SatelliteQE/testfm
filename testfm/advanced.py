@@ -29,21 +29,20 @@ Subcommands:
 Options:
     -h, --help                    print help
 """
-
 from testfm.base import Base
 
 
 class Advanced(Base):
     """Manipulates Foreman-maintain's advanced procedure run command"""
 
-    command_base = 'advanced procedure run'
+    command_base = "advanced procedure run"
 
     @classmethod
     def run_service_restart(cls, options=None):
         """Build foreman-maintain advanced procedure run
          service-restart"""
 
-        cls.command_sub = 'service-restart'
+        cls.command_sub = "service-restart"
 
         if options is None:
             options = {}
@@ -57,7 +56,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          service-stop"""
 
-        cls.command_sub = 'service-stop'
+        cls.command_sub = "service-stop"
 
         if options is None:
             options = {}
@@ -71,7 +70,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          service-start"""
 
-        cls.command_sub = 'service-start'
+        cls.command_sub = "service-start"
 
         if options is None:
             options = {}
@@ -85,7 +84,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          packages-update"""
 
-        cls.command_sub = 'packages-update'
+        cls.command_sub = "packages-update"
 
         if options is None:
             options = {}
@@ -99,7 +98,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          maintenance-mode-disable"""
 
-        cls.command_sub = 'maintenance-mode-disable'
+        cls.command_sub = "maintenance-mode-disable"
 
         if options is None:
             options = {}
@@ -113,7 +112,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          maintenance-mode-enable"""
 
-        cls.command_sub = 'maintenance-mode-enable'
+        cls.command_sub = "maintenance-mode-enable"
 
         if options is None:
             options = {}
@@ -127,7 +126,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          foreman-tasks-delete"""
 
-        cls.command_sub = 'foreman-tasks-delete'
+        cls.command_sub = "foreman-tasks-delete"
 
         if options is None:
             options = {}
@@ -141,7 +140,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          foreman-tasks-resume"""
 
-        cls.command_sub = 'foreman-tasks-resume'
+        cls.command_sub = "foreman-tasks-resume"
 
         if options is None:
             options = {}
@@ -155,7 +154,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          sync-plans-enable"""
 
-        cls.command_sub = 'sync-plans-enable'
+        cls.command_sub = "sync-plans-enable"
 
         if options is None:
             options = {}
@@ -169,7 +168,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          sync-plans-disable"""
 
-        cls.command_sub = 'sync-plans-disable'
+        cls.command_sub = "sync-plans-disable"
 
         if options is None:
             options = {}
@@ -183,7 +182,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          foreman-tasks-ui-investigate"""
 
-        cls.command_sub = 'foreman-tasks-ui-investigate'
+        cls.command_sub = "foreman-tasks-ui-investigate"
 
         if options is None:
             options = {}
@@ -197,7 +196,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          hammer-setup"""
 
-        cls.command_sub = 'hammer-setup'
+        cls.command_sub = "hammer-setup"
 
         if options is None:
             options = {}
@@ -211,7 +210,7 @@ class Advanced(Base):
         """Build foreman-maintain advanced procedure run
          repositories-setup"""
 
-        cls.command_sub = 'repositories-setup'
+        cls.command_sub = "repositories-setup"
 
         if options is None:
             options = {}

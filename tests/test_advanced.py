@@ -1,11 +1,11 @@
 import yaml
+
 from testfm.advanced import Advanced
 from testfm.advanced_by_tag import AdvancedByTag
-from testfm.constants import (
-    sat_repos,
-    sat_beta_repo,
-)
-from testfm.decorators import capsule, stubbed
+from testfm.constants import sat_beta_repo
+from testfm.constants import sat_repos
+from testfm.decorators import capsule
+from testfm.decorators import stubbed
 from testfm.log import logger
 
 
@@ -26,8 +26,8 @@ def test_positive_foreman_maintain_service_restart(ansible_module):
     """
     contacted = ansible_module.command(Advanced.run_service_restart())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_foreman_maintain_hammer_setup(setup_install_pexpect, ansible_module):
@@ -48,25 +48,29 @@ def test_positive_foreman_maintain_hammer_setup(setup_install_pexpect, ansible_m
     :CaseImportance: Critical
     """
     try:
-        setup = ansible_module.command("hammer -u admin -p changeme"
-                                       " user update"
-                                       " --login admin "
-                                       "--password 'JMNBzJ*a-4;XH!C~'")
+        setup = ansible_module.command(
+            "hammer -u admin -p changeme"
+            " user update"
+            " --login admin "
+            "--password 'JMNBzJ*a-4;XH!C~'"
+        )
         for result in setup.values():
             logger.info(result)
             assert result["rc"] == 0
         output = ansible_module.expect(
             command=Advanced.run_hammer_setup(),
-            responses={"Hammer admin password: ": "JMNBzJ*a-4;XH!C~"}
+            responses={"Hammer admin password: ": "JMNBzJ*a-4;XH!C~"},
         )
         for result in output.values():
             logger.info(result)
             assert result["rc"] == 0
     finally:
-        teardown = ansible_module.command("hammer -u admin "
-                                          "-p 'JMNBzJ*a-4;XH!C~'"
-                                          " user update --login admin"
-                                          " --password 'changeme'")
+        teardown = ansible_module.command(
+            "hammer -u admin "
+            "-p 'JMNBzJ*a-4;XH!C~'"
+            " user update --login admin"
+            " --password 'changeme'"
+        )
         for result in teardown.values():
             logger.info(result)
             assert result["rc"] == 0
@@ -90,8 +94,8 @@ def test_positive_foreman_maintain_packages_update(ansible_module):
     """
     contacted = ansible_module.command(Advanced.run_packages_update())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_foreman_taks_delete_old(ansible_module):
@@ -110,12 +114,10 @@ def test_positive_foreman_taks_delete_old(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({
-        u'state': 'old'
-    }))
+    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({u"state": "old"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_foreman_taks_delete_planning(ansible_module):
@@ -134,12 +136,10 @@ def test_positive_foreman_taks_delete_planning(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({
-        u'state': 'planning'
-    }))
+    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({u"state": "planning"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_foreman_taks_delete_pending(ansible_module):
@@ -158,12 +158,10 @@ def test_positive_foreman_taks_delete_pending(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({
-        u'state': 'pending'
-    }))
+    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({u"state": "pending"}))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_foreman_task_resume(ansible_module):
@@ -184,8 +182,8 @@ def test_positive_foreman_task_resume(ansible_module):
     """
     contacted = ansible_module.command(Advanced.run_foreman_tasks_resume())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
 
 
 def test_positive_foreman_tasks_ui_investigate(setup_install_pexpect, ansible_module):
@@ -206,7 +204,7 @@ def test_positive_foreman_tasks_ui_investigate(setup_install_pexpect, ansible_mo
     """
     output = ansible_module.expect(
         command=Advanced.run_foreman_tasks_ui_investigate(),
-        responses={"press ENTER after the tasks are resolved.": " "}
+        responses={"press ENTER after the tasks are resolved.": " "},
     )
     for result in output.values():
         logger.info(result)
@@ -235,31 +233,25 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
     sync_ids, sat_hostname = setup_sync_plan()
     contacted = ansible_module.command(Advanced.run_sync_plans_disable())
     for result in contacted.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
-        assert "FAIL" not in result['stdout']
-    ansible_module.fetch(
-        src="/var/lib/foreman-maintain/data.yml",
-        dest="./"
-    )
-    with open('./{0}/var/lib/foreman-maintain/data.yml'.format(sat_hostname)) as f:
+        assert "FAIL" not in result["stdout"]
+    ansible_module.fetch(src="/var/lib/foreman-maintain/data.yml", dest="./")
+    with open("./{}/var/lib/foreman-maintain/data.yml".format(sat_hostname)) as f:
         data_yml = yaml.safe_load(f)
-    assert len(sync_ids) == len(data_yml[':default'][':sync_plans'][':disabled'])
-    assert sorted(sync_ids) == sorted(data_yml[':default'][':sync_plans'][':disabled'])
+    assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":disabled"])
+    assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":disabled"])
 
     contacted = ansible_module.command(Advanced.run_sync_plans_enable())
     for result in contacted.values():
-        logger.info(result['stdout'])
+        logger.info(result["stdout"])
         assert result["rc"] == 0
-        assert "FAIL" not in result['stdout']
-    ansible_module.fetch(
-        src="/var/lib/foreman-maintain/data.yml",
-        dest="./"
-    )
-    with open('./{0}/var/lib/foreman-maintain/data.yml'.format(sat_hostname)) as f:
+        assert "FAIL" not in result["stdout"]
+    ansible_module.fetch(src="/var/lib/foreman-maintain/data.yml", dest="./")
+    with open("./{}/var/lib/foreman-maintain/data.yml".format(sat_hostname)) as f:
         data_yml = yaml.safe_load(f)
-    assert len(sync_ids) == len(data_yml[':default'][':sync_plans'][':enabled'])
-    assert sorted(sync_ids) == sorted(data_yml[':default'][':sync_plans'][':enabled'])
+    assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":enabled"])
+    assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":enabled"])
 
 
 def test_positive_procedure_by_tag_check_migrations(ansible_module):
@@ -285,20 +277,20 @@ def test_positive_procedure_by_tag_check_migrations(ansible_module):
     """
     contacted = ansible_module.command(AdvancedByTag.pre_migrations())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
     check_iptables = ansible_module.command("iptables -L")
     for rules in check_iptables.values():
-        logger.info(rules['stdout'])
-        assert "FOREMAN_MAINTAIN" in rules['stdout']
+        logger.info(rules["stdout"])
+        assert "FOREMAN_MAINTAIN" in rules["stdout"]
     teardown = ansible_module.command(AdvancedByTag.post_migrations())
     for result in teardown.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
     check_iptables = ansible_module.command("iptables -L")
     for rules in check_iptables.values():
-        logger.info(rules['stdout'])
-        assert "FOREMAN_MAINTAIN" not in rules['stdout']
+        logger.info(rules["stdout"])
+        assert "FOREMAN_MAINTAIN" not in rules["stdout"]
 
 
 @capsule
@@ -318,12 +310,11 @@ def test_positive_procedure_by_tag_restore_confirmation(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(AdvancedByTag.restore([
-        '--assumeyes']))
+    contacted = ansible_module.command(AdvancedByTag.restore(["--assumeyes"]))
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert 'FAIL' not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_sync_plan_with_hammer_defaults(setup_for_hammer_defaults, ansible_module):
@@ -346,14 +337,14 @@ def test_positive_sync_plan_with_hammer_defaults(setup_for_hammer_defaults, ansi
     """
     contacted = ansible_module.command(Advanced.run_sync_plans_disable())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
     contacted = ansible_module.command(Advanced.run_sync_plans_enable())
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
 
 
 def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
@@ -373,19 +364,17 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
 
     :CaseImportance: Critical
     """
-    for ver in ['6.3', '6.4', '6.5', '6.6', '6.7']:
-        contacted = ansible_module.command(Advanced.run_repositories_setup({
-            'version': ver
-        }))
+    for ver in ["6.3", "6.4", "6.5", "6.6", "6.7"]:
+        contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
-            logger.info(result['stdout'])
-            assert "FAIL" not in result['stdout']
-            assert result['rc'] == 0
-        contacted = ansible_module.command('yum repolist')
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
+        contacted = ansible_module.command("yum repolist")
         for result in contacted.values():
-            logger.info(result['stdout'])
+            logger.info(result["stdout"])
             for repo in sat_repos[ver]:
-                assert repo in result['stdout']
+                assert repo in result["stdout"]
 
 
 def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_module):
@@ -405,14 +394,15 @@ def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_modu
 
     :CaseImportance: Critical
     """
-    export_command = 'export FOREMAN_MAINTAIN_USE_BETA=1;'
-    contacted = ansible_module.shell(export_command + Advanced.run_repositories_setup({
-        'version': '6.7'}))
+    export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
+    contacted = ansible_module.shell(
+        export_command + Advanced.run_repositories_setup({"version": "6.7"})
+    )
     for result in contacted.values():
-        logger.info(result['stdout'])
-        assert "FAIL" not in result['stdout']
-        assert result['rc'] == 0
-    contacted = ansible_module.command('yum repolist')
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command("yum repolist")
     for result in contacted.values():
         for repo in sat_beta_repo:
-            assert repo in result['stdout']
+            assert repo in result["stdout"]

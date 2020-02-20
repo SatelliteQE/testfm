@@ -15,14 +15,13 @@ Subcommands:
 Options:
     -h, --help                    print help
 """
-
 from testfm.base import Base
 
 
 class Health(Base):
     """Manipulates Foreman-maintain's health command"""
 
-    command_base = 'health'
+    command_base = "health"
 
     @classmethod
     def check(cls, options=None):
@@ -45,7 +44,7 @@ class Health(Base):
                                       were already run
         -h, --help                    print help
         """
-        cls.command_sub = 'check'
+        cls.command_sub = "check"
 
         if options is None:
             options = {}
@@ -57,7 +56,7 @@ class Health(Base):
     @classmethod
     def list(cls, options=None):
         """Build foreman-maintain health list"""
-        cls.command_sub = 'list'
+        cls.command_sub = "list"
 
         if options is None:
             options = {}
@@ -69,7 +68,7 @@ class Health(Base):
     @classmethod
     def list_tags(cls, options=None):
         """Build foreman-maintain health list-tags"""
-        cls.command_sub = 'list-tags'
+        cls.command_sub = "list-tags"
 
         if options is None:
             options = {}

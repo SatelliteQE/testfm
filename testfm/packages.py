@@ -24,7 +24,7 @@ from testfm.base import Base
 class Packages(Base):
     """Manipulates Foreman-maintain's packages command"""
 
-    command_base = 'packages'
+    command_base = "packages"
 
     @classmethod
     def lock(cls, options=None):
@@ -41,7 +41,7 @@ class Packages(Base):
 
         -h, --help                    print help
         """
-        cls.command_sub = 'lock'
+        cls.command_sub = "lock"
 
         if options is None:
             options = {}
@@ -65,7 +65,7 @@ class Packages(Base):
 
         -h, --help                    print help
         """
-        cls.command_sub = 'unlock'
+        cls.command_sub = "unlock"
 
         if options is None:
             options = {}
@@ -89,7 +89,7 @@ class Packages(Base):
 
         -h, --help                    print help
         """
-        cls.command_sub = 'status'
+        cls.command_sub = "status"
 
         if options is None:
             options = {}
@@ -113,7 +113,7 @@ class Packages(Base):
 
         -h, --help                    print help
         """
-        cls.command_sub = 'install'
+        cls.command_sub = "install"
 
         if options is None:
             options = {}
@@ -137,7 +137,7 @@ class Packages(Base):
 
         -h, --help                    print help
         """
-        cls.command_sub = 'update'
+        cls.command_sub = "update"
 
         if options is None:
             options = {}
@@ -161,7 +161,7 @@ class Packages(Base):
 
         -h, --help                    print help
         """
-        cls.command_sub = 'is-locked'
+        cls.command_sub = "is-locked"
 
         if options is None:
             options = {}

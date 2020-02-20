@@ -17,20 +17,19 @@ Subcommands:
 Options:
     -h, --help                    print help
 """
-
 from testfm.base import Base
 
 
 class Backup(Base):
     """Manipulates Foreman-maintain's backup command"""
 
-    command_base = 'backup'
+    command_base = "backup"
 
     @classmethod
     def run_online_backup(cls, options=None):
         """Build foreman-maintain backup online"""
 
-        cls.command_sub = 'online'
+        cls.command_sub = "online"
 
         if options is None:
             options = {}
@@ -42,7 +41,7 @@ class Backup(Base):
     def run_offline_backup(cls, options=None):
         """Build foreman-maintain backup offline"""
 
-        cls.command_sub = 'offline'
+        cls.command_sub = "offline"
 
         if options is None:
             options = {}
@@ -54,7 +53,7 @@ class Backup(Base):
     def run_snapshot_backup(cls, options=None):
         """Build foreman-maintain backup snapshot"""
 
-        cls.command_sub = 'snapshot'
+        cls.command_sub = "snapshot"
 
         if options is None:
             options = {}
