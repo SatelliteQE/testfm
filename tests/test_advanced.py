@@ -364,7 +364,7 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
 
     :CaseImportance: Critical
     """
-    for ver in ["6.3", "6.4", "6.5", "6.6", "6.7"]:
+    for ver in ["6.3", "6.4", "6.5", "6.6", "6.7", "6.8"]:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
             logger.info(result["stdout"])
@@ -396,7 +396,7 @@ def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_modu
     """
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
-        export_command + Advanced.run_repositories_setup({"version": "6.7"})
+        export_command + Advanced.run_repositories_setup({"version": "6.8"})
     )
     for result in contacted.values():
         logger.info(result["stdout"])

@@ -26,7 +26,7 @@ def run_only_on(*server_version):
         def test_health_check():
             # test code continues here
 
-    :param str server_version: Enter '6.7', '6.6' , '6.5' , '6.4' , '6.3' and '6.2'
+    :param str server_version: Enter '6.8', 6.7', '6.6', '6.5', '6.4' and '6.3'
     for specific version
     """
     return pytest.mark.skipif(
@@ -49,7 +49,7 @@ def starts_in(version):
         def test_health_check():
             # test code continues here
 
-    :param float version: Enter 6.7, 6.6, 6.5 , 6.4 , 6.3 , 6.2 and 6.1
+    :param float version: Enter 6.8, 6.7, 6.6, 6.5, 6.4 and 6.3
     for specific version
     """
     return pytest.mark.skipif(
