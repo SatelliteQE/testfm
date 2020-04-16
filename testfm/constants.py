@@ -54,6 +54,11 @@ sat_67_repos = [
     "rhel-7-server-satellite-tools-6.7-rpms",
     "rhel-7-server-satellite-6.7-rpms",
 ] + common_repos
+sat_68_repos = [
+    "rhel-7-server-ansible-2.8-rpms",
+    "rhel-7-server-satellite-tools-6.8-rpms",
+    "rhel-7-server-satellite-6.8-rpms",
+] + common_repos
 sat_beta_repo = [
     "rhel-server-7-satellite-6-beta-rpms",
     "rhel-7-server-ansible-2.8-rpms",
@@ -68,6 +73,7 @@ sat_repos = {
     "6.5": sat_65_repos,
     "6.6": sat_66_repos,
     "6.7": sat_67_repos,
+    "6.8": sat_68_repos,
 }
 foreman_maintain_yml = "/etc/foreman-maintain/foreman_maintain.yml"
 epel_repo = "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"

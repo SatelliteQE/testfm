@@ -179,6 +179,9 @@ def test_positive_fm_packages_install(ansible_module):
     contacted = ansible_module.yum(name="zsh", state="absent")
     for result in contacted.values():
         assert result["rc"] == 0
+    contacted = ansible_module.yum(name="elinks", state="absent")
+    for result in contacted.values():
+        assert result["rc"] == 0
     contacted = ansible_module.command("yum install -y zsh")
     for result in contacted.values():
         assert result["rc"] == 1
@@ -187,11 +190,13 @@ def test_positive_fm_packages_install(ansible_module):
     contacted = run(Packages.install(["--assumeyes", "zsh-5.0.2-31.el7.x86_64 elinks"]))
     logger.info(contacted.stdout)
     assert "FAIL" not in contacted.stdout
+    assert "Nothing to do" not in contacted.stdout
     assert "Packages are locked." in contacted.stdout
     assert "Automatic locking of package versions is enabled in installer." in contacted.stdout
     contacted = run(Packages.update(["--assumeyes", "zsh"]))
     logger.info(contacted.stdout)
     assert "FAIL" not in contacted.stdout
+    assert "Nothing to do" not in contacted.stdout
     assert "Packages are locked." in contacted.stdout
     assert "Automatic locking of package versions is enabled in installer." in contacted.stdout
     # Test whether packages are unlocked or not
@@ -214,6 +219,9 @@ def test_positive_fm_packages_install(ansible_module):
         assert "Packages are not locked" in result["stdout"]
         assert result["rc"] == 1
     contacted = ansible_module.yum(name="zsh", state="absent")
+    for result in contacted.values():
+        assert result["rc"] == 0
+    contacted = ansible_module.yum(name="elinks", state="absent")
     for result in contacted.values():
         assert result["rc"] == 0
     contacted = ansible_module.command("yum install -y zsh")
