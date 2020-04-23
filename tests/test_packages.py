@@ -1,5 +1,4 @@
 from testfm.decorators import starts_in
-from testfm.helpers import run
 from testfm.log import logger
 from testfm.packages import Packages
 
@@ -135,7 +134,7 @@ def test_positive_lock_package_versions(ansible_module):
         assert result["rc"] == 0
 
 
-def test_positive_fm_packages_install(ansible_module):
+def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests):
     """Verify whether packages install/update work as expected.
 
     :id: 645a3d84-34cb-469c-8b79-105b889aac78
@@ -159,46 +158,27 @@ def test_positive_fm_packages_install(ansible_module):
 
     :CaseImportance: Critical
     """
-    # Test whether packages are locked or not
-    contacted = ansible_module.command("satellite-installer --lock-package-versions")
-    for result in contacted.values():
-        logger.info(result["stdout"])
-        assert result["rc"] == 0
-    contacted = ansible_module.command(Packages.status())
-    for result in contacted.values():
-        logger.info(result["stdout"])
-        assert "Packages are locked." in result["stdout"]
-        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
-        assert "FAIL" not in result["stdout"]
-        assert result["rc"] == 0
-    contacted = ansible_module.command(Packages.is_locked())
-    for result in contacted.values():
-        logger.info(result["stdout"])
-        assert "Packages are locked" in result["stdout"]
-        assert result["rc"] == 0
-    contacted = ansible_module.yum(name="zsh", state="absent")
-    for result in contacted.values():
-        assert result["rc"] == 0
-    contacted = ansible_module.yum(name="elinks", state="absent")
-    for result in contacted.values():
-        assert result["rc"] == 0
     contacted = ansible_module.command("yum install -y zsh")
     for result in contacted.values():
         assert result["rc"] == 1
         assert "Use foreman-maintain packages install/update <package>" in result["stdout"]
     # Test whether FM packages install/ update command works as expected.
-    contacted = run(Packages.install(["--assumeyes", "zsh-5.0.2-31.el7.x86_64 elinks"]))
-    logger.info(contacted.stdout)
-    assert "FAIL" not in contacted.stdout
-    assert "Nothing to do" not in contacted.stdout
-    assert "Packages are locked." in contacted.stdout
-    assert "Automatic locking of package versions is enabled in installer." in contacted.stdout
-    contacted = run(Packages.update(["--assumeyes", "zsh"]))
-    logger.info(contacted.stdout)
-    assert "FAIL" not in contacted.stdout
-    assert "Nothing to do" not in contacted.stdout
-    assert "Packages are locked." in contacted.stdout
-    assert "Automatic locking of package versions is enabled in installer." in contacted.stdout
+    contacted = ansible_module.raw(
+        Packages.install(["--assumeyes", "zsh-5.0.2-31.el7.x86_64 elinks"])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert "Nothing to do" not in result["stdout"]
+        assert "Packages are locked." in result["stdout"]
+        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
+    contacted = ansible_module.raw(Packages.update(["--assumeyes", "zsh"]))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert "Nothing to do" not in result["stdout"]
+        assert "Packages are locked." in result["stdout"]
+        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
     # Test whether packages are unlocked or not
     contacted = ansible_module.command("satellite-installer --no-lock-package-versions")
     for result in contacted.values():
@@ -221,15 +201,7 @@ def test_positive_fm_packages_install(ansible_module):
     contacted = ansible_module.yum(name="zsh", state="absent")
     for result in contacted.values():
         assert result["rc"] == 0
-    contacted = ansible_module.yum(name="elinks", state="absent")
-    for result in contacted.values():
-        assert result["rc"] == 0
     contacted = ansible_module.command("yum install -y zsh")
     for result in contacted.values():
         assert result["rc"] == 0
         assert "Use foreman-maintain packages install/update <package>" not in result["stdout"]
-    # lock packages
-    teardown = ansible_module.command("satellite-installer --lock-package-versions")
-    for result in teardown.values():
-        logger.info(result["stdout"])
-        assert result["rc"] == 0

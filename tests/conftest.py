@@ -433,3 +433,46 @@ def setup_backup_tests(request, ansible_module):
         ansible_module.command(Service.service_start())
 
     request.addfinalizer(teardown_backup_tests)
+
+
+@pytest.fixture(scope="function")
+def setup_packages_lock_tests(request, ansible_module):
+    """ Setup/Teardown for Packages lock tests."""
+    # Test whether packages are locked or not
+    contacted = ansible_module.command("satellite-installer --lock-package-versions")
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert result["rc"] == 0
+    contacted = ansible_module.command(Packages.status())
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "Packages are locked." in result["stdout"]
+        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command(Packages.is_locked())
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "Packages are locked" in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.yum(name="zsh", state="absent")
+    for result in contacted.values():
+        assert result["rc"] == 0
+    contacted = ansible_module.yum(name="elinks", state="absent")
+    for result in contacted.values():
+        assert result["rc"] == 0
+
+    def teardown_packages_lock_tests():
+        contacted = ansible_module.yum(name="zsh", state="absent")
+        for result in contacted.values():
+            assert result["rc"] == 0
+        contacted = ansible_module.yum(name="elinks", state="absent")
+        for result in contacted.values():
+            assert result["rc"] == 0
+        # lock packages
+        teardown = ansible_module.command("satellite-installer --lock-package-versions")
+        for result in teardown.values():
+            logger.info(result["stdout"])
+            assert result["rc"] == 0
+
+    request.addfinalizer(teardown_packages_lock_tests)
