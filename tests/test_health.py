@@ -307,9 +307,7 @@ def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansi
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 0
-    puppet_ssldir_path = ansible_module.command("puppet master --configprint ssldir").values()[0][
-        "stdout"
-    ]
+    puppet_ssldir_path = ansible_module.command("puppet config print ssldir").values()[0]["stdout"]
     contacted = ansible_module.find(
         paths="{}/ca/requests/".format(puppet_ssldir_path), file_type="file", size="0"
     )

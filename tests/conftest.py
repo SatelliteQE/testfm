@@ -248,9 +248,7 @@ def setup_puppet_empty_cert(setup_install_pexpect, ansible_module):
     It is used by test test_positive_puppet_check_empty_cert_requests of test_health.py.
     """
     fname = gen_string("alpha")
-    puppet_ssldir_path = ansible_module.command("puppet master --configprint ssldir").values()[0][
-        "stdout"
-    ]
+    puppet_ssldir_path = ansible_module.command("puppet config print ssldir").values()[0]["stdout"]
     setup = ansible_module.file(
         path="{}/ca/requests/{}".format(puppet_ssldir_path, fname), state="touch"
     )
