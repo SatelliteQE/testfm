@@ -1,8 +1,11 @@
+from testfm.decorators import capsule
 from testfm.helpers import product
+from testfm.helpers import server
 from testfm.log import logger
 from testfm.upgrade import Upgrade
 
 
+@capsule
 def test_positive_foreman_maintain_upgrade_list(ansible_module):
     """List versions this system is upgradable to
 
@@ -18,25 +21,37 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
 
     :CaseImportance: Critical
     """
-    satellite_version = ansible_module.command(
-        "rpm -q 'satellite' --queryformat='%{VERSION}'"
-    ).values()[0]["stdout"]
-    if satellite_version.startswith("6.8"):
-        versions = ["6.8.z"]
-    elif satellite_version.startswith("6.7"):
-        versions = ["6.7.z", "6.8"]
-    elif satellite_version.startswith("6.6"):
-        versions = ["6.6.z", "6.7"]
-    elif satellite_version.startswith("6.5"):
-        versions = ["6.5.z", "6.6"]
-    elif satellite_version.startswith("6.4"):
-        versions = ["6.4.z", "6.5"]
-    elif satellite_version.startswith("6.3"):
-        versions = ["6.3.z", "6.4"]
-    elif satellite_version.startswith("6.2"):
-        versions = ["6.2.z", "6.3"]
+    if server() == "satellite":
+        satellite_version = ansible_module.command(
+            "rpm -q 'satellite' --queryformat='%{VERSION}'"
+        ).values()[0]["stdout"]
+        if satellite_version.startswith("6.8"):
+            versions = ["6.8.z"]
+        elif satellite_version.startswith("6.7"):
+            versions = ["6.7.z", "6.8"]
+        elif satellite_version.startswith("6.6"):
+            versions = ["6.6.z", "6.7"]
+        elif satellite_version.startswith("6.5"):
+            versions = ["6.5.z", "6.6"]
+        elif satellite_version.startswith("6.4"):
+            versions = ["6.4.z", "6.5"]
+        elif satellite_version.startswith("6.3"):
+            versions = ["6.3.z", "6.4"]
+        elif satellite_version.startswith("6.2"):
+            versions = ["6.2.z", "6.3"]
+        else:
+            versions = ["6.2"]
     else:
-        versions = ["6.2"]
+        capsule_version = ansible_module.command(
+            "rpm -q 'satellite-capsule' --queryformat='%{VERSION}'"
+        ).values()[0]["stdout"]
+        if capsule_version.startswith("6.8"):
+            versions = ["6.8.z"]
+        elif capsule_version.startswith("6.7"):
+            versions = ["6.7.z", "6.8"]
+        else:
+            return "unsupported capsule version"
+
     contacted = ansible_module.command(Upgrade.list_versions())
     for result in contacted.values():
         logger.info(result["stdout"])
