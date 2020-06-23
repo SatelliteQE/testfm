@@ -85,7 +85,7 @@ def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
             "--target-version",
             "{}.z".format(product()),
             "--whitelist",
-            '"disk-performance,check-epel-repository,check-hotfix-installed,'
+            '"disk-performance,check-non-redhat-repository,check-hotfix-installed,'
             'check-upstream-repository"',
             "--assumeyes",
         ]
