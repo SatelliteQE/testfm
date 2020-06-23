@@ -418,7 +418,7 @@ def test_positive_check_yum_exclude_list_without_excludes(ansible_module):
 
 @capsule
 def test_positive_check_epel_repository(setup_epel_repository, ansible_module):
-    """Verify check-epel-repository.
+    """Verify check-non-redhat-repository.
 
     :id: ce2d7278-d7b7-4f76-9923-79be831c0368
 
@@ -427,19 +427,19 @@ def test_positive_check_epel_repository(setup_epel_repository, ansible_module):
 
     :steps:
         1. Configure epel repository.
-        2. Run foreman-maintain health check --label check-epel-repository.
+        2. Run foreman-maintain health check --label check-non-redhat-repository.
         3. Assert that EPEL repos are enabled on system.
 
     :BZ: 1755755
 
-    :expectedresults: check-epel-repository should work.
+    :expectedresults: check-non-redhat-repository should work.
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({"label": "check-epel-repository"}))
+    contacted = ansible_module.command(Health.check({"label": "check-non-redhat-repository"}))
     for result in contacted.values():
         logger.info(result["stdout"])
-        assert "System is subscribed to EPEL repository" in result["stdout"]
+        assert "System is subscribed to non Red Hat repositories" in result["stdout"]
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
 
@@ -449,7 +449,7 @@ def test_positive_check_epel_repository(setup_epel_repository, ansible_module):
 def test_positive_check_epel_repository_with_invalid_repo(
     setup_epel_repository, setup_invalid_repository, ansible_module
 ):
-    """Verify check-epel-repository.
+    """Verify check-non-redhat-repository.
 
     :id: e41648f4-ada6-4e7e-9112-45146d308410
 
@@ -458,19 +458,19 @@ def test_positive_check_epel_repository_with_invalid_repo(
 
     :steps:
         1. Configure epel repository and a repository with invalid baseurl.
-        2. Run foreman-maintain health check --label check-epel-repository.
+        2. Run foreman-maintain health check --label check-non-redhat-repository.
         3. Assert that EPEL repos are enabled on system.
 
     :BZ: 1755755
 
-    :expectedresults: check-epel-repository should work.
+    :expectedresults: check-non-redhat-repository should work.
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({"label": "check-epel-repository"}))
+    contacted = ansible_module.command(Health.check({"label": "check-non-redhat-repository"}))
     for result in contacted.values():
         logger.info(result["stdout"])
-        assert "System is subscribed to EPEL repository" in result["stdout"]
+        assert "System is subscribed to non Red Hat repositories" in result["stdout"]
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
 
@@ -486,7 +486,7 @@ def test_positive_check_old_foreman_tasks(setup_old_foreman_tasks, ansible_modul
 
     :steps:
         1. Configure epel repository.
-        2. Run foreman-maintain health check --label check-epel-repository.
+        2. Run foreman-maintain health check --label check-non-redhat-repository.
         3. Assert that old tasks are found on system.
         4. Assert that old tasks are deleted from system.
 
