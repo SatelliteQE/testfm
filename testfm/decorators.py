@@ -29,10 +29,11 @@ def run_only_on(*server_version):
     :param str server_version: Enter '6.8', 6.7', '6.6', '6.5', '6.4' and '6.3'
     for specific version
     """
+    prd_version = product()
     return pytest.mark.skipif(
-        product() not in server,
+        prd_version not in server_version,
         reason="Server version is '{}' and this test will run only "
-        "on '{}' version".format(product(), server_version),
+        "on '{}' version".format(prd_version, server_version),
     )
 
 
