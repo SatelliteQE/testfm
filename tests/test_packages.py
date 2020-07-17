@@ -1,8 +1,10 @@
+from testfm.decorators import capsule
 from testfm.decorators import starts_in
 from testfm.log import logger
 from testfm.packages import Packages
 
 
+@capsule
 def test_positive_fm_packages_lock(ansible_module):
     """Verify whether satellite related packages get locked
 
@@ -69,6 +71,7 @@ def test_positive_fm_packages_lock(ansible_module):
         assert result["rc"] == 0
 
 
+@capsule
 @starts_in(6.6)
 def test_positive_lock_package_versions(ansible_module):
     """Verify whether satellite related packages get locked
@@ -134,6 +137,7 @@ def test_positive_lock_package_versions(ansible_module):
         assert result["rc"] == 0
 
 
+@capsule
 def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests):
     """Verify whether packages install/update work as expected.
 
