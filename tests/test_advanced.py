@@ -254,6 +254,7 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":enabled"])
 
 
+@capsule
 def test_positive_procedure_by_tag_check_migrations(ansible_module):
     """Run pre-migrations and post-migrations using advanced
     procedure by-tag
