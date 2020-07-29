@@ -88,7 +88,7 @@ def test_positive_foreman_maintain_health_check(ansible_module):
     :CaseImportance: Critical
     """
     contacted = ansible_module.command(
-        Health.check(["-w", "puppet-check-no-empty-cert-requests", "-y"])
+        Health.check(["-w", "puppet-check-no-empty-cert-requests,check-tftp-storage", "-y"])
     )
     for result in contacted.values():
         logger.info(result["stdout"])
@@ -343,7 +343,11 @@ def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs,
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({"label": "check-hotfix-installed"}))
+    contacted = ansible_module.command(
+        Health.check(
+            {"label": "check-hotfix-installed", "whitelist": "check-non-redhat-repository"}
+        )
+    )
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "WARNING" in result["stdout"]
@@ -369,7 +373,11 @@ def test_positive_check_hotfix_installed_without_hotfix(setup_install_pkgs, ansi
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({"label": "check-hotfix-installed"}))
+    contacted = ansible_module.command(
+        Health.check(
+            {"label": "check-hotfix-installed", "whitelist": "check-non-redhat-repository"}
+        )
+    )
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "WARNING" not in result["stdout"]
