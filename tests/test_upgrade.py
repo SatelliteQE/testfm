@@ -97,3 +97,26 @@ def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
         assert "SKIPPED" in result["stdout"]
         assert "FAIL" not in result["stdout"]
         assert skip_message in result["stdout"]
+
+
+def test_positive_self_update():
+    """ Test self-update foreman-maintain package feature.
+
+        :id: 1c566768-fd73-4fe6-837b-26709a1ebed9
+
+        :setup:
+            1. foreman-maintain should be installed.
+            2. foreman-maintain package version should be >= v0.6.x
+
+        :steps:
+            1. Run foreman-maintain upgrade check/run command.
+            2. Run foreman-maintain upgrade check/run command with disable-self-upgrade option.
+
+        :BZ: 1649329
+
+        :expectedresults:
+            1. It updates FM to latest version and gives message to re-run command.
+            2. If disable-self-upgrade option is used then it should skip self-upgrade step.
+
+        :CaseImportance: Critical
+        """
