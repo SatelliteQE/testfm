@@ -35,8 +35,12 @@ Get the source code and install dependencies::
     git clone https://github.com/SatelliteQE/testfm.git
     pip3 install -r requirements.txt
 
-That’s it! You can now go ahead and start testing The Foreman Maintain.
-However, there are a few other things you need to do before continuing:
+Before running any tests, you must create a configuration file::
+
+   cp testfm.properties.sample testfm.properties
+   vi testfm.properties
+
+There are a few other things you need to do before continuing:
 
 - Make sure ssh-key is copied to the test system.
 
@@ -50,15 +54,15 @@ Before running any tests, you must add foreman or satellite hostname to the
 
 That done, you can run tests using pytest ::
 
-    pytest --ansible-host-pattern satellite --ansible-user=root  --ansible-inventory testfm/inventory
+    pytest -sv --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
     tests/
 
 It is possible to run a specific subset of tests::
 
-    pytest --ansible-host-pattern satellite --ansible-user=root --ansible-inventory testfm/inventory
+    pytest -sv --ansible-host-pattern server --ansible-user=root --ansible-inventory testfm/inventory
     tests/test_case.py
 
-    pytest --ansible-host-pattern satellite --ansible-user=root  --ansible-inventory testfm/inventory
+    pytest -sv --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
     tests/test_case.py::test_case_name
 
 Want to contribute?
