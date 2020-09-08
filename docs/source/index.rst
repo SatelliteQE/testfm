@@ -8,60 +8,69 @@ TestFM
 Quickstart
 ^^^^^^^^^^
 
-The following is only a brief setup guide for TestFM. The section on Running the Tests provides a more comprehensive
-guide to using TestFM.
+The following is only a brief setup guide for TestFM.
+The section on Running the Tests provides a more comprehensive guide to using
+TestFM.
 
-TestFM requires SSH access to the server system under test, and this SSH access is implemented by pytest-ansible.
+TestFM requires SSH access to the server system under test, and this SSH access
+is implemented by pytest-ansible.
 
 Get the source code and install dependencies::
 
    git clone https://github.com/SatelliteQE/testfm.git
    pip3 install -r requirements.txt
 
-That’s it! You can now go ahead and start testing The Foreman Maintain. However, there are a few other things you need
-to do before continuing:
+Before running any tests, you must create a configuration file::
 
-* Make sure ssh-key is copied to the test system.
-* Make sure foreman maintain is installed on foreman/satellite server.
+   cp testfm.properties.sample testfm.properties
+   vi testfm.properties
+
+There are a few other things you need to do before continuing:
+
+- Make sure ssh-key is copied to the test system.
+
+- Make sure foreman maintain is installed on foreman/satellite server.
 
 Running the Tests
 ^^^^^^^^^^^^^^^^^
 
-Before running any tests, you must add foreman or satellite hostname to the testfm/inventory file
-(first copy it from`testfm/inventory.sample`).
+Before running any tests, you must add foreman or satellite hostname to the
+`testfm/inventory` file (first copy it from`testfm/inventory.sample`).
 
-That done, you can run tests using pytest::
+That done, you can run tests using pytest ::
 
-   pytest --ansible-host-pattern satellite --ansible-user=root  --ansible-inventory testfm/inventory tests/
+    pytest -sv --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
+    tests/
 
 It is possible to run a specific subset of tests::
 
-   pytest --ansible-host-pattern satellite --ansible-user=root --ansible-inventory \
-      testfm/inventory tests/test_case.py
+    pytest -sv --ansible-host-pattern server --ansible-user=root --ansible-inventory testfm/inventory
+    tests/test_case.py
 
-   pytest --ansible-host-pattern satellite --ansible-user=root  --ansible-inventory \
-      testfm/inventory tests/test_case.py::test_case_name
+    pytest -sv --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
+    tests/test_case.py::test_case_name
 
 Want to contribute?
 ^^^^^^^^^^^^^^^^^^^
 
-Thank you for considering contributing to TestFM! If you have any question or concerns, feel free to
-reach out to the team.
+Thank you for considering contributing to TestFM! If you have any
+question or concerns, feel free to reach out to the team.
 
 Recommended
 ^^^^^^^^^^^
 
-* Import modules in alphabetical order.
-* Every method and function will have a properly formatted docstring.
-
-In order to ensure you are able to pass the Travis CI build, it is recommended that you run the following commands in
-the base of your testfm directory::
-
-   flake8
+- Import modules in alphabetical order.
+- Every method and function will have a properly formatted docstring.
 
 
-flake8 will ensure that the changes you made are not in violation of PEP8 standards. If the command gives no output,
-then you have passed. If not, then address any corrections recommended.
+In order to ensure you are able to pass the Travis CI build,
+it is recommended that you run the following commands in the base of your
+testfm directory ::
+
+    pre-commit autoupdate && pre-commit run -a
+
+Pre-commit will ensure that the changes you made are not in violation of PEP8
+standards.
 
 If you have something great, please submit a pull request anyway!
 
