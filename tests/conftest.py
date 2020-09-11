@@ -474,3 +474,16 @@ def setup_packages_lock_tests(request, ansible_module):
             assert result["rc"] == 0
 
     request.addfinalizer(teardown_packages_lock_tests)
+
+
+@pytest.fixture(scope="function")
+def setup_tftp_storage(request, ansible_module):
+    """ Setup/Teardown for test_positive_check_tftp_storage"""
+    setup = ansible_module.command("hammer settings set --name token_duration --value 2")
+    assert setup.values()[0]["rc"] == 0
+
+    def teardown_tftp_storage():
+        teardown = ansible_module.command("hammer settings set --name token_duration --value 360")
+        assert teardown.values()[0]["rc"] == 0
+
+    request.addfinalizer(teardown_tftp_storage)

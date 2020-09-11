@@ -1,3 +1,5 @@
+import time
+
 from testfm.decorators import capsule
 from testfm.decorators import stubbed
 from testfm.health import Health
@@ -573,3 +575,64 @@ def test_positive_check_tmout_variable(ansible_module):
         assert "FAIL" in result["stdout"]
         assert error_message in result["stdout"]
         assert result["rc"] == 1
+
+
+def test_positive_check_tftp_storage(ansible_module, setup_tftp_storage):
+    """Verify check-tftp-storage
+
+    :id: 9a900bc7-65ff-4280-bf8a-8974a7cb76c6
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Create test files in /var/lib/tftpboot/boot/
+        2. Run foreman-maintain health check --label check-tftp-storage.
+        3. Assert that check-tftp-storage fails.
+        4. Assert that check deletes files older than token_duration setting.
+        5. Delete all files from /var/lib/tftpboot/boot/
+        6. Run foreman-maintain health check --label check-tftp-storage.
+        7. Assert that check-tmout-variable pass.
+
+    :expectedresults: check-tftp-storage should work.
+
+    :CaseImportance: Critical
+    """
+    files = [
+        "foreman-discovery-vmlinuz",
+        "foreman-discovery-initrd.img",
+        "do-not-delete.yml",
+        "keep-discovery-initrd.img",
+    ]
+    # Create files for testing check-tftp-storage check.
+    for file in files[:3]:
+        setup = ansible_module.file(path=f"/var/lib/tftpboot/boot/{file}", state="touch")
+        assert setup.values()[0]["changed"] == 1
+    time.sleep(200)
+    setup = ansible_module.file(path=f"/var/lib/tftpboot/boot/{files[-1]}", state="touch")
+    assert setup.values()[0]["changed"] == 1
+    # Run check-tftp-storage check.
+    contacted = ansible_module.command(
+        Health.check(["--label", "check-tftp-storage", "--assumeyes"])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "There are old initrd and vmlinuz files present in tftp" in result["stdout"]
+        assert "Rerunning the check after fix procedure" in result["stdout"]
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] == 0
+    # check whether expected files are deleted
+    for file in files[:2]:
+        contacted = ansible_module.file(path=f"/var/lib/tftpboot/boot/{file}", state="absent")
+        assert contacted.values()[0]["changed"] is False
+    # check whether expected files are not deleted.
+    for file in files[2:]:
+        contacted = ansible_module.file(path=f"/var/lib/tftpboot/boot/{file}", state="present")
+        assert contacted.values()[0]["changed"] is False
+        ansible_module.file(path=f"/var/lib/tftpboot/boot/{file}", state="absent")
+    # Re-run check with no files present in /var/lib/tftpboot/boot/
+    contacted = ansible_module.command(Health.check(["--label", "check-tftp-storage"]))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
