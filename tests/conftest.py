@@ -26,24 +26,6 @@ from testfm.service import Service
 
 
 @pytest.fixture(scope="function")
-def setup_yum_exclude(request, ansible_module):
-    """This fixture is used for adding and then removing yum excludes in /etc/yum.conf file.
-    """
-    file = "/etc/yum.conf"
-
-    def yum_exclude(exclude):
-        exclude = "exclude=" + exclude
-        ansible_module.lineinfile(dest=file, insertafter="EOF", line=exclude)
-        request.addfinalizer(teardown_yum_exclude)
-        return exclude
-
-    def teardown_yum_exclude():
-        ansible_module.lineinfile(dest=file, state="absent", regexp="^exclude=")
-
-    return yum_exclude
-
-
-@pytest.fixture(scope="function")
 def setup_hotfix_check(request, ansible_module):
     """This fixture is used for installing hofix package and modifying foreman file.
     This fixture is used in test_positive_check_hotfix_installed_with_hotfix of test_health.py
