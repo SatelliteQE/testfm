@@ -659,7 +659,7 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
 
     :expectedresults: check-postgresql-checkpoint-segments should work.
 
-    :CaseImportance: Critical
+    :CaseImportance: High
     """
     # Add config_entries section
     ansible_module.blockinfile(
@@ -701,6 +701,44 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
     contacted = ansible_module.command(
         Health.check(["--label", "check-postgresql-checkpoint-segments"])
     )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+
+@capsule
+def test_positive_check_env_proxy(ansible_module):
+    """Verify env-proxy.
+
+    :id: f8c44b40-3ce5-4179-8d6b-1156c0032450
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. export HTTP_PROXY environment variable.
+        2. Run foreman-maintain health check --label env-proxy.
+        3. Assert that check env-proxy fail.
+        4. Run foreman-maintain health check --label env-proxy.
+        5. Assert that check env-proxy pass.
+
+    :expectedresults: check env-proxy should work.
+
+    :CaseImportance: Medium
+    """
+    export = "export  HTTP_PROXY=https://proxy.example.com:5442;"
+    error_message = "Global HTTP(S) proxy in environment (env) is set. Please unset first!"
+    # Run check with HTTP_PROXY environment variable set.
+    contacted = ansible_module.shell(export + Health.check({"label": "env-proxy"}))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
+        assert error_message in result["stdout"]
+        assert result["rc"] == 1
+
+    # Run check without setting HTTP_PROXY environment variable.
+    contacted = ansible_module.command(Health.check({"label": "env-proxy"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
