@@ -592,7 +592,7 @@ def test_positive_check_tftp_storage(ansible_module, setup_tftp_storage):
         4. Assert that check deletes files older than token_duration setting.
         5. Delete all files from /var/lib/tftpboot/boot/
         6. Run foreman-maintain health check --label check-tftp-storage.
-        7. Assert that check-tmout-variable pass.
+        7. Assert that check-tftp-storage pass.
 
     :expectedresults: check-tftp-storage should work.
 
@@ -632,6 +632,113 @@ def test_positive_check_tftp_storage(ansible_module, setup_tftp_storage):
         ansible_module.file(path=f"/var/lib/tftpboot/boot/{file}", state="absent")
     # Re-run check with no files present in /var/lib/tftpboot/boot/
     contacted = ansible_module.command(Health.check(["--label", "check-tftp-storage"]))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+
+def test_positive_check_postgresql_checkpoint_segments(ansible_module):
+    """Verify check-postgresql-checkpoint-segments
+
+    :id: 963a5b47-168a-4443-9fdf-bba59c9b0e97
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Add config_entries section in /etc/foreman-installer/custom-hiera.yaml
+        2. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        3. Assert that check-postgresql-checkpoint-segments fails.
+        4. Add checkpoint_segments parameter in /etc/foreman-installer/custom-hiera.yaml
+        5. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        6. Assert that check-postgresql-checkpoint-segments fails.
+        7. Remove config_entries section from /etc/foreman-installer/custom-hiera.yaml
+        8. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        9. Assert that check-postgresql-checkpoint-segments pass.
+
+    :expectedresults: check-postgresql-checkpoint-segments should work.
+
+    :CaseImportance: High
+    """
+    # Add config_entries section
+    ansible_module.blockinfile(
+        path="/etc/foreman-installer/custom-hiera.yaml",
+        block="postgresql::server::config_entries:",
+    )
+    # Run check-postgresql-checkpoint-segments check.
+    contacted = ansible_module.command(
+        Health.check(["--label", "check-postgresql-checkpoint-segments"])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "ERROR: 'postgresql::server::config_entries' cannot be null." in result["stdout"]
+        assert "Please remove it from following file and re-run the command." in result["stdout"]
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] == 1
+    # Add checkpoint_segments
+    ansible_module.blockinfile(
+        path="/etc/foreman-installer/custom-hiera.yaml",
+        block="postgresql::server::config_entries: \n  checkpoint_segments: 32",
+    )
+    # Run check-postgresql-checkpoint-segments check.
+    contacted = ansible_module.command(
+        Health.check(["--label", "check-postgresql-checkpoint-segments"])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "ERROR: Tuning option 'checkpoint_segments' found." in result["stdout"]
+        assert "Please remove it from following file and re-run the command." in result["stdout"]
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] == 1
+    # Remove config_entries section
+    ansible_module.blockinfile(
+        path="/etc/foreman-installer/custom-hiera.yaml",
+        block="postgresql::server::config_entries: \n  checkpoint_segments: 32",
+        state="absent",
+    )
+    # Run check-postgresql-checkpoint-segments check.
+    contacted = ansible_module.command(
+        Health.check(["--label", "check-postgresql-checkpoint-segments"])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+
+@capsule
+def test_positive_check_env_proxy(ansible_module):
+    """Verify env-proxy.
+
+    :id: f8c44b40-3ce5-4179-8d6b-1156c0032450
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. export HTTP_PROXY environment variable.
+        2. Run foreman-maintain health check --label env-proxy.
+        3. Assert that check env-proxy fail.
+        4. Run foreman-maintain health check --label env-proxy.
+        5. Assert that check env-proxy pass.
+
+    :expectedresults: check env-proxy should work.
+
+    :CaseImportance: Medium
+    """
+    export = "export  HTTP_PROXY=https://proxy.example.com:5442;"
+    error_message = "Global HTTP(S) proxy in environment (env) is set. Please unset first!"
+    # Run check with HTTP_PROXY environment variable set.
+    contacted = ansible_module.shell(export + Health.check({"label": "env-proxy"}))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
+        assert error_message in result["stdout"]
+        assert result["rc"] == 1
+
+    # Run check without setting HTTP_PROXY environment variable.
+    contacted = ansible_module.command(Health.check({"label": "env-proxy"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
