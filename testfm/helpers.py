@@ -24,8 +24,8 @@ def run(command):
 
 def server():
     """ Use this to find whether server on which tests are running is capsule or satellite."""
-    contacted = run("rpm -q satellite | echo $?")
-    if contacted == "0":
+    contacted = run("rpm -q satellite > /dev/null; echo $?")
+    if "0" in contacted.stdout:
         return "satellite"
     else:
         return "capsule"
