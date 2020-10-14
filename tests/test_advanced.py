@@ -2,9 +2,12 @@ import yaml
 
 from testfm.advanced import Advanced
 from testfm.advanced_by_tag import AdvancedByTag
+from testfm.constants import cap_beta_repo
+from testfm.constants import cap_repos
 from testfm.constants import sat_beta_repo
 from testfm.constants import sat_repos
 from testfm.decorators import capsule
+from testfm.decorators import capsule_only
 from testfm.decorators import stubbed
 from testfm.log import logger
 
@@ -348,7 +351,7 @@ def test_positive_sync_plan_with_hammer_defaults(setup_for_hammer_defaults, ansi
         assert result["rc"] == 0
 
 
-def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
+def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
     """Verify that all required repositories gets enabled.
 
     :id: e32fee2d-2a1f-40ed-9f94-515f75511c5a
@@ -359,13 +362,13 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
     :steps:
         1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
 
-    :BZ: 1684730
+    :BZ: 1684730, 1869731
 
-    :expectedresults: Required repositories should get enabled
+    :expectedresults: Required Satellite repositories should get enabled
 
     :CaseImportance: Critical
     """
-    for ver in ["6.3", "6.4", "6.5", "6.6", "6.7"]:
+    for ver in ["6.4", "6.5", "6.6", "6.7", "6.8"]:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
             logger.info(result["stdout"])
@@ -376,32 +379,7 @@ def test_positive_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_mod
             logger.info(result["stdout"])
             for repo in sat_repos[ver]:
                 assert repo in result["stdout"]
-    # For 6.8 repository setup check. Remove this once 6.8 is GA.
-    contacted = ansible_module.command(Advanced.run_repositories_setup({"version": "6.8"}))
-    for result in contacted.values():
-        logger.info(result["stdout"])
-        assert "FAIL" in result["stdout"]
-        for repo in sat_repos["6.8"]:
-            assert repo in result["stdout"]
-
-
-def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_module):
-    """Verify that all required beta repositories gets enabled.
-
-    :id: 2d544863-ebd1-4a60-b189-395b5cd82104
-
-    :setup:
-        1. foreman-maintain should be installed.
-
-    :steps:
-        1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
-
-    :BZ: 1684730
-
-    :expectedresults: Required beta repositories should get enabled
-
-    :CaseImportance: Critical
-    """
+    # Verify that all required beta repositories gets enabled
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
         export_command + Advanced.run_repositories_setup({"version": "6.8"})
@@ -412,5 +390,50 @@ def test_positive_beta_repositories(setup_subscribe_to_cdn_dogfood, ansible_modu
         assert result["rc"] == 0
     contacted = ansible_module.command("yum repolist")
     for result in contacted.values():
+        logger.info(result["stdout"])
         for repo in sat_beta_repo:
+            assert repo in result["stdout"]
+
+
+@capsule_only()
+def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
+    """Verify that all required capsule repositories gets enabled.
+
+    :id: 88558fb0-2268-469f-86ae-c4d18ccef782
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
+
+    :BZ: 1684730, 1869731
+
+    :expectedresults: Required Capsule repositories should get enabled
+
+    :CaseImportance: Critical
+    """
+    contacted = ansible_module.command(Advanced.run_repositories_setup({"version": "6.8"}))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command("yum repolist")
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        for repo in cap_repos["6.8"]:
+            assert repo in result["stdout"]
+    # Verify that all required beta repositories gets enabled
+    export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
+    contacted = ansible_module.shell(
+        export_command + Advanced.run_repositories_setup({"version": "6.8"})
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command("yum repolist")
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        for repo in cap_beta_repo:
             assert repo in result["stdout"]

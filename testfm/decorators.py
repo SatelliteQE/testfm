@@ -37,6 +37,24 @@ def run_only_on(*server_version):
     )
 
 
+def capsule_only():
+    """Run test on Capsule server only.
+
+    Usage:
+
+    To run test on capsule only::
+
+        from TestFM.decorators import capsule_only
+
+        @capsule_only
+        def test_health_check():
+            # test code continues here
+    """
+    return pytest.mark.skipif(
+        server() == "satellite", reason="This test is only intended to run on Capsule server."
+    )
+
+
 def starts_in(version):
     """Decorator to select tests based on minimum Satellite version.
 

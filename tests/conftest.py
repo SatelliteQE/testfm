@@ -5,20 +5,22 @@ import yaml
 from fauxfactory import gen_string
 
 from testfm.advanced import Advanced
+from testfm.constants import CAPSULE_DOGFOOD_ACTIVATIONKEY
 from testfm.constants import DOGFOOD_ACTIVATIONKEY
 from testfm.constants import DOGFOOD_ORG
 from testfm.constants import epel_repo
 from testfm.constants import fm_hammer_yml
+from testfm.constants import FM_RHN_POOLID
 from testfm.constants import foreman_maintain_yml
 from testfm.constants import HOTFIX_URL
 from testfm.constants import katello_ca_consumer
 from testfm.constants import RHN_PASSWORD
-from testfm.constants import RHN_POOLID
 from testfm.constants import RHN_USERNAME
 from testfm.constants import satellite_answer_file
 from testfm.constants import upstream_url
 from testfm.helpers import product
 from testfm.helpers import run
+from testfm.helpers import server
 from testfm.log import logger
 from testfm.maintenance_mode import MaintenanceMode
 from testfm.packages import Packages
@@ -300,24 +302,27 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
         if "katello-ca-consumer" in ca_consumer:
             pkg_name = [t for t in ca_consumer.split() if t.startswith("katello-ca-consumer")][0]
             ansible_module.yum(name=pkg_name, state="absent")
-        ansible_module.command(
-            'subscription-manager register --force --user="{}" --password="{}"'.format(
-                RHN_USERNAME, RHN_PASSWORD
-            )
-        )
-        for pool_id in RHN_POOLID.split():
-            ansible_module.command("subscription-manager subscribe --pool={}".format(pool_id))
+        credentials = f' --user="{RHN_USERNAME}" --password="{RHN_PASSWORD}"'
+        ansible_module.command("subscription-manager register --force" + credentials)
+        for pool_id in FM_RHN_POOLID.split():
+            ansible_module.command(f"subscription-manager subscribe --pool={pool_id}")
 
     def teardown_subscribe_to_cdn_dogfood():
         if subscribed_to_cdn is False:
             ansible_module.command("subscription-manager unregister")
             ansible_module.command("subscription-manager clean")
-            ansible_module.command("yum -y localinstall {}".format(katello_ca_consumer))
-            ansible_module.command(
-                'subscription-manager register --force --org="{}" --activationkey="{}"'.format(
-                    DOGFOOD_ORG, DOGFOOD_ACTIVATIONKEY
+            ansible_module.command(f"yum -y localinstall {katello_ca_consumer}")
+            if server() == "satellite":
+                ansible_module.command(
+                    f'subscription-manager register --force --org="{DOGFOOD_ORG}" '
+                    f'--activationkey="{DOGFOOD_ACTIVATIONKEY}"'
                 )
-            )
+            else:
+                ansible_module.command(
+                    f'subscription-manager register --force --org="{DOGFOOD_ORG}" '
+                    f'--activationkey="{CAPSULE_DOGFOOD_ACTIVATIONKEY}"'
+                )
+
         else:
             contacted = ansible_module.command(
                 Advanced.run_repositories_setup({"version": product()})  # Satellite minor version
