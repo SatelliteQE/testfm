@@ -300,14 +300,21 @@ def test_positive_backup_online_all(setup_backup_tests, ansible_module):
     """
     subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     ansible_module.file(path=subdir, state="directory", mode="0777")
-    setup = ansible_module.command(Backup.run_online_backup(["-y", "/mnt/"]))
+    setup = ansible_module.command(Backup.run_online_backup(["-y", subdir]))
     for result in setup.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
+    contacted = ansible_module.command("ls {}".format(subdir))
+    source_dir = contacted.values()[0]["stdout_lines"][0]
     contacted = ansible_module.command(
         Backup.run_online_backup(
-            ["-y -f -s -p -t 10M -i", "/mnt/", "--features", "dns,tftp,openscap,dhcp", subdir]
+            [
+                "-y -f -s -p -t 10M -i",
+                "{}/{}".format(subdir, source_dir),
+                "--features dns,tfp,dhcp,openscap",
+                subdir,
+            ]
         )
     )
     for result in contacted.values():
@@ -608,16 +615,18 @@ def test_positive_backup_offline_all(setup_backup_tests, ansible_module):
     """
     subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     ansible_module.file(path=subdir, state="directory", mode="0777")
-    setup = ansible_module.command(Backup.run_offline_backup(["-y", "/mnt/"]))
+    setup = ansible_module.command(Backup.run_offline_backup(["-y", subdir]))
     for result in setup.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
+    contacted = ansible_module.command("ls {}".format(subdir))
+    source_dir = contacted.values()[0]["stdout_lines"][0]
     contacted = ansible_module.command(
         Backup.run_offline_backup(
             [
                 "-y -f -s -p -t 10M -i",
-                "/mnt/",
+                "{}/{}".format(subdir, source_dir),
                 "--features dns,tfp,dhcp,openscap",
                 "--include-db-dumps",
                 subdir,

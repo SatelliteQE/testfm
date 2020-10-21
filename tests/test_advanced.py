@@ -395,6 +395,7 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
             assert repo in result["stdout"]
 
 
+@capsule
 @capsule_only()
 def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
     """Verify that all required capsule repositories gets enabled.
