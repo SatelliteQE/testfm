@@ -5,5 +5,5 @@ pytest==3.6.1
 pytest-ansible==2.2.2
 unittest2==1.1.0
 fabric==2.5.0
-testimony==2.1.0
+testimony==2.2.0
 pre-commit
