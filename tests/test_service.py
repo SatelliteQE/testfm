@@ -78,6 +78,47 @@ def test_positive_automate_bz1624699(ansible_module):
         assert result["rc"] == 0
 
 
+def test_positive_foreman_service(ansible_module):
+    """Validate httpd service should work as expected even stopping of the foreman service
+
+    :id: 08a29ea2-2e49-11eb-a22b-d46d6dd3b5b2
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Stop foreman service
+        2. Check the status for httpd should not have affect
+        3. Run foreman-maintain health check
+
+    :expectedresults: service should restart correctly.
+
+    :CaseImportance: Critical
+    """
+    try:
+        setup = ansible_module.command(Service.service_stop({u"only": "foreman"}))
+        for result in setup.values():
+            assert result["rc"] == 0
+            assert "FAIL" not in result["stdout"]
+            assert "foreman" in result["stdout"]
+
+        httpd_service = ansible_module.command(Service.service_status({u"only": "httpd"}))
+        for result in httpd_service.values():
+            logger.info(result)
+            assert result["rc"] == 0
+
+        contacted = ansible_module.command(Health.check(["-y"]))
+        for result in contacted.values():
+            logger.info(result)
+            assert result["rc"] == 0
+            assert "foreman" in result["stdout"]
+
+    finally:
+        teardown = ansible_module.command(Service.service_start({u"only": "foreman"}))
+        for result in teardown.values():
+            assert result["rc"] == 0
+
+
 @capsule
 def test_positive_service_enable(ansible_module):
     """Enable services using foreman-maintain service
