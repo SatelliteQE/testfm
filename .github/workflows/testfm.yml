@@ -1,0 +1,31 @@
+name: TestFM - CI
+
+on:
+  push:
+  pull_request:
+    types: ["opened", "synchronize", "reopened"]
+
+jobs:
+  codechecks:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout TestFM
+        uses: actions/checkout@v2
+
+      - name: Set Up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update ; sudo apt-get install -y python-dev
+          pip install -r requirements.txt
+
+      - name: Pre Commit Checks
+        uses: pre-commit/action@v2.0.0
+
+      - name: Make Docstrings
+        run: make test-docstrings
