@@ -25,8 +25,10 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
         satellite_version = ansible_module.command(
             "rpm -q 'satellite' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if satellite_version.startswith("6.8"):
-            versions = ["6.8.z"]
+        if satellite_version.startswith("6.9"):
+            versions = ["6.9.z"]
+        elif satellite_version.startswith("6.8"):
+            versions = ["6.8.z", "6.9"]
         elif satellite_version.startswith("6.7"):
             versions = ["6.7.z", "6.8"]
         elif satellite_version.startswith("6.6"):
@@ -40,17 +42,19 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
         elif satellite_version.startswith("6.2"):
             versions = ["6.2.z", "6.3"]
         else:
-            versions = ["6.2"]
+            versions = ["unsupported satellite version"]
     else:
         capsule_version = ansible_module.command(
             "rpm -q 'satellite-capsule' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if capsule_version.startswith("6.8"):
-            versions = ["6.8.z"]
+        if capsule_version.startswith("6.9"):
+            versions = ["6.9.z"]
+        elif capsule_version.startswith("6.8"):
+            versions = ["6.8.z", "6.9"]
         elif capsule_version.startswith("6.7"):
             versions = ["6.7.z", "6.8"]
         else:
-            return "unsupported capsule version"
+            versions = ["unsupported capsule version"]
 
     contacted = ansible_module.command(Upgrade.list_versions())
     for result in contacted.values():
