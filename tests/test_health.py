@@ -746,3 +746,30 @@ def test_positive_check_env_proxy(ansible_module):
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
+
+
+@stubbed
+def test_positive_check_foreman_proxy_verify_dhcp_config_syntax(ansible_module):
+    """Verify foreman-proxy-verify-dhcp-config-syntax
+
+    :id: 43ca5cc7-9888-490d-b1ba-f3298e737039
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. Satellite instance configured with external DHCP like Infoblox,
+           which has `:use_provider: dhcp_infoblox` set in /etc/foreman-proxy/settings.d/dhcp.yml
+        3. Satellite instance which is DHCP enabled and has `:use_provider: dhcp_isc`
+           set in /etc/foreman-proxy/settings.d/dhcp.yml
+
+    :steps:
+        1. foreman-maintain health list | grep foreman-proxy-verify-dhcp-config-syntax
+        2. foreman-maintain health check --label foreman-proxy-verify-dhcp-config-syntax
+
+    :BZ: 1847889
+
+    :expectedresults: Check is not available on the satellite instances where `:use_provider:`
+                      is set other than `dhcp_isc`, and also not on DHCP disabled Satellite.
+
+
+    :CaseImportance: Medium
+    """
