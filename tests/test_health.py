@@ -355,7 +355,7 @@ def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs,
         assert "WARNING" in result["stdout"]
         assert "hotfix-package" in result["stdout"]
         assert setup_hotfix_check in result["stdout"]
-        assert result["rc"] == 1
+        assert result["rc"] == 78
 
 
 @capsule
