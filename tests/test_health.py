@@ -522,7 +522,7 @@ def test_positive_check_old_foreman_tasks(setup_old_foreman_tasks, ansible_modul
     :CaseImportance: Critical
     """
     error_message = "paused or stopped task(s) older than 30 days"
-    delete_message = "Deleted old stopped and paused tasks:"
+    delete_message = "Deleted old tasks:"
     contacted = ansible_module.command(
         Health.check(["--label", "check-old-foreman-tasks", "--assumeyes"])
     )
