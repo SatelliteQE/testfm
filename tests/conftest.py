@@ -148,7 +148,7 @@ def setup_katello_service_stop(request, ansible_module):
 
 
 @pytest.fixture(scope="function")
-def setup_install_pexpect(ansible_module):
+def setup_install_pexpect(ansible_module, request):
     """This fixture is used to install pexpect on host.
     It is used by test test_positive_foreman_maintain_hammer_setup,
     test_positive_foreman_tasks_ui_investigate,
@@ -156,12 +156,20 @@ def setup_install_pexpect(ansible_module):
     fixture setup_puppet_empty_cert.
     """
     ansible_module.get_url(url="https://bootstrap.pypa.io/get-pip.py", dest="/root")
-    setup = ansible_module.command("python /root/get-pip.py")
+    setup = ansible_module.command("python3 /root/get-pip.py")
     for result in setup.values():
         assert result["rc"] == 0
     setup = ansible_module.command("pip install pexpect")
     for result in setup.values():
         assert result["rc"] == 0
+
+    def teardown_uninstall():
+        uninstall_pexpect = ansible_module.command("pip uninstall pexpect -y")
+        assert uninstall_pexpect.values()[0]["rc"] == 0
+        uninstall_pip = ansible_module.command("pip uninstall pip -y")
+        assert uninstall_pip.values()[0]["rc"] == 0
+
+    request.addfinalizer(teardown_uninstall)
 
 
 @pytest.fixture(scope="function")
