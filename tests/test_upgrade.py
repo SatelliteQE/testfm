@@ -1,4 +1,5 @@
 from testfm.decorators import capsule
+from testfm.decorators import stubbed
 from testfm.helpers import product
 from testfm.helpers import server
 from testfm.log import logger
@@ -103,6 +104,8 @@ def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
         assert skip_message in result["stdout"]
 
 
+@capsule
+@stubbed
 def test_positive_self_update():
     """ Test self-update foreman-maintain package feature.
 
@@ -121,6 +124,33 @@ def test_positive_self_update():
         :expectedresults:
             1. It updates FM to latest version and gives message to re-run command.
             2. If disable-self-upgrade option is used then it should skip self-upgrade step.
+
+        :CaseImportance: Critical
+        """
+
+
+@capsule
+@stubbed
+def test_positive_check_presence_satellite_or_satellite_capsule():
+    """ Check for presence of satellite or satellite-capsule packages feature.
+
+        :id: 1011ff01-6dfb-422f-92c5-995d38bc163e
+
+        :setup:
+            1. foreman-maintain should be installed.
+            2. foreman-maintain package version should be >= v0.6.x
+
+        :steps:
+            1. Run foreman-maintain upgrade list-versions/check/run command.
+            2. Run foreman-maintain upgrade list-versions/check/run command,
+                after removing satellite and satellite-capsule packages.
+
+        :BZ: 1886031
+
+        :expectedresults:
+            1. If those packages are removed, then it should give error, like
+                "Error: Important rpm package satellite/satellite-capsule is not installed!
+                 Install satellite/satellite-capsule rpm to ensure system consistency."
 
         :CaseImportance: Critical
         """

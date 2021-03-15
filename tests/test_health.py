@@ -239,6 +239,28 @@ def test_positive_available_space(ansible_module):
         assert result["rc"] == 0
 
 
+def test_positive_available_space_candlepin(ansible_module):
+    """Verify available-space-cp check
+
+    :id: 382a2bf3-a3da-4e46-b370-a443450f93b7
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain health check --label available-space-cp
+
+    :expectedresults: Health check should perform.
+
+    :CaseImportance: Medium
+    """
+    contacted = ansible_module.command(Health.check({"label": "available-space-cp"}))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+
+
 def test_positive_automate_bz1632768(setup_hammer_defaults, ansible_module):
     """Verify that health check is performed when
      hammer on system have defaults set.
