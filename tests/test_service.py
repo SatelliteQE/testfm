@@ -282,3 +282,37 @@ def test_positive_fm_service_restart_bz_1696862(setup_bz_1696862, ansible_module
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
+
+
+@capsule
+def test_positive_foreman_maintain_service_list_sidekiq(ansible_module):
+    """List sidekiq services with service list
+
+    :id: 5acb68a9-c430-485d-bb45-b499adc90927
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain service list
+        2. Run foreman-maintain service restart
+
+    :expectedresults: Sidekiq-services should list and should restart.
+
+    :CaseImportance: Medium
+    """
+    contacted = ansible_module.command(Service.service_list())
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+        assert "dynflow-sidekiq@.service" in result["stdout"]
+
+    contacted = ansible_module.command(Service.service_restart())
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+        assert "dynflow-sidekiq@orchestrator" in result["stdout"]
+        assert "dynflow-sidekiq@worker" in result["stdout"]
+        assert "dynflow-sidekiq@worker-hosts-queue" in result["stdout"]
