@@ -1,4 +1,5 @@
-from testfm.decorators import capsule
+import pytest
+
 from testfm.decorators import stubbed
 from testfm.helpers import product
 from testfm.helpers import server
@@ -6,7 +7,7 @@ from testfm.log import logger
 from testfm.upgrade import Upgrade
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_foreman_maintain_upgrade_list(ansible_module):
     """List versions this system is upgradable to
 
@@ -65,7 +66,7 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
             assert ver in result["stdout_lines"]
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
     """ Test repositories-validate pre-upgrade check is
      skipped when system is subscribed using custom activationkey.
@@ -104,7 +105,7 @@ def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
         assert skip_message in result["stdout"]
 
 
-@capsule
+@pytest.mark.capsule
 @stubbed
 def test_positive_self_update():
     """ Test self-update foreman-maintain package feature.
@@ -129,7 +130,7 @@ def test_positive_self_update():
         """
 
 
-@capsule
+@pytest.mark.capsule
 @stubbed
 def test_positive_check_presence_satellite_or_satellite_capsule():
     """ Check for presence of satellite or satellite-capsule packages feature.
