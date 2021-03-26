@@ -1,10 +1,11 @@
-from testfm.decorators import capsule
+import pytest
+
 from testfm.health import Health
 from testfm.log import logger
 from testfm.service import Service
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_foreman_maintain_service_restart(ansible_module):
     """Restart services using service restart
 
@@ -27,7 +28,7 @@ def test_positive_foreman_maintain_service_restart(ansible_module):
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_foreman_maintain_service_start(ansible_module):
     """Start services using service start
 
@@ -119,7 +120,7 @@ def test_positive_foreman_service(ansible_module):
             assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_service_enable(ansible_module):
     """Enable services using foreman-maintain service
 
@@ -142,7 +143,7 @@ def test_positive_service_enable(ansible_module):
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_service_disable(ansible_module):
     """Disable services using foreman-maintain service
 
@@ -170,7 +171,7 @@ def test_positive_service_disable(ansible_module):
             assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_automate_bz1626651(ansible_module):
     """Disable services using foreman-maintain service
 
@@ -204,7 +205,7 @@ def test_positive_automate_bz1626651(ansible_module):
             assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_service_status_clocale(ansible_module):
     """Foreman-maintain service on C locale
 
@@ -226,7 +227,7 @@ def test_positive_service_status_clocale(ansible_module):
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_failed_service_status(ansible_module):
     """Verify foreman-maintain service status return error when service stopped
 
@@ -284,7 +285,7 @@ def test_positive_fm_service_restart_bz_1696862(setup_bz_1696862, ansible_module
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_foreman_maintain_service_list_sidekiq(ansible_module):
     """List sidekiq services with service list
 

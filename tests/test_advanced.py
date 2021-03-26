@@ -1,3 +1,4 @@
+import pytest
 import yaml
 
 from testfm.advanced import Advanced
@@ -6,9 +7,8 @@ from testfm.constants import cap_beta_repo
 from testfm.constants import cap_repos
 from testfm.constants import sat_beta_repo
 from testfm.constants import sat_repos
-from testfm.decorators import capsule
-from testfm.decorators import capsule_only
 from testfm.decorators import stubbed
+from testfm.helpers import server
 from testfm.log import logger
 
 
@@ -257,7 +257,7 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":enabled"])
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_procedure_by_tag_check_migrations(ansible_module):
     """Run pre-migrations and post-migrations using advanced
     procedure by-tag
@@ -297,7 +297,7 @@ def test_positive_procedure_by_tag_check_migrations(ansible_module):
         assert "FOREMAN_MAINTAIN" not in rules["stdout"]
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_procedure_by_tag_restore_confirmation(ansible_module):
     """Run restore_confirmation using advanced procedure by-tag
 
@@ -395,8 +395,8 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
             assert repo in result["stdout"]
 
 
-@capsule
-@capsule_only()
+@pytest.mark.capsule
+@pytest.mark.skipif(server() == "satellite", reason="Test intended to run only on Capsule servers")
 def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ansible_module):
     """Verify that all required capsule repositories gets enabled.
 

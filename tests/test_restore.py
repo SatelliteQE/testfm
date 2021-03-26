@@ -1,7 +1,7 @@
+import pytest
 from fauxfactory import gen_string
 
 from testfm.backup import Backup
-from testfm.decorators import capsule
 from testfm.log import logger
 from testfm.restore import Restore
 
@@ -9,7 +9,7 @@ NODIR_MSG = "ERROR: parameter 'BACKUP_DIR': no value provided"
 BADDIR_MSG = "The given directory does not contain the " "required files or has too many files"
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_restore_online_backup(ansible_module):
     """Restore online backup of server
 
@@ -51,7 +51,7 @@ def test_positive_restore_online_backup(ansible_module):
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_restore_offline_backup(ansible_module):
     """Restore offline backup of server
 
@@ -93,7 +93,7 @@ def test_positive_restore_offline_backup(ansible_module):
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_negative_restore_nodir(ansible_module):
     """Restore without specified source dir
 
@@ -118,7 +118,7 @@ def test_negative_restore_nodir(ansible_module):
         assert NODIR_MSG in result["stderr"]
 
 
-@capsule
+@pytest.mark.capsule
 def test_negative_restore_baddir(ansible_module):
     """Restore with invalid source dir
 

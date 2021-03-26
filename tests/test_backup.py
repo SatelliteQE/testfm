@@ -1,7 +1,7 @@
+import pytest
 from fauxfactory import gen_string
 
 from testfm.backup import Backup
-from testfm.decorators import capsule
 from testfm.decorators import ends_in
 from testfm.helpers import server
 from testfm.log import logger
@@ -49,7 +49,7 @@ CONTENT_FILES = [
 assert_msg = "All required backup files not found"
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_online(setup_backup_tests, ansible_module):
     """Take online backup of server
 
@@ -85,7 +85,7 @@ def test_positive_backup_online(setup_backup_tests, ansible_module):
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_online_skip_pulp_content(setup_backup_tests, ansible_module):
     """Take online backup skipping pulp content of server
 
@@ -124,7 +124,7 @@ def test_positive_backup_online_skip_pulp_content(setup_backup_tests, ansible_mo
     assert CONTENT_FILES not in files_list, "content not skipped"
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_online_preserve_directory(setup_backup_tests, ansible_module):
     """Take online backup of server preserving directory
 
@@ -162,7 +162,7 @@ def test_positive_backup_online_preserve_directory(setup_backup_tests, ansible_m
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_online_split_pulp_tar(setup_backup_tests, ansible_module):
     """Take online backup of server spliting pulp tar
 
@@ -199,7 +199,7 @@ def test_positive_backup_online_split_pulp_tar(setup_backup_tests, ansible_modul
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_online_incremental(setup_backup_tests, ansible_module):
     """Take incremental online backup of server
 
@@ -243,7 +243,7 @@ def test_positive_backup_online_incremental(setup_backup_tests, ansible_module):
     assert source_size >= dest_size
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_online_caspule_features(setup_backup_tests, ansible_module):
     """Take online backup of server including capsule features dns, tftp, etc.
 
@@ -280,7 +280,7 @@ def test_positive_backup_online_caspule_features(setup_backup_tests, ansible_mod
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_online_all(setup_backup_tests, ansible_module):
     """Take online backup of server providing all options
 
@@ -323,7 +323,7 @@ def test_positive_backup_online_all(setup_backup_tests, ansible_module):
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline(setup_backup_tests, ansible_module):
     """Take offline backup of server
 
@@ -359,7 +359,7 @@ def test_positive_backup_offline(setup_backup_tests, ansible_module):
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline_skip_pulp_content(setup_backup_tests, ansible_module):
     """Take offline backup of server skipping pulp content
 
@@ -398,7 +398,7 @@ def test_positive_backup_offline_skip_pulp_content(setup_backup_tests, ansible_m
     assert CONTENT_FILES not in files_list, "content not skipped"
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline_preserve_directory(setup_backup_tests, ansible_module):
     """Take offline backup of server preserving directory
 
@@ -437,7 +437,7 @@ def test_positive_backup_offline_preserve_directory(setup_backup_tests, ansible_
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline_split_pulp_tar(setup_backup_tests, ansible_module):
     """Take offline backup of server splitting pulp tar
 
@@ -475,7 +475,7 @@ def test_positive_backup_offline_split_pulp_tar(setup_backup_tests, ansible_modu
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline_incremental(setup_backup_tests, ansible_module):
     """Take offline incremental backup of server
 
@@ -519,7 +519,7 @@ def test_positive_backup_offline_incremental(setup_backup_tests, ansible_module)
     assert source_size >= dest_size
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline_capsule_features(setup_backup_tests, ansible_module):
     """Take offline backup of server including capsule features dns, tftp, etc.
 
@@ -557,7 +557,7 @@ def test_positive_backup_offline_capsule_features(setup_backup_tests, ansible_mo
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline_logical(setup_backup_tests, ansible_module):
     """Take offline backup of server include-db-dumps
 
@@ -594,7 +594,7 @@ def test_positive_backup_offline_logical(setup_backup_tests, ansible_module):
     assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
 
 
-@capsule
+@pytest.mark.capsule
 def test_positive_backup_offline_all(setup_backup_tests, ansible_module):
     """Take offline backup of server providing all options
 
@@ -639,7 +639,7 @@ def test_positive_backup_offline_all(setup_backup_tests, ansible_module):
         assert result["rc"] == 0
 
 
-@capsule
+@pytest.mark.capsule
 def test_negative_backup_online_nodir(ansible_module):
     """Take online backup of server with no destination
 
@@ -664,7 +664,7 @@ def test_negative_backup_online_nodir(ansible_module):
         assert NODIR_MSG in result["stderr"]
 
 
-@capsule
+@pytest.mark.capsule
 def test_negative_backup_offline_nodir(ansible_module):
     """Take offline backup of server with no destination
 
@@ -689,7 +689,7 @@ def test_negative_backup_offline_nodir(ansible_module):
         assert NODIR_MSG in result["stderr"]
 
 
-@capsule
+@pytest.mark.capsule
 def test_negative_backup_online_incremental_nodir(ansible_module):
     """Take online backup of server with no destination
 
