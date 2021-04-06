@@ -817,4 +817,5 @@ def test_positive_remove_job_file(setup_subscribe_to_cdn_dogfood, ansible_module
     """
     contacted = ansible_module.command(Health.check({"label": "disk" "-performance"}))
     contacted = ansible_module.find(paths="/var/lib/pulp", file_type="file")
-    assert "job" not in contacted.values()[0]["files"][0]["path"]
+    for file in contacted.values()[0]["files"]:
+        assert "job" not in file["path"]
