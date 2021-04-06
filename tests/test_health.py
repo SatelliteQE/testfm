@@ -796,3 +796,26 @@ def test_positive_check_foreman_proxy_verify_dhcp_config_syntax(ansible_module):
 
     :CaseImportance: Medium
     """
+
+
+def test_positive_remove_job_file(setup_subscribe_to_cdn_dogfood, ansible_module):
+    """Verify file /var/lib/pulp/job1.0.0 is not present after the following command.
+
+    :id: eed224f9-a2ec-4d15-9047-cede0b823866
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain health check --label disk-performance
+
+    :expectedresults: /var/lib/pulp/job1.0.0 file should not exist.
+
+    :CaseImportance: Medium
+
+    :BZ: 1762302
+    """
+    contacted = ansible_module.command(Health.check({"label": "disk" "-performance"}))
+    contacted = ansible_module.find(paths="/var/lib/pulp", file_type="file")
+    for file in contacted.values()[0]["files"]:
+        assert "job" not in file["path"]
