@@ -1,4 +1,4 @@
-ansible==2.9.20
+ansible==3.3.0
 fauxfactory==3.1.0
 PyNaCl==1.4.0
 pytest==3.6.1
