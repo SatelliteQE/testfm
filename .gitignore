@@ -4,8 +4,9 @@
 # Compiled python code.
 *.pyc
 
-# Logs
-/testfm.log
+# Test results.
+**/foreman-results.xml
+**/testfm.log
 
 #env
 env/
@@ -18,3 +19,7 @@ testfm.egg-info/
 #Packaging
 build/
 dist/
+
+# Dynaconf local files
+/conf/*
+!/conf/testfm.sample.yaml
