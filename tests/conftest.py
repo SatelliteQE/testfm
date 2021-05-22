@@ -19,7 +19,6 @@ from testfm.constants import RHN_USERNAME
 from testfm.constants import satellite_answer_file
 from testfm.constants import upstream_url
 from testfm.helpers import product
-from testfm.helpers import run
 from testfm.helpers import server
 from testfm.log import logger
 from testfm.maintenance_mode import MaintenanceMode
@@ -410,7 +409,7 @@ def setup_old_foreman_tasks(ansible_module):
     rake_command = "foreman-rake console <<< "
     find_task = '\'t = ForemanTasks::Task.where(state: "stopped").first;'
     update_task = "t.started_at = t.started_at - 31.day;t.save(:validate => false)'"
-    run(rake_command + find_task + update_task)
+    ansible_module.shell(rake_command + find_task + update_task)
 
 
 @pytest.fixture(scope="function")

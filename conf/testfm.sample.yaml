@@ -1,7 +1,7 @@
 # copy this file as `testfm.local.yaml` and override any config provided under `conf/*.yaml`
 # or preferably use environment variables instead of this file
 # example:
-# `export TESTFM_TESTFM__SERVER_HOSTNAME=myserver.example.com`
+# `export TESTFM_TESTFM__HOTFIX_URL=<HOTFIX_URL>`
 ---
 # copy SUBSCRIPTION section from subscription.yaml or keep subscription.yaml under conf/
 # SUBSCRIPTION:
@@ -13,5 +13,4 @@
   # DOGFOOD_ACTIVATIONKEY: <DOGFOOD_ACTIVATIONKEY>
   # CAPSULE_DOGFOOD_ACTIVATIONKEY: <CAPSULE_DOGFOOD_ACTIVATIONKEY>
 # TESTFM:
-  # SERVER_HOSTNAME: <SERVER_HOSTNAME>
   # HOTFIX_URL: <HOTFIX_URL>

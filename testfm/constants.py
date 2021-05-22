@@ -8,7 +8,6 @@ DOGFOOD_ACTIVATIONKEY = settings.subscription.dogfood_activationkey
 CAPSULE_DOGFOOD_ACTIVATIONKEY = settings.subscription.capsule_dogfood_activationkey
 DOGFOOD_URL = settings.subscription.dogfood_url
 HOTFIX_URL = settings.testfm.hotfix_url
-SERVER_HOSTNAME = settings.testfm.server_hostname
 
 katello_ca_consumer = DOGFOOD_URL + "/pub/katello-ca-consumer-latest.noarch.rpm"
 upstream_url = {
