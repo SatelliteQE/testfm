@@ -22,8 +22,9 @@ Get the source code and install dependencies::
 
 Before running any tests, you must create a configuration file::
 
-   cp testfm.properties.sample testfm.properties
-   vi testfm.properties
+   cp testfm.sample.yaml testfm.local.yaml
+   OR
+   cp testfm.sample.yaml testfm.local.yaml
 
 There are a few other things you need to do before continuing:
 
@@ -39,15 +40,15 @@ Before running any tests, you must add foreman or satellite hostname to the
 
 That done, you can run tests using pytest ::
 
-    pytest -sv --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
+    pytest -v --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
     tests/
 
 It is possible to run a specific subset of tests::
 
-    pytest -sv --ansible-host-pattern server --ansible-user=root --ansible-inventory testfm/inventory
+    pytest -v --ansible-host-pattern server --ansible-user=root --ansible-inventory testfm/inventory
     tests/test_case.py
 
-    pytest -sv --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
+    pytest -v --ansible-host-pattern server --ansible-user=root  --ansible-inventory testfm/inventory
     tests/test_case.py::test_case_name
 
 Want to contribute?
