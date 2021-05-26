@@ -3,7 +3,7 @@ dynaconf==3.1.4
 fauxfactory==3.1.0
 pre-commit
 PyNaCl==1.4.0
-pytest==3.6.1
+pytest==6.2.4
 pytest-ansible==2.2.4
 testimony==2.2.0
 unittest2==1.1.0
