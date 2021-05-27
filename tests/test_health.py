@@ -164,7 +164,7 @@ def test_negative_check_server_ping(setup_katello_service_stop, ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Health.check({"label": "server-ping"}))
+    contacted = ansible_module.command(Health.check(["--label", "server-ping", "--assumeyes"]))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
