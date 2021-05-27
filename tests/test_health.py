@@ -807,15 +807,25 @@ def test_positive_remove_job_file(setup_subscribe_to_cdn_dogfood, ansible_module
         1. foreman-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --label disk-performance
+        1. Run foreman-maintain health list --tags pre-upgrade
+        2. Run foreman-maintain health check --label disk-performance
 
-    :expectedresults: /var/lib/pulp/job1.0.0 file should not exist.
+    :expectedresults: `disk-performance` shouldn't exist under pre-upgrade tag and
+            /var/lib/pulp/job1.0.0 file should not exist after check execution
 
     :CaseImportance: Medium
 
-    :BZ: 1762302
+    :BZ: 1827219, 1762302
     """
-    contacted = ansible_module.command(Health.check({"label": "disk" "-performance"}))
+    # Verify pre-upgrade checks don't include disk-performance check
+    contacted = ansible_module.command(Health.list({"tags": "pre-upgrade"}))
+    for result in contacted.values():
+        assert "disk-performance" not in result["stdout"]
+
+    # Verify job1.0.0 file not exist after check completion
+    contacted = ansible_module.command(
+        Health.check(["--label", "disk-performance", "--assumeyes"])
+    )
     contacted = ansible_module.find(paths="/var/lib/pulp", file_type="file")
     for file in contacted.values()[0]["files"]:
         assert "job" not in file["path"]
