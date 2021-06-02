@@ -9,6 +9,7 @@ from testfm.constants import CAPSULE_DOGFOOD_ACTIVATIONKEY
 from testfm.constants import DOGFOOD_ACTIVATIONKEY
 from testfm.constants import DOGFOOD_ORG
 from testfm.constants import epel_repo
+from testfm.constants import FAKE_YUM0_REPO
 from testfm.constants import fm_hammer_yml
 from testfm.constants import FM_RHN_POOLID
 from testfm.constants import foreman_maintain_yml
@@ -481,3 +482,30 @@ def setup_tftp_storage(request, ansible_module):
         assert teardown.values()[0]["rc"] == 0
 
     request.addfinalizer(teardown_tftp_storage)
+
+
+@pytest.fixture(scope="function")
+def setup_yum_content(request, ansible_module):
+    """ Setup/Teardown cusom yum repo for test_positive_content_migrate."""
+    prod_name = gen_string("alpha")
+    repo_name = gen_string("alpha")
+    repo_url = FAKE_YUM0_REPO
+
+    ansible_module.command(f"hammer product create --organization-id 1 --name {prod_name}")
+    ansible_module.command(
+        f"hammer repository create --organization-id 1 --name {repo_name} --product {prod_name} "
+        f"--content-type 'yum' --url {repo_url} --download-policy 'immediate'"
+    )
+    setup = ansible_module.command(
+        f"hammer repository synchronize --organization-id 1 --product {prod_name} "
+        f"--name {repo_name}"
+    )
+    assert setup.values()[0]["rc"] == 0
+
+    def teardown_yum_content():
+        teardown = ansible_module.command(
+            f"hammer product delete --organization-id 1 --name {prod_name}"
+        )
+        assert teardown.values()[0]["rc"] == 0
+
+    request.addfinalizer(teardown_yum_content)
