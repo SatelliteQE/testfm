@@ -9,7 +9,7 @@ def product():
         '-a "rpm -q satellite > /dev/null && rpm -q satellite --queryformat=%{VERSION}'
         ' || rpm -q satellite-capsule --queryformat=%{VERSION}" -o'
     ).read()
-    return server_version.splitlines()[0].split(" ")[-1][:3]
+    return server_version.splitlines()[0].split(" ")[-1]
 
 
 def run(command):

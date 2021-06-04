@@ -716,7 +716,7 @@ def test_negative_backup_online_incremental_nodir(ansible_module):
         assert NOPREV_MSG in result["stderr"]
 
 
-@ends_in(6.7)
+@ends_in("6.7")
 def test_positive_backup_stopped_dynflowd(setup_backup_tests, ansible_module):
     """Take online backup of server when dynflowd is not running
 
@@ -763,7 +763,7 @@ def test_positive_backup_stopped_dynflowd(setup_backup_tests, ansible_module):
             assert result["rc"] == 0
 
 
-@ends_in(6.7)
+@ends_in("6.7")
 def test_positive_backup_stopped_foreman_tasks(setup_backup_tests, ansible_module):
     """Take online backup of server when foreman-tasks is not running
 

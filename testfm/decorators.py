@@ -1,3 +1,5 @@
+from distutils.version import StrictVersion as Version
+
 import pytest
 import unittest2
 
@@ -19,11 +21,11 @@ def run_only_on(*server_version):
 
         from TestFM.decorators import run_only_on
 
-        @run_only_on('6.4')
+        @run_only_on("6.4")
         def test_health_check():
             # test code continues here
 
-    :param str server_version: Enter '6.8', 6.7', '6.6', '6.5', '6.4' and '6.3'
+    :param str server_version: Enter "6.8", "6.7", "6.6", "6.5", "6.4" and "6.3"
     for specific version
     """
     prd_version = product()
@@ -43,15 +45,15 @@ def starts_in(version):
 
         from TestFM.decorators import starts_in
 
-        @starts_in(6.6)
+        @starts_in("6.6")
         def test_health_check():
             # test code continues here
 
-    :param float version: Enter 6.8, 6.7, 6.6, 6.5, 6.4 and 6.3
+    :param str version: Enter "6.10", "6.9", "6.8.4", and likewise
     for specific version
     """
     return pytest.mark.skipif(
-        float(product()) < version,
+        Version(product()) < Version(version),
         reason="Server version is '{}' and this test will run only "
         "on {} '{}' onward".format(product(), server(), version),
     )
@@ -66,15 +68,15 @@ def ends_in(version):
 
         from TestFM.decorators import ends_in
 
-        @ends_in(6.6)
+        @ends_in("6.6")
         def test_health_check():
             # test code continues here
 
-    :param float version: Enter 6.7, 6.6, 6.5 , 6.4 , 6.3 , 6.2 and 6.1
+    :param str version: Enter "6.10", "6.9", "6.8.4", and likewise
     for specific version
     """
     return pytest.mark.skipif(
-        float(product()) > version,
+        Version(product()) > Version(version),
         reason="Server version is '{}' and this test will run only "
         "on {} <= '{}'".format(product(), server(), version),
     )
