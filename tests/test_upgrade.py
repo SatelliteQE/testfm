@@ -27,30 +27,24 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
         satellite_version = ansible_module.command(
             "rpm -q 'satellite' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if satellite_version.startswith("6.9"):
-            versions = ["6.9.z"]
+        if satellite_version.startswith("6.10"):
+            versions = ["6.10.z"]
+        elif satellite_version.startswith("6.9"):
+            versions = ["6.9.z", "6.10"]
         elif satellite_version.startswith("6.8"):
             versions = ["6.8.z", "6.9"]
         elif satellite_version.startswith("6.7"):
             versions = ["6.7.z", "6.8"]
-        elif satellite_version.startswith("6.6"):
-            versions = ["6.6.z", "6.7"]
-        elif satellite_version.startswith("6.5"):
-            versions = ["6.5.z", "6.6"]
-        elif satellite_version.startswith("6.4"):
-            versions = ["6.4.z", "6.5"]
-        elif satellite_version.startswith("6.3"):
-            versions = ["6.3.z", "6.4"]
-        elif satellite_version.startswith("6.2"):
-            versions = ["6.2.z", "6.3"]
         else:
             versions = ["unsupported satellite version"]
     else:
         capsule_version = ansible_module.command(
             "rpm -q 'satellite-capsule' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if capsule_version.startswith("6.9"):
-            versions = ["6.9.z"]
+        if capsule_version.startswith("6.10"):
+            versions = ["6.10.z"]
+        elif capsule_version.startswith("6.9"):
+            versions = ["6.9.z", "6.10"]
         elif capsule_version.startswith("6.8"):
             versions = ["6.8.z", "6.9"]
         elif capsule_version.startswith("6.7"):
@@ -67,7 +61,7 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
 
 
 @pytest.mark.capsule
-def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
+def test_positive_repositories_validate(ansible_module):
     """ Test repositories-validate pre-upgrade check is
      skipped when system is subscribed using custom activationkey.
 
@@ -90,10 +84,9 @@ def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
     fm_command = Upgrade.check(
         [
             "--target-version",
-            "{}.z".format(product()),
+            f"{product()}.z",
             "--whitelist",
-            '"disk-performance,check-non-redhat-repository,check-hotfix-installed,'
-            'check-upstream-repository"',
+            "check-non-redhat-repository,non-rh-packages,services-up",
             "--assumeyes",
         ]
     )

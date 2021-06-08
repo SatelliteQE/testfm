@@ -99,7 +99,7 @@ def test_positive_foreman_maintain_health_check(ansible_module):
 
 
 @pytest.mark.capsule
-def test_positive_foreman_maintain_health_check_by_tags(setup_install_pkgs, ansible_module):
+def test_positive_foreman_maintain_health_check_by_tags(ansible_module):
     """Verify foreman-maintain health check by tags
 
         :id: 518e19af-2dd4-4fb0-8c90-208cbd354107
