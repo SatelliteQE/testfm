@@ -67,4 +67,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.QUAY_SERVER }}/${{ secrets.QUAY_NAMESPACE }}/robottelo:${{ steps.image_tag.outputs.IMAGE_TAG }}
+          tags: ${{ secrets.QUAY_SERVER }}/${{ secrets.QUAY_NAMESPACE }}/testfm:${{ steps.image_tag.outputs.IMAGE_TAG }}
