@@ -51,23 +51,21 @@ def setup_hotfix_check(request, ansible_module):
     )
     setup = ansible_module.file(path="/etc/yum.repos.d/hotfix_repo.repo", state="present")
     assert setup.values()[0]["changed"] == 0
-    if float(product()) >= 6.6:
-        pkgs_locked = ansible_module.command(Packages.is_locked()).values()[0]["rc"]
-        if pkgs_locked == 0:
-            ansible_module.command(Packages.unlock())
-        setup = ansible_module.yum(name="hotfix-package", state="present")
-        for result in setup.values():
-            assert result["rc"] == 0
-        if pkgs_locked == 0:
-            ansible_module.command(Packages.lock())
+    pkgs_locked = ansible_module.command(Packages.is_locked()).values()[0]["rc"]
+    if pkgs_locked == 0:
+        ansible_module.command(Packages.unlock())
+    setup = ansible_module.yum(name="hotfix-package", state="present")
+    for result in setup.values():
+        assert result["rc"] == 0
+    if pkgs_locked == 0:
+        ansible_module.command(Packages.lock())
 
     def teardown_hotfix_check():
-        if float(product()) >= 6.6:
-            teardown = ansible_module.command(Packages.unlock())
-            for result in teardown.values():
-                logger.info(result["stdout"])
-                assert "FAIL" not in result["stdout"]
-                assert result["rc"] == 0
+        teardown = ansible_module.command(Packages.unlock())
+        for result in teardown.values():
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
         if pkgs_locked == 0:
             ansible_module.command(Packages.unlock())
         teardown = ansible_module.command("yum -y reinstall tfm-rubygem-fog-vsphere")
@@ -312,7 +310,6 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
                     f'subscription-manager register --force --org="{DOGFOOD_ORG}" '
                     f'--activationkey="{CAPSULE_DOGFOOD_ACTIVATIONKEY}"'
                 )
-
         else:
             contacted = ansible_module.command(
                 Advanced.run_repositories_setup({"version": product()})  # Satellite minor version
@@ -429,7 +426,7 @@ def setup_backup_tests(request, ansible_module):
 
 
 @pytest.fixture(scope="function")
-def setup_packages_lock_tests(request, ansible_module):
+def setup_packages_lock_tests(request, ansible_module, setup_subscribe_to_cdn_dogfood):
     """ Setup/Teardown for Packages lock tests."""
     # Test whether packages are locked or not
     contacted = ansible_module.command("satellite-installer --lock-package-versions")
