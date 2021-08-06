@@ -348,7 +348,7 @@ def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansi
 
 
 @pytest.mark.capsule
-def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs, ansible_module):
+def test_positive_check_hotfix_installed(setup_hotfix_check, ansible_module):
     """Verify check-hotfix-installed check.
 
     :id: d9023293-4173-4223-bbf5-328b41cf87cd
@@ -357,8 +357,6 @@ def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs,
         1. foreman-maintain should be installed.
 
         2. modify some files of satellite.
-
-        3. Install hotfix-package, python-kitchen, yum-utils packages.
 
     :steps:
         1. Run foreman-maintain health check --label check-hotfix-installed
@@ -382,7 +380,7 @@ def test_positive_check_hotfix_installed(setup_hotfix_check, setup_install_pkgs,
 
 
 @pytest.mark.capsule
-def test_positive_check_hotfix_installed_without_hotfix(setup_install_pkgs, ansible_module):
+def test_positive_check_hotfix_installed_without_hotfix(ansible_module):
     """Verify check-hotfix-installed check.
 
     :id: 3b6fbf3a-5c78-4283-996e-ca8da88a5d1b

@@ -51,34 +51,6 @@ def test_positive_foreman_maintain_service_start(ansible_module):
         assert result["rc"] == 0
 
 
-def test_positive_automate_bz1624699(ansible_module):
-    """Validate correct service restart on dynflowd stopped
-
-    :id: 36f7ea87-12f3-4c12-817d-0031ce3ad241
-
-    :setup:
-        1. foreman-maintain should be installed.
-
-    :steps:
-        1. Stop dynflowd service
-        2. Run foreman-maintain health check
-
-    :expectedresults: service should restart correctly.
-
-    :CaseImportance: Critical
-    """
-    setup = ansible_module.command(Service.service_stop({u"only": "smart_proxy_dynflow_core"}))
-    for result in setup.values():
-        assert result["rc"] == 0
-        assert "FAIL" not in result["stdout"]
-        assert "smart_proxy_dynflow_core" in result["stdout"]
-
-    contacted = ansible_module.command(Health.check(["-y"]))
-    for result in contacted.values():
-        logger.info(result)
-        assert result["rc"] == 0
-
-
 def test_positive_foreman_service(ansible_module):
     """Validate httpd service should work as expected even stopping of the foreman service
 
@@ -285,7 +257,6 @@ def test_positive_fm_service_restart_bz_1696862(setup_bz_1696862, ansible_module
         assert result["rc"] == 0
 
 
-@pytest.mark.capsule
 def test_positive_foreman_maintain_service_list_sidekiq(ansible_module):
     """List sidekiq services with service list
 

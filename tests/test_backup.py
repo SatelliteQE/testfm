@@ -2,10 +2,8 @@ import pytest
 from fauxfactory import gen_string
 
 from testfm.backup import Backup
-from testfm.decorators import ends_in
 from testfm.helpers import server
 from testfm.log import logger
-from testfm.service import Service
 
 BACKUP_DIR = "/tmp/"
 NODIR_MSG = "ERROR: parameter 'BACKUP_DIR': no value provided"
@@ -714,85 +712,3 @@ def test_negative_backup_online_incremental_nodir(ansible_module):
         logger.info(result["stderr"])
         assert result["rc"] == 1
         assert NOPREV_MSG in result["stderr"]
-
-
-@ends_in(6.7)
-def test_positive_backup_stopped_dynflowd(setup_backup_tests, ansible_module):
-    """Take online backup of server when dynflowd is not running
-
-    :id: 321b5f16-337c-4370-87b6-cfe1c78c9139
-
-    :setup:
-
-        1. foreman-maintain should be installed.
-
-    :steps:
-        1. Run foreman-maintain service stop --only dynflowd
-        2. Run foreman-maintain backup online /backup_dir/
-
-    :expectedresults: Backup should successful.
-
-    :CaseImportance: Critical
-    """
-    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
-    try:
-        setup = ansible_module.command(Service.service_stop({u"only": "dynflowd"}))
-        for result in setup.values():
-            logger.info(result)
-            assert result["rc"] == 0
-        contacted = ansible_module.command(Backup.run_online_backup(["-y", subdir]))
-        for result in contacted.values():
-            logger.info(result["stdout"])
-            assert "FAIL" not in result["stdout"]
-            assert result["rc"] == 0
-
-        # getting created files
-        contacted = ansible_module.command("ls {}".format(subdir))
-        timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-        contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
-        files_list = contacted.values()[0]["stdout_lines"]
-        expected_files = ONLINE_BACKUP_FILES
-
-        # capsule-specific file list
-        if server() == "capsule":
-            expected_files = ONLINE_CAPS_FILES
-        assert set(files_list).issuperset(expected_files + CONTENT_FILES), assert_msg
-    finally:
-        teardown = ansible_module.command(Service.service_start())
-        for result in teardown.values():
-            assert result["rc"] == 0
-
-
-@ends_in(6.7)
-def test_positive_backup_stopped_foreman_tasks(setup_backup_tests, ansible_module):
-    """Take online backup of server when foreman-tasks is not running
-
-    :id: 3def9d00-f9be-4817-adf0-acd7cf68460b
-
-    :setup:
-
-        1. foreman-maintain should be installed.
-
-    :steps:
-        1. Run foreman-maintain service stop --only foreman-tasks
-        2. Run foreman-maintain backup online /backup_dir/
-
-    :expectedresults: Backup should successful.
-
-    :CaseImportance: Critical
-    """
-    subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
-    try:
-        setup = ansible_module.command(Service.service_stop({u"only": "foreman-tasks"}))
-        for result in setup.values():
-            logger.info(result)
-            assert result["rc"] == 0
-        contacted = ansible_module.command(Backup.run_online_backup(["-y", subdir]))
-        for result in contacted.values():
-            logger.info(result["stdout"])
-            assert "FAIL" not in result["stdout"]
-            assert result["rc"] == 0
-    finally:
-        teardown = ansible_module.command(Service.service_start())
-        for result in teardown.values():
-            assert result["rc"] == 0

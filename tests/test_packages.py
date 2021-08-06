@@ -1,6 +1,5 @@
 import pytest
 
-from testfm.decorators import starts_in
 from testfm.log import logger
 from testfm.packages import Packages
 
@@ -73,7 +72,6 @@ def test_positive_fm_packages_lock(ansible_module):
 
 
 @pytest.mark.capsule
-@starts_in(6.6)
 def test_positive_lock_package_versions(ansible_module):
     """Verify whether satellite related packages get locked
 
