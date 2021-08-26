@@ -429,7 +429,7 @@ def setup_backup_tests(request, ansible_module):
 
 
 @pytest.fixture(scope="function")
-def setup_packages_lock_tests(request, ansible_module):
+def setup_packages_lock_tests(request, ansible_module, setup_subscribe_to_cdn_dogfood):
     """ Setup/Teardown for Packages lock tests."""
     # Test whether packages are locked or not
     contacted = ansible_module.command("satellite-installer --lock-package-versions")

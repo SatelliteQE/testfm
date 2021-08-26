@@ -67,7 +67,7 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
 
 
 @pytest.mark.capsule
-def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
+def test_positive_repositories_validate(ansible_module):
     """ Test repositories-validate pre-upgrade check is
      skipped when system is subscribed using custom activationkey.
 
@@ -90,10 +90,9 @@ def test_positive_repositories_validate(setup_install_pkgs, ansible_module):
     fm_command = Upgrade.check(
         [
             "--target-version",
-            "{}.z".format(product()),
+            f"{product()}.z",
             "--whitelist",
-            '"disk-performance,check-non-redhat-repository,check-hotfix-installed,'
-            'check-upstream-repository"',
+            "check-non-redhat-repository,check-hotfix-installed,check-upstream-repository",
             "--assumeyes",
         ]
     )

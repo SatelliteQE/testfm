@@ -285,7 +285,6 @@ def test_positive_fm_service_restart_bz_1696862(setup_bz_1696862, ansible_module
         assert result["rc"] == 0
 
 
-@pytest.mark.capsule
 def test_positive_foreman_maintain_service_list_sidekiq(ansible_module):
     """List sidekiq services with service list
 
