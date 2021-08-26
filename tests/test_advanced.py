@@ -368,7 +368,7 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
 
     :CaseImportance: Critical
     """
-    for ver in ["6.4", "6.5", "6.6", "6.7", "6.8"]:
+    for ver in ["6.4", "6.5", "6.6", "6.7", "6.8", "6.9"]:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
             logger.info(result["stdout"])
@@ -379,10 +379,11 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
             logger.info(result["stdout"])
             for repo in sat_repos[ver]:
                 assert repo in result["stdout"]
+
     # Verify that all required beta repositories gets enabled
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
-        export_command + Advanced.run_repositories_setup({"version": "6.8"})
+        export_command + Advanced.run_repositories_setup({"version": "6.9"})
     )
     for result in contacted.values():
         logger.info(result["stdout"])
@@ -414,20 +415,21 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_repositories_setup({"version": "6.8"}))
-    for result in contacted.values():
-        logger.info(result["stdout"])
-        assert "FAIL" not in result["stdout"]
-        assert result["rc"] == 0
-    contacted = ansible_module.command("yum repolist")
-    for result in contacted.values():
-        logger.info(result["stdout"])
-        for repo in cap_repos["6.8"]:
-            assert repo in result["stdout"]
+    for ver in ["6.8", "6.9"]:
+        contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
+        for result in contacted.values():
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
+        contacted = ansible_module.command("yum repolist")
+        for result in contacted.values():
+            logger.info(result["stdout"])
+            for repo in cap_repos[ver]:
+                assert repo in result["stdout"]
     # Verify that all required beta repositories gets enabled
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
-        export_command + Advanced.run_repositories_setup({"version": "6.8"})
+        export_command + Advanced.run_repositories_setup({"version": "6.9"})
     )
     for result in contacted.values():
         logger.info(result["stdout"])

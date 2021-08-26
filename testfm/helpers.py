@@ -14,7 +14,7 @@ def product():
 
 def run(command):
     """Use this helper to execute shell command on Satellite"""
-    return os.popen("ansible server -i testfm/inventory -m command -a '${command}'").read()
+    return os.popen(f"ansible server -i testfm/inventory -u root -m command -a '{command}'").read()
 
 
 def server():
