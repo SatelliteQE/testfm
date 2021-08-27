@@ -1,0 +1,73 @@
+# CI stages to execute against all branches on PR merge
+name: TestFM - IMAGE
+
+on:
+  push:
+    branches:
+      - 6.9.z
+
+jobs:
+  codechecks:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout TestFM
+        uses: actions/checkout@v2
+
+      - name: Set Up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update ; sudo apt-get install -y python-dev
+          pip install -r requirements.txt
+
+      - name: Pre Commit Checks
+        uses: pre-commit/action@v2.0.0
+
+      - name: Make Docstrings
+        run: make test-docstrings
+
+
+  testfm_container:
+    needs: codechecks
+    name: Update TestFM container image on Quay.
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get image tag
+        id: image_tag
+        run: |
+          echo -n ::set-output name=IMAGE_TAG::
+          TAG="${GITHUB_REF##*/}"
+          if [ "${TAG}" == "master" ]; then
+              TAG="latest"
+          fi
+          echo "${TAG}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Quay Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.QUAY_SERVER }}
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Build and push image to Quay
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.QUAY_SERVER }}/${{ secrets.QUAY_NAMESPACE }}/testfm:${{ steps.image_tag.outputs.IMAGE_TAG }}
