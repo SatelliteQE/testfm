@@ -212,7 +212,7 @@ def setup_sync_plan(request, ansible_module):
             sync_yml = yaml.safe_load(f)
             for id in sync_yml:
                 if id["Enabled"]:
-                    sync_ids.append(id["ID"])
+                    sync_ids.append(id["Id"])
         request.addfinalizer(teardown_sync_plan)
         return list(set(sync_ids)), sat_hostname
 
