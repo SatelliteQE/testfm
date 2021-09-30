@@ -13,8 +13,6 @@ OFFLINE_CAPS_FILES = [
     "config_files.tar.gz",
     ".config.snar",
     "metadata.yml",
-    "mongo_data.tar.gz",
-    ".mongo.snar",
 ]
 
 OFFLINE_SAT_FILES = [
@@ -28,7 +26,7 @@ ONLINE_CAPS_FILES = [
     "config_files.tar.gz",
     ".config.snar",
     "metadata.yml",
-    "mongo_dump",
+    "pulpcore.dump",
 ]
 
 ONLINE_SAT_FILES = [
