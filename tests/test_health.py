@@ -863,3 +863,32 @@ def test_positive_corrupted_roles(ansible_module, setup_corrupted_role):
     )
     for result in contacted.values():
         assert len(result["stdout_lines"]) == 2
+
+
+@pytest.mark.capsule
+def test_positive_check_non_rh_packages(setup_custom_package, ansible_module):
+    """Verify check-non-redhat-repository.
+
+    :id: 2b7a25bb-902c-4a87-bb71-f460dcce655c
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. Configure custom repository and install custom package
+
+    :steps:
+        1. Run foreman-maintain health check --label non-rh-packages.
+        2. Verify presense of non-RH/custom package installed on system.
+
+    :BZ: 1869865
+
+    :expectedresults: check-non-rh-packages should work.
+
+    :CaseImportance: High
+    """
+    contacted = ansible_module.command(Health.check({"label": "non-rh-packages"}))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "Found 1 unexpected non Red Hat Package(s) installed!" in result["stdout"]
+        assert "walrus-5.21-1.noarch" in result["stdout"]
+        assert "WARNING" in result["stdout"]
+        assert result["rc"] == 78

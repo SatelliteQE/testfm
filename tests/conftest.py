@@ -320,6 +320,8 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_epel_repository(request, ansible_module):
+    """Setup/teardown fixture used by test_positive_check_epel_repository
+    and test_positive_check_epel_repository_with_invalid_repo"""
     setup = ansible_module.yum(name=epel_repo, state="present")
     assert setup.values()[0]["rc"] == 0
 
@@ -332,6 +334,7 @@ def setup_epel_repository(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_invalid_repository(request, ansible_module):
+    """Setup/teardown fixture used by test_positive_check_epel_repository_with_invalid_repo"""
     ansible_module.yum_repository(
         name="test_repo",
         description="repo with invalid baseurl",
@@ -526,3 +529,39 @@ def setup_corrupted_role(request, ansible_module):
         assert teardown.values()[0]["rc"] == 0
 
     request.addfinalizer(teardown_corrupted_role)
+
+
+@pytest.fixture(scope="function")
+def setup_custom_package(request, ansible_module):
+    """Setup/Teardown cusom yum repo/package for non-rh-packages check."""
+    ansible_module.yum_repository(
+        name="custom_repo",
+        description="custom repo",
+        file="custom_repo",
+        baseurl=f"{FAKE_YUM0_REPO}",
+        enabled="yes",
+        gpgcheck="no",
+    )
+    setup = ansible_module.file(path="/etc/yum.repos.d/custom_repo.repo", state="present")
+    assert setup.values()[0]["changed"] == 0
+
+    pkgs_locked = ansible_module.command(Packages.is_locked()).values()[0]["rc"]
+    if pkgs_locked == 0:
+        ansible_module.command(Packages.unlock())
+
+    contacted = ansible_module.yum(name="walrus", state="present")
+    for result in contacted.values():
+        assert result["rc"] == 0
+
+    if pkgs_locked == 0:
+        ansible_module.command(Packages.lock())
+
+    def teardown_custom_package():
+        teardown = ansible_module.yum(name="walrus", state="absent")
+        for result in contacted.values():
+            assert result["rc"] == 0
+
+        teardown = ansible_module.file(path="/etc/yum.repos.d/custom_repo.repo", state="absent")
+        assert teardown.values()[0]["changed"] == 1
+
+    request.addfinalizer(teardown_custom_package)
