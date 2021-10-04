@@ -61,22 +61,13 @@ def setup_hotfix_check(request, ansible_module):
         ansible_module.command(Packages.lock())
 
     def teardown_hotfix_check():
-        teardown = ansible_module.command(Packages.unlock())
-        for result in teardown.values():
-            logger.info(result["stdout"])
-            assert "FAIL" not in result["stdout"]
-            assert result["rc"] == 0
+        pkgs_locked = ansible_module.command(Packages.is_locked()).values()[0]["rc"]
         if pkgs_locked == 0:
             ansible_module.command(Packages.unlock())
         teardown = ansible_module.command("yum -y reinstall tfm-rubygem-fog-vsphere")
         for result in teardown.values():
             assert result["rc"] == 0
-        if float(product()) >= 6.6:
-            teardown = ansible_module.command(Packages.lock())
-            for result in teardown.values():
-                logger.info(result["stdout"])
-                assert "FAIL" not in result["stdout"]
-                assert result["rc"] == 0
+
         teardown = ansible_module.file(path="/etc/yum.repos.d/hotfix_repo.repo", state="absent")
         assert teardown.values()[0]["changed"] == 1
         teardown = ansible_module.yum(name=["hotfix-package"], state="absent")
@@ -565,3 +556,34 @@ def setup_custom_package(request, ansible_module):
         assert teardown.values()[0]["changed"] == 1
 
     request.addfinalizer(teardown_custom_package)
+
+
+@pytest.fixture(scope="function")
+def change_admin_passwd(request, setup_install_pexpect, ansible_module):
+    """Setup/Teardown for test_advanced.test_positive_foreman_maintain_hammer_setup"""
+    setup = ansible_module.command(
+        "hammer -u admin -p changeme user update --login admin --password admin"
+    )
+    for result in setup.values():
+        logger.info(result)
+        assert result["rc"] == 0
+
+    def default_admin_passwd():
+        teardown = ansible_module.command(
+            "hammer -u admin -p admin user update --login admin --password 'changeme'"
+        )
+        for result in teardown.values():
+            logger.info(result)
+            assert result["rc"] == 0
+        # Make default admin creds available in foreman_maintain_yml
+        output = ansible_module.command(Advanced.run_hammer_setup())
+        for result in output.values():
+            logger.info(result)
+            assert result["rc"] == 0
+        # Make sure default password available in foreman_maintain_yml
+        output = ansible_module.command(f"grep -i ':password: changeme' {foreman_maintain_yml}")
+        for result in output.values():
+            assert result["rc"] == 0
+            assert "changeme" in result["stdout"]
+
+    request.addfinalizer(default_admin_passwd)
