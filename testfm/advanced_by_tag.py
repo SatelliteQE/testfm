@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Usage:
     foreman-maintain advanced procedure by-tag [OPTIONS] SUBCOMMAND [ARG] ...
@@ -28,8 +27,7 @@ class AdvancedByTag(Base):
 
     @classmethod
     def post_migrations(cls, options=None):
-        """Build foreman-maintain advanced procedure by-tag
-         post-migrations"""
+        """Build foreman-maintain advanced procedure by-tag post-migrations"""
 
         cls.command_sub = "post-migrations"
 
@@ -42,8 +40,7 @@ class AdvancedByTag(Base):
 
     @classmethod
     def pre_migrations(cls, options=None):
-        """Build foreman-maintain advanced procedure by-tag
-         pre-migrations"""
+        """Build foreman-maintain advanced procedure by-tag pre-migrations"""
 
         cls.command_sub = "pre-migrations"
 
@@ -56,8 +53,7 @@ class AdvancedByTag(Base):
 
     @classmethod
     def restore(cls, options=None):
-        """Build foreman-maintain advanced procedure by-tag
-         backup"""
+        """Build foreman-maintain advanced procedure by-tag backup"""
 
         cls.command_sub = "restore"
 

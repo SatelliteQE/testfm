@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from setuptools import find_packages
 from setuptools import setup
 
-with open("README.rst", "r") as handle:
+with open("README.rst") as handle:
     LONG_DESCRIPTION = handle.read()
 
 with open("VERSION") as handle:

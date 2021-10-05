@@ -28,23 +28,23 @@ def test_positive_restore_online_backup(ansible_module):
     """
     # preparing a target dir
     backup_dir = "online_backup_restore"
-    setup = ansible_module.command("rm -rf /tmp/{}".format(backup_dir))
+    setup = ansible_module.command(f"rm -rf /tmp/{backup_dir}")
     assert setup.values()[0]["rc"] == 0
     setup = ansible_module.file(
-        path="/tmp/{}".format(backup_dir), state="directory", owner="postgres",
+        path=f"/tmp/{backup_dir}",
+        state="directory",
+        owner="postgres",
     )
     # saving backup to specified dir
     setup = ansible_module.command(
-        Backup.run_online_backup(["-y", "--preserve-directory", "/tmp/{}".format(backup_dir)])
+        Backup.run_online_backup(["-y", "--preserve-directory", f"/tmp/{backup_dir}"])
     )
     for result in setup.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     # restore from previously saved backup
-    contacted = ansible_module.command(
-        Restore._construct_command(["-y", "/tmp/{}".format(backup_dir)])
-    )
+    contacted = ansible_module.command(Restore._construct_command(["-y", f"/tmp/{backup_dir}"]))
     for result in contacted.values():
         logger.info(result)
         assert "FAIL" not in result["stdout"]
@@ -70,23 +70,23 @@ def test_positive_restore_offline_backup(ansible_module):
     """
     # preparing a target dir
     backup_dir = "offline_backup_restore"
-    setup = ansible_module.command("rm -rf /tmp/{}".format(backup_dir))
+    setup = ansible_module.command(f"rm -rf /tmp/{backup_dir}")
     assert setup.values()[0]["rc"] == 0
     setup = ansible_module.file(
-        path="/tmp/{}".format(backup_dir), state="directory", owner="postgres",
+        path=f"/tmp/{backup_dir}",
+        state="directory",
+        owner="postgres",
     )
     # saving backup to specified dir
     setup = ansible_module.command(
-        Backup.run_offline_backup(["-y", "--preserve-directory", "/tmp/{}".format(backup_dir)])
+        Backup.run_offline_backup(["-y", "--preserve-directory", f"/tmp/{backup_dir}"])
     )
     for result in setup.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     # restore from previously saved backup
-    contacted = ansible_module.command(
-        Restore._construct_command(["-y", "/tmp/{}".format(backup_dir)])
-    )
+    contacted = ansible_module.command(Restore._construct_command(["-y", f"/tmp/{backup_dir}"]))
     for result in contacted.values():
         logger.info(result)
         assert "FAIL" not in result["stdout"]

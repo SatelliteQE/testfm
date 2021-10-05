@@ -120,9 +120,7 @@ def test_positive_lock_package_versions(ansible_module):
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert "Packages are not locked." in result["stdout"]
-        assert (
-            "Automatic locking of package versions is disabled in installer." in result["stdout"]
-        )
+        assert "Automatic locking of package versions is disabled in installer." in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():
@@ -192,9 +190,7 @@ def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests)
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert "Packages are not locked." in result["stdout"]
-        assert (
-            "Automatic locking of package versions is disabled in installer." in result["stdout"]
-        )
+        assert "Automatic locking of package versions is disabled in installer." in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():

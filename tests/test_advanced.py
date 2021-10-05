@@ -117,7 +117,7 @@ def test_positive_foreman_taks_delete_old(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({u"state": "old"}))
+    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({"state": "old"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
@@ -139,7 +139,7 @@ def test_positive_foreman_taks_delete_planning(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({u"state": "planning"}))
+    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({"state": "planning"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
@@ -161,7 +161,7 @@ def test_positive_foreman_taks_delete_pending(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({u"state": "pending"}))
+    contacted = ansible_module.command(Advanced.run_foreman_tasks_delete({"state": "pending"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
@@ -240,7 +240,7 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
         assert result["rc"] == 0
         assert "FAIL" not in result["stdout"]
     ansible_module.fetch(src="/var/lib/foreman-maintain/data.yml", dest="./")
-    with open("./{}/var/lib/foreman-maintain/data.yml".format(sat_hostname)) as f:
+    with open(f"./{sat_hostname}/var/lib/foreman-maintain/data.yml") as f:
         data_yml = yaml.safe_load(f)
     assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":disabled"])
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":disabled"])
@@ -251,7 +251,7 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
         assert result["rc"] == 0
         assert "FAIL" not in result["stdout"]
     ansible_module.fetch(src="/var/lib/foreman-maintain/data.yml", dest="./")
-    with open("./{}/var/lib/foreman-maintain/data.yml".format(sat_hostname)) as f:
+    with open(f"./{sat_hostname}/var/lib/foreman-maintain/data.yml") as f:
         data_yml = yaml.safe_load(f)
     assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":enabled"])
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":enabled"])

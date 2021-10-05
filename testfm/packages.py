@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Usage:
     foreman-maintain packages [OPTIONS] SUBCOMMAND [ARG] ...
@@ -29,17 +28,17 @@ class Packages(Base):
     @classmethod
     def lock(cls, options=None):
         """
-    Usage:
-        foreman-maintain packages lock [OPTIONS]
+        Usage:
+            foreman-maintain packages lock [OPTIONS]
 
-    Options:
-        -y, --assumeyes               Automatically answer yes for all questions
+        Options:
+            -y, --assumeyes               Automatically answer yes for all questions
 
-        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+            -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
 
-        -f, --force                   Force steps that would be skipped as they were already run
+            -f, --force                   Force steps that would be skipped as they were already run
 
-        -h, --help                    print help
+            -h, --help                    print help
         """
         cls.command_sub = "lock"
 
@@ -53,17 +52,17 @@ class Packages(Base):
     @classmethod
     def unlock(cls, options=None):
         """
-    Usage:
-        foreman-maintain packages unlock [OPTIONS]
+        Usage:
+            foreman-maintain packages unlock [OPTIONS]
 
-    Options:
-        -y, --assumeyes               Automatically answer yes for all questions
+        Options:
+            -y, --assumeyes               Automatically answer yes for all questions
 
-        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+            -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
 
-        -f, --force                   Force steps that would be skipped as they were already run
+            -f, --force                   Force steps that would be skipped as they were already run
 
-        -h, --help                    print help
+            -h, --help                    print help
         """
         cls.command_sub = "unlock"
 
@@ -77,17 +76,17 @@ class Packages(Base):
     @classmethod
     def status(cls, options=None):
         """
-    Usage:
-        foreman-maintain packages status [OPTIONS]
+        Usage:
+            foreman-maintain packages status [OPTIONS]
 
-    Options:
-        -y, --assumeyes               Automatically answer yes for all questions
+        Options:
+            -y, --assumeyes               Automatically answer yes for all questions
 
-        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+            -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
 
-        -f, --force                   Force steps that would be skipped as they were already run
+            -f, --force                   Force steps that would be skipped as they were already run
 
-        -h, --help                    print help
+            -h, --help                    print help
         """
         cls.command_sub = "status"
 
@@ -101,17 +100,17 @@ class Packages(Base):
     @classmethod
     def install(cls, options=None):
         """
-    Usage:
-        foreman-maintain packages install [OPTIONS] PACKAGES ...
+        Usage:
+            foreman-maintain packages install [OPTIONS] PACKAGES ...
 
-    Options:
-        -y, --assumeyes               Automatically answer yes for all questions
+        Options:
+            -y, --assumeyes               Automatically answer yes for all questions
 
-        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+            -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
 
-        -f, --force                   Force steps that would be skipped as they were already run
+            -f, --force                   Force steps that would be skipped as they were already run
 
-        -h, --help                    print help
+            -h, --help                    print help
         """
         cls.command_sub = "install"
 
@@ -125,17 +124,17 @@ class Packages(Base):
     @classmethod
     def update(cls, options=None):
         """
-    Usage:
-        foreman-maintain packages update [OPTIONS] PACKAGES ...
+        Usage:
+            foreman-maintain packages update [OPTIONS] PACKAGES ...
 
-    Options:
-        -y, --assumeyes               Automatically answer yes for all questions
+        Options:
+            -y, --assumeyes               Automatically answer yes for all questions
 
-        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+            -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
 
-        -f, --force                   Force steps that would be skipped as they were already run
+            -f, --force                   Force steps that would be skipped as they were already run
 
-        -h, --help                    print help
+            -h, --help                    print help
         """
         cls.command_sub = "update"
 
@@ -149,17 +148,17 @@ class Packages(Base):
     @classmethod
     def is_locked(cls, options=None):
         """
-    Usage:
-        foreman-maintain packages is-locked [OPTIONS]
+        Usage:
+            foreman-maintain packages is-locked [OPTIONS]
 
-    Options:
-        -y, --assumeyes               Automatically answer yes for all questions
+        Options:
+            -y, --assumeyes               Automatically answer yes for all questions
 
-        -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+            -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
 
-        -f, --force                   Force steps that would be skipped as they were already run
+            -f, --force                   Force steps that would be skipped as they were already run
 
-        -h, --help                    print help
+            -h, --help                    print help
         """
         cls.command_sub = "is-locked"
 

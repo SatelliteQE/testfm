@@ -62,7 +62,7 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
 
 @pytest.mark.capsule
 def test_positive_repositories_validate(ansible_module):
-    """ Test repositories-validate pre-upgrade check is
+    """Test repositories-validate pre-upgrade check is
      skipped when system is subscribed using custom activationkey.
 
     :id: 811698c0-09da-4727-8886-077aebb2b5ed
@@ -101,50 +101,50 @@ def test_positive_repositories_validate(ansible_module):
 @pytest.mark.capsule
 @stubbed
 def test_positive_self_update():
-    """ Test self-update foreman-maintain package feature.
+    """Test self-update foreman-maintain package feature.
 
-        :id: 1c566768-fd73-4fe6-837b-26709a1ebed9
+    :id: 1c566768-fd73-4fe6-837b-26709a1ebed9
 
-        :setup:
-            1. foreman-maintain should be installed.
-            2. foreman-maintain package version should be >= v0.6.x
+    :setup:
+        1. foreman-maintain should be installed.
+        2. foreman-maintain package version should be >= v0.6.x
 
-        :steps:
-            1. Run foreman-maintain upgrade check/run command.
-            2. Run foreman-maintain upgrade check/run command with disable-self-upgrade option.
+    :steps:
+        1. Run foreman-maintain upgrade check/run command.
+        2. Run foreman-maintain upgrade check/run command with disable-self-upgrade option.
 
-        :BZ: 1649329
+    :BZ: 1649329
 
-        :expectedresults:
-            1. It updates FM to latest version and gives message to re-run command.
-            2. If disable-self-upgrade option is used then it should skip self-upgrade step.
+    :expectedresults:
+        1. It updates FM to latest version and gives message to re-run command.
+        2. If disable-self-upgrade option is used then it should skip self-upgrade step.
 
-        :CaseImportance: Critical
-        """
+    :CaseImportance: Critical
+    """
 
 
 @pytest.mark.capsule
 @stubbed
 def test_positive_check_presence_satellite_or_satellite_capsule():
-    """ Check for presence of satellite or satellite-capsule packages feature.
+    """Check for presence of satellite or satellite-capsule packages feature.
 
-        :id: 1011ff01-6dfb-422f-92c5-995d38bc163e
+    :id: 1011ff01-6dfb-422f-92c5-995d38bc163e
 
-        :setup:
-            1. foreman-maintain should be installed.
-            2. foreman-maintain package version should be >= v0.6.x
+    :setup:
+        1. foreman-maintain should be installed.
+        2. foreman-maintain package version should be >= v0.6.x
 
-        :steps:
-            1. Run foreman-maintain upgrade list-versions/check/run command.
-            2. Run foreman-maintain upgrade list-versions/check/run command,
-                after removing satellite and satellite-capsule packages.
+    :steps:
+        1. Run foreman-maintain upgrade list-versions/check/run command.
+        2. Run foreman-maintain upgrade list-versions/check/run command,
+            after removing satellite and satellite-capsule packages.
 
-        :BZ: 1886031
+    :BZ: 1886031
 
-        :expectedresults:
-            1. If those packages are removed, then it should give error, like
-                "Error: Important rpm package satellite/satellite-capsule is not installed!
-                 Install satellite/satellite-capsule rpm to ensure system consistency."
+    :expectedresults:
+        1. If those packages are removed, then it should give error, like
+            "Error: Important rpm package satellite/satellite-capsule is not installed!
+             Install satellite/satellite-capsule rpm to ensure system consistency."
 
-        :CaseImportance: Critical
-        """
+    :CaseImportance: Critical
+    """

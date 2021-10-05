@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Usage:
     foreman-maintain health [OPTIONS] SUBCOMMAND [ARG] ...
@@ -26,23 +25,23 @@ class Health(Base):
     @classmethod
     def check(cls, options=None):
         """Build foreman-maintain health check
-    Usage:
-        foreman-maintain health check [OPTIONS]
+        Usage:
+            foreman-maintain health check [OPTIONS]
 
-    Options:
-        --label label                 Limit only for a specific label.
-                                      (Use "list" command to see available
-                                       labels)
-        --tags tags                   Limit only for specific set of labels.
-                                      (Use list-tags command to see available
-                                      tags) (comma-separated list)
-        -y, --assumeyes               Automatically answer yes for all
-                                      questions
-        -w, --whitelist whitelist     Comma-separated list of labels of steps
-                                      to be ignored
-        -f, --force                   Force steps that would be skipped as they
-                                      were already run
-        -h, --help                    print help
+        Options:
+            --label label                 Limit only for a specific label.
+                                          (Use "list" command to see available
+                                           labels)
+            --tags tags                   Limit only for specific set of labels.
+                                          (Use list-tags command to see available
+                                          tags) (comma-separated list)
+            -y, --assumeyes               Automatically answer yes for all
+                                          questions
+            -w, --whitelist whitelist     Comma-separated list of labels of steps
+                                          to be ignored
+            -f, --force                   Force steps that would be skipped as they
+                                          were already run
+            -h, --help                    print help
         """
         cls.command_sub = "check"
 
