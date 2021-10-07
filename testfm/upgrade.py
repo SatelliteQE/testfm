@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Usage:
     foreman-maintain upgrade [OPTIONS] SUBCOMMAND [ARG] ...

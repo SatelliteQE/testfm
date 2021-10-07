@@ -1,4 +1,4 @@
-class Base(object):
+class Base:
     """
     @param command_base: base command of foreman-maintain.
     Output of recent `foreman-maintain --help`::
@@ -31,23 +31,23 @@ class Base(object):
     @classmethod
     def _construct_command(cls, options=None):
         """Build a foreman-maintain command based on the options passed"""
-        tail = u""
+        tail = ""
         if isinstance(options, list):
             for val in options:
                 if val is None:
                     continue
                 else:
-                    tail += u" {}".format(val)
+                    tail += f" {val}"
         else:
             for key, val in options.items():
                 if val is None:
                     continue
                 if val is True:
-                    tail += u" --{}".format(key)
+                    tail += f" --{key}"
                 elif val is not False:
                     if isinstance(val, list):
                         val = ",".join(str(el) for el in val)
-                    tail += u' --{}="{}"'.format(key, val)
+                    tail += f' --{key}="{val}"'
 
-        cmd = u"foreman-maintain {} {} {}".format(cls.command_base, cls.command_sub, tail.strip())
+        cmd = f"foreman-maintain {cls.command_base} {cls.command_sub} {tail.strip()}"
         return cmd
