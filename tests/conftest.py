@@ -498,3 +498,31 @@ def setup_yum_content(request, ansible_module):
         assert teardown.values()[0]["rc"] == 0
 
     request.addfinalizer(teardown_yum_content)
+
+
+@pytest.fixture(scope="function")
+def setup_corrupted_role(request, ansible_module):
+    """This fixture is used to corrupt a role for test test_corrupted_roles"""
+    role_name = "test_role"
+    resource_type = gen_string("alpha")
+    ansible_module.command(f"hammer role create --name {role_name}")
+    ansible_module.command(f"hammer filter create --role {role_name} --permission-ids 62,68")
+    permission_name = r"'\''console_hosts'\''"
+    resource_type = rf"'\''{resource_type}'\''"
+    setup = ansible_module.shell(
+        f'''sudo su - postgres -c "psql -d foreman -c 'UPDATE permissions SET
+        resource_type = {resource_type} WHERE name = {permission_name};'"'''
+    )
+    assert setup.values()[0]["rc"] == 0
+
+    def teardown_corrupted_role():
+        resource_type = r"'\''Host'\''"
+        setup = ansible_module.shell(
+            f'''sudo su - postgres -c "psql -d foreman -c 'UPDATE permissions SET
+            resource_type = {resource_type} WHERE name = {permission_name};'"'''
+        )
+        assert setup.values()[0]["rc"] == 0
+        teardown = ansible_module.command(f"hammer role delete --name {role_name}")
+        assert teardown.values()[0]["rc"] == 0
+
+    request.addfinalizer(teardown_corrupted_role)
