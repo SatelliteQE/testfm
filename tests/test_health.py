@@ -821,3 +821,45 @@ def test_positive_remove_job_file(setup_subscribe_to_cdn_dogfood, ansible_module
     contacted = ansible_module.find(paths="/var/lib/pulp", file_type="file")
     for file in contacted.values()[0]["files"]:
         assert "job" not in file["path"]
+
+
+def test_positive_corrupted_roles(ansible_module, setup_corrupted_role):
+    """Verify corrupted-roles check.
+
+    :id: 69d9ac9e-772c-42e8-94b6-e8561c70c5c0
+
+     :setup:
+        1. foreman-maintain should be installed.
+        2. Run "hammer filter list --search role=test_role" to Check the role,
+           resource type, and permissions assigned.
+
+    :steps:
+        1. Run foreman-maintain health check --label corrupted-roles
+        2. Run "hammer filter list --search role=test_role" again to check if corrupted roles
+           are fixed and verify if new filter is created for updated resource_type
+
+    :expectedresults: Check corrupted-roles should work and should handle corrupted roles
+                      by splitting filters as per updated values.
+
+    :CaseImportance: Medium
+
+    :BZ: 1703041, 1908846
+    """
+    # Check the filter created to verify the role, resource type, and permissions assigned.
+    contacted = ansible_module.shell(
+        r"hammer --output yaml filter list --search role=test_role | grep '\- Id:'"
+    )
+    for result in contacted.values():
+        assert len(result["stdout_lines"]) == 1
+    # Run corrupted-roles check.
+    contacted = ansible_module.command(Health.check(["--label", "corrupted-roles", "--assumeyes"]))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] == 0
+    # Verify corrupted roles are fixed and new filter is created for updated resource_type.
+    contacted = ansible_module.shell(
+        r"hammer --output yaml filter list --search role=test_role | grep '\- Id:'"
+    )
+    for result in contacted.values():
+        assert len(result["stdout_lines"]) == 2
