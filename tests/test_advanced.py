@@ -5,6 +5,7 @@ from testfm.advanced import Advanced
 from testfm.advanced_by_tag import AdvancedByTag
 from testfm.constants import cap_beta_repo
 from testfm.constants import cap_repos
+from testfm.constants import foreman_maintain_yml
 from testfm.constants import sat_beta_repo
 from testfm.constants import sat_repos
 from testfm.decorators import stubbed
@@ -33,7 +34,7 @@ def test_positive_foreman_maintain_service_restart(ansible_module):
         assert "FAIL" not in result["stdout"]
 
 
-def test_positive_foreman_maintain_hammer_setup(setup_install_pexpect, ansible_module):
+def test_positive_foreman_maintain_hammer_setup(change_admin_passwd, ansible_module):
     """Hammer setup using advanced procedure
 
     :id: 236171c0-5185-465e-9eec-e15dfefb41c3
@@ -49,34 +50,39 @@ def test_positive_foreman_maintain_hammer_setup(setup_install_pexpect, ansible_m
     :expectedresults: Hammer setup should successful.
 
     :CaseImportance: Critical
+
+    :BZ: 1830355
     """
-    try:
-        setup = ansible_module.command(
-            "hammer -u admin -p changeme"
-            " user update"
-            " --login admin "
-            "--password 'JMNBzJ*a-4;XH!C~'"
-        )
-        for result in setup.values():
-            logger.info(result)
-            assert result["rc"] == 0
-        output = ansible_module.expect(
-            command=Advanced.run_hammer_setup(),
-            responses={"Hammer admin password: ": "JMNBzJ*a-4;XH!C~"},
-        )
-        for result in output.values():
-            logger.info(result)
-            assert result["rc"] == 0
-    finally:
-        teardown = ansible_module.command(
-            "hammer -u admin "
-            "-p 'JMNBzJ*a-4;XH!C~'"
-            " user update --login admin"
-            " --password 'changeme'"
-        )
-        for result in teardown.values():
-            logger.info(result)
-            assert result["rc"] == 0
+    # try with incorrect password
+    output = ansible_module.expect(
+        command=Advanced.run_hammer_setup(),
+        responses={"Hammer admin password: ": "wrong_password"},
+    )
+    for result in output.values():
+        logger.info(result)
+        assert "Incorrect credential for admin user" in result["stdout"]
+        assert result["rc"] == 1
+
+    # Verify wrong_password isn't updated in foreman_maintain_yml
+    output = ansible_module.command(f"grep -i ':password: wrong_password' {foreman_maintain_yml}")
+    for result in output.values():
+        assert result["rc"] == 1
+        assert "wrong_password" not in result["stdout"]
+
+    # try with correct password
+    output = ansible_module.expect(
+        command=Advanced.run_hammer_setup(),
+        responses={"Hammer admin password: ": "admin"},
+    )
+    for result in output.values():
+        logger.info(result)
+        assert result["rc"] == 0
+
+    # Verify new password updated in foreman_maintain_yml
+    output = ansible_module.command(f"grep -i ':password: admin' {foreman_maintain_yml}")
+    for result in output.values():
+        assert result["rc"] == 0
+        assert "admin" in result["stdout"]
 
 
 @stubbed
