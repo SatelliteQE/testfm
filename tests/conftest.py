@@ -587,3 +587,34 @@ def change_admin_passwd(request, setup_install_pexpect, ansible_module):
             assert "changeme" in result["stdout"]
 
     request.addfinalizer(default_admin_passwd)
+
+
+@pytest.fixture(scope="function")
+def setup_packages_update(request, ansible_module):
+    """This fixture is used to downgrade a package for test test_positive_fm_packages_update"""
+    ansible_module.yum_repository(
+        name="custom_repo",
+        description="custom_repo",
+        file="custom_repo",
+        baseurl=FAKE_YUM0_REPO,
+        enabled="yes",
+        gpgcheck="no",
+    )
+    setup = ansible_module.raw(Packages.install(["--assumeyes", "walrus"]))
+    for result in setup.values():
+        assert result["rc"] == 0
+    contacted = ansible_module.yum(
+        name="walrus-0.71-1",
+        allow_downgrade=True,
+        disable_plugin="foreman-protector",
+        state="present",
+    )
+    for result in contacted.values():
+        assert result["rc"] == 0
+
+    def teardown_packages_update():
+        contacted = ansible_module.yum(name="walrus", state="absent")
+        for result in contacted.values():
+            assert result["rc"] == 0
+
+    request.addfinalizer(teardown_packages_update)

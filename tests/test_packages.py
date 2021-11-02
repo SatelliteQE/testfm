@@ -204,3 +204,45 @@ def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests)
     for result in contacted.values():
         assert result["rc"] == 0
         assert "Use foreman-maintain packages install/update <package>" not in result["stdout"]
+
+
+@pytest.mark.capsule
+def test_positive_fm_packages_update(ansible_module, setup_packages_update):
+    """Verify whether packages check-update and update work as expected.
+
+    :id: 354d9940-10f1-4244-9079-fdbd24be49b3
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain packages check-update
+        2. Run foreman-maintain packages update to update the walrus package.
+        3. Verify walrus package is updated.
+
+    :BZ: 1803975
+
+    :expectedresults: foreman-maintain packages check-update should list walrus package for update
+                      and foreman-maintain packages update should update the walrus package.
+
+    :CaseImportance: Critical
+    """
+    # Run foreman-maintain packages check update and verify walrus package is available for update.
+    contacted = ansible_module.command(Packages.check_update())
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+        assert "walrus" in result["stdout"]
+    # Run foreman-maintain packages update
+    contacted = ansible_module.raw(Packages.update(["--assumeyes", "walrus"]))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    # Verify walrus package is updated.
+    contacted = ansible_module.command("rpm -qa walrus")
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert result["rc"] == 0
+        assert "walrus-5.21-1" in result["stdout"]

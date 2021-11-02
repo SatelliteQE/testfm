@@ -13,6 +13,7 @@ Subcommands:
     install                       Install packages in an unlocked session
     update                        Update packages in an unlocked session
     is-locked                     Check if update of packages is allowed
+    check-update                  Check for available package updates
 
 Options:
     -h, --help                    print help
@@ -167,4 +168,29 @@ class Packages(Base):
 
         result = cls._construct_command(options)
 
+        return result
+
+    @classmethod
+    def check_update(cls, options=None):
+        """
+        Usage:
+            foreman-maintain packages check-update [OPTIONS]
+
+        Options:
+            -y, --assumeyes               Automatically answer yes for all questions
+
+            -w, --whitelist whitelist     Comma-separated list of labels of steps to be skipped
+
+            -f, --force                   Force steps that would be skipped as they were already run
+
+            --plaintext                   Print the output in plaintext and disable the spinner
+
+            -h, --help                    print help
+        """
+        cls.command_sub = "check-update"
+
+        if options is None:
+            options = {}
+
+        result = cls._construct_command(options)
         return result
