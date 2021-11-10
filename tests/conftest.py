@@ -575,13 +575,13 @@ def change_admin_passwd(request, setup_install_pexpect, ansible_module):
         for result in teardown.values():
             logger.info(result)
             assert result["rc"] == 0
-        # Make default admin creds available in foreman_maintain_yml
+        # Make default admin creds available in fm_hammer_yml
         output = ansible_module.command(Advanced.run_hammer_setup())
         for result in output.values():
             logger.info(result)
             assert result["rc"] == 0
-        # Make sure default password available in foreman_maintain_yml
-        output = ansible_module.command(f"grep -i ':password: changeme' {foreman_maintain_yml}")
+        # Make sure default password available in fm_hammer_yml
+        output = ansible_module.command(f"grep -i ':password: changeme' {fm_hammer_yml}")
         for result in output.values():
             assert result["rc"] == 0
             assert "changeme" in result["stdout"]
