@@ -382,7 +382,7 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
 
     :CaseImportance: Critical
     """
-    for ver in ["6.7", "6.8", "6.9"]:
+    for ver in ["6.7", "6.8", "6.9", "6.10"]:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
             logger.info(result["stdout"])
@@ -397,7 +397,7 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
     # Verify that all required beta repositories gets enabled
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
-        export_command + Advanced.run_repositories_setup({"version": "6.9"})
+        export_command + Advanced.run_repositories_setup({"version": "6.10"})
     )
     for result in contacted.values():
         logger.info(result["stdout"])
@@ -409,13 +409,13 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
         for repo in sat_beta_repo:
             assert repo in result["stdout"]
 
-    # 6.10 till not GA
-    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.10"}))
+    # 7.0 till not GA
+    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "7.0"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
-        for repo in sat_repos["6.10"]:
+        for repo in sat_repos["7.0"]:
             assert repo in result["stdout"]
 
 
@@ -438,7 +438,7 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
 
     :CaseImportance: Critical
     """
-    for ver in ["6.8", "6.9"]:
+    for ver in ["6.8", "6.9", "6.10"]:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
             logger.info(result["stdout"])
@@ -452,7 +452,7 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
     # Verify that all required beta repositories gets enabled
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
-        export_command + Advanced.run_repositories_setup({"version": "6.9"})
+        export_command + Advanced.run_repositories_setup({"version": "6.10"})
     )
     for result in contacted.values():
         logger.info(result["stdout"])
@@ -464,11 +464,11 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
         for repo in cap_beta_repo:
             assert repo in result["stdout"]
 
-    # 6.10 till not GA
-    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.10"}))
+    # 7.0 till not GA
+    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "7.0"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
-        for repo in cap_repos["6.10"]:
+        for repo in cap_repos["7.0"]:
             assert repo in result["stdout"]

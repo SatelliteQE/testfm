@@ -58,6 +58,10 @@ sat_610_repos = [
     "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-6.10-rpms",
 ] + common_repos
+sat_70_repos = [
+    "rhel-7-server-ansible-2.9-rpms",
+    "rhel-7-server-satellite-7.0-rpms",
+] + common_repos
 sat_beta_repo = [
     "rhel-server-7-satellite-6-beta-rpms",
     "rhel-7-server-ansible-2.9-rpms",
@@ -80,6 +84,11 @@ cap_610_repos = [
     "rhel-7-server-satellite-tools-6.10-rpms",
     "rhel-7-server-satellite-capsule-6.10-rpms",
 ] + common_repos
+cap_70_repos = [
+    "rhel-7-server-ansible-2.9-rpms",
+    "rhel-7-server-satellite-tools-7.0-rpms",
+    "rhel-7-server-satellite-capsule-7.0-rpms",
+] + common_repos
 cap_beta_repo = [
     "rhel-server-7-satellite-capsule-6-beta-rpms",
     "rhel-7-server-ansible-2.9-rpms",
@@ -96,11 +105,13 @@ sat_repos = {
     "6.8": sat_68_repos,
     "6.9": sat_69_repos,
     "6.10": sat_610_repos,
+    "7.0": sat_70_repos,
 }
 cap_repos = {
     "6.8": cap_68_repos,
     "6.9": cap_69_repos,
     "6.10": cap_610_repos,
+    "7.0": cap_70_repos,
 }
 foreman_maintain_yml = "/etc/foreman-maintain/foreman_maintain.yml"
 epel_repo = "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
