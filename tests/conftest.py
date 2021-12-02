@@ -618,3 +618,21 @@ def setup_packages_update(request, ansible_module):
             assert result["rc"] == 0
 
     request.addfinalizer(teardown_packages_update)
+
+
+@pytest.fixture(scope="function")
+def setup_rpmsave_file(request, ansible_module):
+    """This fixture is used to create a .rpmsave file"""
+    file_name = gen_string("alpha")
+    setup = ansible_module.file(path=f"/etc/foreman/dynflow/{file_name}.yml.rpmsave", state="touch")
+    for result in setup.values():
+        assert result["changed"] is True
+
+    def teardown_rpmsave_file():
+        contacted = ansible_module.file(
+            path=f"/etc/foreman/dynflow/{file_name}.yml.rpmsave", state="absent"
+        )
+        for result in contacted.values():
+            assert result["changed"] is True
+
+    request.addfinalizer(teardown_rpmsave_file)
