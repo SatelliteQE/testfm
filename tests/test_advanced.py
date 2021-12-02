@@ -74,7 +74,7 @@ def test_positive_foreman_maintain_hammer_setup(change_admin_passwd, ansible_mod
     # Verify wrong_password isn't updated in fm_hammer_yml
     output = ansible_module.command(f"grep -i ':password: wrong_password' {fm_hammer_yml}")
     for result in output.values():
-        assert result["rc"] == 1
+        assert result["rc"] != 0
         assert "wrong_password" not in result["stdout"]
 
     # try with correct password
