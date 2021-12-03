@@ -1,6 +1,7 @@
 import pytest
 
 from testfm.decorators import starts_in
+from testfm.decorators import stubbed
 from testfm.log import logger
 from testfm.packages import Packages
 
@@ -210,3 +211,27 @@ def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests)
     for result in contacted.values():
         assert result["rc"] == 0
         assert "Use foreman-maintain packages install/update <package>" not in result["stdout"]
+
+
+@stubbed
+def test_positive_fm_packages_sat_installer(ansible_module):
+    """Verify satellite-installer is not executed after install/update
+    of rubygem-foreman_maintain package
+
+    :id: d73971a1-68b4-4ab2-a87c-76cc5ff80a39
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain packages install/update rubygem-foreman_maintain
+        2. Verify satellite-installer is not executed after install/update
+           of rubygem-foreman_maintain package
+
+    :BZ: 1825841
+
+    :expectedresults: satellite-installer should not be executed after install/update
+                      of rubygem-foreman_maintain package
+
+    :CaseImportance: Critical
+    """

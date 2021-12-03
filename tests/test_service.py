@@ -316,3 +316,33 @@ def test_positive_foreman_maintain_service_list_sidekiq(ansible_module):
         assert "dynflow-sidekiq@orchestrator" in result["stdout"]
         assert "dynflow-sidekiq@worker" in result["stdout"]
         assert "dynflow-sidekiq@worker-hosts-queue" in result["stdout"]
+
+
+def test_positive_service_status_rpmsave(ansible_module, setup_rpmsave_file):
+    """Verify foreman-maintain service status doesn't pick up any backup files like .rpmsave,
+    or any file with .yml which don't exist as services.
+
+    :id: dda696c9-7385-4450-8380-b694e4016661
+
+    :setup:
+        1. foreman-maintain should be installed.
+
+    :steps:
+        1. Run foreman-maintain service status.
+        2. Verify foreman-maintain service status doesn't pick up any backup files like
+           .rpmsave, or any file with .yml which don't exist as services.
+
+
+    :expectedresults: foreman-maintain service status shouldn't pick
+                      invalid services with extension .rpmsave
+
+    :BZ: 1945916, 1962853
+
+    :CaseImportance: High
+    """
+    contacted = ansible_module.command(Service.service_status(["-b"]))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "rpmsave" not in result["stdout"]
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
