@@ -667,23 +667,53 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
         1. foreman-maintain should be installed.
 
     :steps:
-        1. Add config_entries section in /etc/foreman-installer/custom-hiera.yaml
+        1. Have an invalid /etc/foreman-installer/custom-hiera.yaml file
         2. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
-        3. Assert that check-postgresql-checkpoint-segments fails.
-        4. Add checkpoint_segments parameter in /etc/foreman-installer/custom-hiera.yaml
-        5. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
-        6. Assert that check-postgresql-checkpoint-segments fails.
-        7. Remove config_entries section from /etc/foreman-installer/custom-hiera.yaml
-        8. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
-        9. Assert that check-postgresql-checkpoint-segments pass.
+        3. Assert that check-postgresql-checkpoint-segments gives proper
+           error message saying an invalid yaml file
+        4. Make /etc/foreman-installer/custom-hiera.yaml file valid
+        5. Add config_entries section in /etc/foreman-installer/custom-hiera.yaml
+        6. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        7. Assert that check-postgresql-checkpoint-segments fails.
+        8. Add checkpoint_segments parameter in /etc/foreman-installer/custom-hiera.yaml
+        9. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        10. Assert that check-postgresql-checkpoint-segments fails.
+        11. Remove config_entries section from /etc/foreman-installer/custom-hiera.yaml
+        12. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        13. Assert that check-postgresql-checkpoint-segments pass.
+
+    :BZ: 1894149, 1899322
 
     :expectedresults: check-postgresql-checkpoint-segments should work.
 
     :CaseImportance: High
     """
+    custom_hiera = "/etc/foreman-installer/custom-hiera.yaml"
+    # Create invalid yaml file
+    ansible_module.lineinfile(
+        path=custom_hiera,
+        regexp="---",
+        line="----",
+        state="present",
+    )
+    contacted = ansible_module.command(
+        Health.check(["--label", "check-postgresql-checkpoint-segments"])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert f"File {custom_hiera} is not a yaml file." in result["stdout"]
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] == 1
+    # Make yaml file valid
+    ansible_module.lineinfile(
+        path=custom_hiera,
+        regexp="----",
+        line="---",
+        state="present",
+    )
     # Add config_entries section
     ansible_module.blockinfile(
-        path="/etc/foreman-installer/custom-hiera.yaml",
+        path=custom_hiera,
         block="postgresql::server::config_entries:",
     )
     # Run check-postgresql-checkpoint-segments check.
@@ -698,7 +728,7 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
         assert result["rc"] == 1
     # Add checkpoint_segments
     ansible_module.blockinfile(
-        path="/etc/foreman-installer/custom-hiera.yaml",
+        path=custom_hiera,
         block="postgresql::server::config_entries: \n  checkpoint_segments: 32",
     )
     # Run check-postgresql-checkpoint-segments check.
@@ -713,7 +743,7 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
         assert result["rc"] == 1
     # Remove config_entries section
     ansible_module.blockinfile(
-        path="/etc/foreman-installer/custom-hiera.yaml",
+        path=custom_hiera,
         block="postgresql::server::config_entries: \n  checkpoint_segments: 32",
         state="absent",
     )
@@ -892,3 +922,30 @@ def test_positive_check_non_rh_packages(setup_custom_package, ansible_module):
         assert "walrus-5.21-1.noarch" in result["stdout"]
         assert "WARNING" in result["stdout"]
         assert result["rc"] == 78
+
+
+@stubbed
+def test_positive_available_space_postgresql12(ansible_module):
+    """Verify warnings when available space in /var/opt/rh/rh-postgresql12/
+    is less than consumed space of /var/lib/pgsql/
+
+    :id: 283e627d-6afc-49cb-afdb-5b77a91bbd1e
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. Have some data under /var/lib/pgsql (upgrade templates have ~565Mib data)
+        3. Create dir /var/opt/rh/rh-postgresql12/ and mount a partition of ~300Mib
+           to this dir (less than /var/lib/pgsql).
+
+    :steps:
+        1. foreman-maintain health check --label available-space-for-postgresql12
+        2. Verify Warning or Error is displayed when enough space is not
+           available under /var/opt/rh/rh-postgresql12/
+
+    :BZ: 1898108, 1973363
+
+    :expectedresults: Verify warnings when available space in /var/opt/rh/rh-postgresql12/
+                      is less than consumed space of /var/lib/pgsql/
+
+    :CaseImportance: High
+    """
