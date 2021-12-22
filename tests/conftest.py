@@ -500,7 +500,9 @@ def setup_corrupted_role(request, ansible_module):
     role_name = "test_role"
     resource_type = gen_string("alpha")
     ansible_module.command(f"hammer role create --name {role_name}")
-    ansible_module.command(f"hammer filter create --role {role_name} --permission-ids 62,68")
+    ansible_module.command(
+        f"hammer filter create --role {role_name} --permissions view_hosts,console_hosts"
+    )
     permission_name = r"'\''console_hosts'\''"
     resource_type = rf"'\''{resource_type}'\''"
     setup = ansible_module.shell(
