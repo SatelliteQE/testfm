@@ -1,21 +1,26 @@
-# CI stages to execute against all branches on PR merge
+# CI stages to execute against 6.10.z branch on PR merge
 name: TestFM - IMAGE
 
-on: [push]
+on:
+  push:
+    branches:
+      - 6.10.z
 
 jobs:
   codechecks:
     name: Code Quality
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
     steps:
       - name: Checkout TestFM
         uses: actions/checkout@v2
 
-      - name: Set Up Python
+      - name: Set Up Python-${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: '3.6'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Dependencies
         run: |
