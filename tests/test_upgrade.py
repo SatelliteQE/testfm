@@ -27,28 +27,28 @@ def test_positive_foreman_maintain_upgrade_list(ansible_module):
         satellite_version = ansible_module.command(
             "rpm -q 'satellite' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if satellite_version.startswith("6.10"):
-            versions = ["6.10.z"]
+        if satellite_version.startswith("7.0"):
+            versions = ["7.0.z"]
+        elif satellite_version.startswith("6.10"):
+            versions = ["6.10.z", "7.0"]
         elif satellite_version.startswith("6.9"):
             versions = ["6.9.z", "6.10"]
         elif satellite_version.startswith("6.8"):
             versions = ["6.8.z", "6.9"]
-        elif satellite_version.startswith("6.7"):
-            versions = ["6.7.z", "6.8"]
         else:
             versions = ["unsupported satellite version"]
     else:
         capsule_version = ansible_module.command(
             "rpm -q 'satellite-capsule' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if capsule_version.startswith("6.10"):
-            versions = ["6.10.z"]
+        if capsule_version.startswith("7.0"):
+            versions = ["7.0.z"]
+        elif capsule_version.startswith("6.10"):
+            versions = ["6.10.z", "7.0"]
         elif capsule_version.startswith("6.9"):
             versions = ["6.9.z", "6.10"]
         elif capsule_version.startswith("6.8"):
             versions = ["6.8.z", "6.9"]
-        elif capsule_version.startswith("6.7"):
-            versions = ["6.7.z", "6.8"]
         else:
             versions = ["unsupported capsule version"]
 
@@ -86,7 +86,7 @@ def test_positive_repositories_validate(ansible_module):
             "--target-version",
             f"{product()}.z",
             "--whitelist",
-            "check-non-redhat-repository,non-rh-packages,services-up",
+            "check-non-redhat-repository",
             "--assumeyes",
         ]
     )
