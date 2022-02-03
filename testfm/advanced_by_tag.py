@@ -1,6 +1,6 @@
 """
 Usage:
-    foreman-maintain advanced procedure by-tag [OPTIONS] SUBCOMMAND [ARG] ...
+    satellite-maintain advanced procedure by-tag [OPTIONS] SUBCOMMAND [ARG] ...
 
 Parameters:
     SUBCOMMAND                    subcommand
@@ -21,13 +21,13 @@ from testfm.base import Base
 
 
 class AdvancedByTag(Base):
-    """Manipulates Foreman-maintain's advanced procedure by-tag command"""
+    """Manipulates Satellite-maintain's advanced procedure by-tag command"""
 
     command_base = "advanced procedure by-tag"
 
     @classmethod
     def post_migrations(cls, options=None):
-        """Build foreman-maintain advanced procedure by-tag post-migrations"""
+        """Build satellite-maintain advanced procedure by-tag post-migrations"""
 
         cls.command_sub = "post-migrations"
 
@@ -40,7 +40,7 @@ class AdvancedByTag(Base):
 
     @classmethod
     def pre_migrations(cls, options=None):
-        """Build foreman-maintain advanced procedure by-tag pre-migrations"""
+        """Build satellite-maintain advanced procedure by-tag pre-migrations"""
 
         cls.command_sub = "pre-migrations"
 
@@ -53,7 +53,7 @@ class AdvancedByTag(Base):
 
     @classmethod
     def restore(cls, options=None):
-        """Build foreman-maintain advanced procedure by-tag backup"""
+        """Build satellite-maintain advanced procedure by-tag backup"""
 
         cls.command_sub = "restore"
 

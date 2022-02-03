@@ -1,6 +1,6 @@
 """
 Usage:
-    foreman-maintain health [OPTIONS] SUBCOMMAND [ARG] ...
+    satellite-maintain health [OPTIONS] SUBCOMMAND [ARG] ...
 
 Parameters:
     SUBCOMMAND                    subcommand
@@ -18,15 +18,15 @@ from testfm.base import Base
 
 
 class Health(Base):
-    """Manipulates Foreman-maintain's health command"""
+    """Manipulates Satellite-maintain's health command"""
 
     command_base = "health"
 
     @classmethod
     def check(cls, options=None):
-        """Build foreman-maintain health check
+        """Build satellite-maintain health check
         Usage:
-            foreman-maintain health check [OPTIONS]
+            satellite-maintain health check [OPTIONS]
 
         Options:
             --label label                 Limit only for a specific label.
@@ -54,7 +54,7 @@ class Health(Base):
 
     @classmethod
     def list(cls, options=None):
-        """Build foreman-maintain health list"""
+        """Build satellite-maintain health list"""
         cls.command_sub = "list"
 
         if options is None:
@@ -66,7 +66,7 @@ class Health(Base):
 
     @classmethod
     def list_tags(cls, options=None):
-        """Build foreman-maintain health list-tags"""
+        """Build satellite-maintain health list-tags"""
         cls.command_sub = "list-tags"
 
         if options is None:

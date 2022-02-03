@@ -179,7 +179,7 @@ def test_positive_automate_bz1626651(ansible_module):
 
 @pytest.mark.capsule
 def test_positive_service_status_clocale(ansible_module):
-    """Foreman-maintain service on C locale
+    """Satellite-maintain service on C locale
 
     :id: 143dda54-5ab5-478a-b33e-af805bace2d7
 

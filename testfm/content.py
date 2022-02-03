@@ -20,7 +20,7 @@ from testfm.base import Base
 
 
 class Content(Base):
-    """Manipulates Foreman-maintain's content command"""
+    """Manipulates Satellite-maintain's content command"""
 
     command_base = "content"
 

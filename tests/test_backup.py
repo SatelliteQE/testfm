@@ -49,9 +49,9 @@ def test_positive_backup_online(setup_backup_tests, ansible_module):
 
     :setup:
 
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
     :steps:
-        1. Run foreman-maintain backup online /backup_dir/
+        1. Run satellite-maintain backup online /backup_dir/
 
     :expectedresults: Backup should successful.
 
@@ -85,9 +85,9 @@ def test_positive_backup_online_skip_pulp_content(setup_backup_tests, ansible_mo
 
     :setup:
 
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
     :steps:
-        1. Run foreman-maintain backup online --skip-pulp-content /backup_dir/
+        1. Run satellite-maintain backup online --skip-pulp-content /backup_dir/
 
     :expectedresults: Backup should successful.
 

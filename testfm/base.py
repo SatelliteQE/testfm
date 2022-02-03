@@ -1,10 +1,10 @@
 class Base:
     """
-    @param command_base: base command of foreman-maintain.
-    Output of recent `foreman-maintain --help`::
+    @param command_base: base command of satellite-maintain.
+    Output of recent `satellite-maintain --help`::
 
         Usage:
-            foreman-maintain [OPTIONS] SUBCOMMAND [ARG] ...
+            satellite-maintain [OPTIONS] SUBCOMMAND [ARG] ...
 
         Parameters:
             SUBCOMMAND                    subcommand
@@ -30,7 +30,7 @@ class Base:
 
     @classmethod
     def _construct_command(cls, options=None):
-        """Build a foreman-maintain command based on the options passed"""
+        """Build a satellite-maintain command based on the options passed"""
         tail = ""
         if isinstance(options, list):
             for val in options:
@@ -49,5 +49,5 @@ class Base:
                         val = ",".join(str(el) for el in val)
                     tail += f' --{key}="{val}"'
 
-        cmd = f"foreman-maintain {cls.command_base} {cls.command_sub} {tail.strip()}"
+        cmd = f"satellite-maintain {cls.command_base} {cls.command_sub} {tail.strip()}"
         return cmd

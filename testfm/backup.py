@@ -20,7 +20,7 @@ from testfm.base import Base
 
 
 class Backup(Base):
-    """Manipulates Foreman-maintain's backup command"""
+    """Manipulates Satellite-maintain's backup command"""
 
     command_base = "backup"
 

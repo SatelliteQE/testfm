@@ -57,7 +57,7 @@ texinfo_documents = [
         "TestFM Documentation",
         author,
         "TestFM",
-        "A test suite based on pytest-ansible that exercises The Foreman-maintain tool.",
+        "A test suite based on pytest-ansible that exercises The Satellite-maintain tool.",
         "Miscellaneous",
     ),
 ]

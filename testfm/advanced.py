@@ -32,7 +32,7 @@ from testfm.base import Base
 
 
 class Advanced(Base):
-    """Manipulates Foreman-maintain's advanced procedure run command"""
+    """Manipulates Satellite-maintain's advanced procedure run command"""
 
     command_base = "advanced procedure run"
 

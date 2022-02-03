@@ -20,10 +20,10 @@ def test_positive_foreman_maintain_service_restart(ansible_module):
     :id: 64d3c78e-d602-43d6-bf77-f31135ed019e
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run service-restart
+        1. Run satellite-maintain advanced procedure run service-restart
 
     :expectedresults: Katello-service should restart.
 
@@ -41,7 +41,7 @@ def test_positive_foreman_maintain_hammer_setup(change_admin_passwd, ansible_mod
     :id: 236171c0-5185-465e-9eec-e15dfefb41c3
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Change password for user to any string
@@ -101,10 +101,10 @@ def test_positive_foreman_maintain_packages_update(ansible_module):
     :id: d56523d7-7042-40e1-a96e-db8f33b960e5
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run packages-update
+        1. Run satellite-maintain advanced procedure run packages-update
 
     :expectedresults: packages should update.
 
@@ -122,10 +122,10 @@ def test_positive_foreman_taks_delete_old(ansible_module):
     :id: c5deaf67-8fa9-43a6-bf62-1c0d6be63a85
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run
+        1. Run satellite-maintain advanced procedure run
         foreman-tasks-delete --state old
 
     :expectedresults: Old foreman tasks should delete.
@@ -144,10 +144,10 @@ def test_positive_foreman_taks_delete_planning(ansible_module):
     :id: 447f5b05-b6a2-4f3a-8e89-8281995ca1cf
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run
+        1. Run satellite-maintain advanced procedure run
         foreman-tasks-delete --state planning
 
     :expectedresults: foreman tasks in planning state should delete.
@@ -166,10 +166,10 @@ def test_positive_foreman_taks_delete_pending(ansible_module):
     :id: 6bd3af66-9910-48c4-8cbb-69c3ddd18d6c
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run
+        1. Run satellite-maintain advanced procedure run
         foreman-tasks-delete --state pending
 
     :expectedresults: foreman tasks in pending state should delete.
@@ -188,7 +188,7 @@ def test_positive_foreman_task_resume(ansible_module):
     :id: e9afe55b-e3a4-425a-8bfd-a8df6674e516
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Run foreman-maintain advanced procedure run

@@ -1,6 +1,6 @@
 """
 Usage:
-    foreman-maintain packages [OPTIONS] SUBCOMMAND [ARG] ...
+    satellite-maintain packages [OPTIONS] SUBCOMMAND [ARG] ...
 
 Parameters:
     SUBCOMMAND                    subcommand
@@ -22,7 +22,7 @@ from testfm.base import Base
 
 
 class Packages(Base):
-    """Manipulates Foreman-maintain's packages command"""
+    """Manipulates Satellite-maintain's packages command"""
 
     command_base = "packages"
 
@@ -30,7 +30,7 @@ class Packages(Base):
     def lock(cls, options=None):
         """
         Usage:
-            foreman-maintain packages lock [OPTIONS]
+            satellite-maintain packages lock [OPTIONS]
 
         Options:
             -y, --assumeyes               Automatically answer yes for all questions
@@ -54,7 +54,7 @@ class Packages(Base):
     def unlock(cls, options=None):
         """
         Usage:
-            foreman-maintain packages unlock [OPTIONS]
+            satellite-maintain packages unlock [OPTIONS]
 
         Options:
             -y, --assumeyes               Automatically answer yes for all questions
@@ -78,7 +78,7 @@ class Packages(Base):
     def status(cls, options=None):
         """
         Usage:
-            foreman-maintain packages status [OPTIONS]
+            satellite-maintain packages status [OPTIONS]
 
         Options:
             -y, --assumeyes               Automatically answer yes for all questions
@@ -102,7 +102,7 @@ class Packages(Base):
     def install(cls, options=None):
         """
         Usage:
-            foreman-maintain packages install [OPTIONS] PACKAGES ...
+            satellite-maintain packages install [OPTIONS] PACKAGES ...
 
         Options:
             -y, --assumeyes               Automatically answer yes for all questions
@@ -126,7 +126,7 @@ class Packages(Base):
     def update(cls, options=None):
         """
         Usage:
-            foreman-maintain packages update [OPTIONS] PACKAGES ...
+            satellite-maintain packages update [OPTIONS] PACKAGES ...
 
         Options:
             -y, --assumeyes               Automatically answer yes for all questions
@@ -150,7 +150,7 @@ class Packages(Base):
     def is_locked(cls, options=None):
         """
         Usage:
-            foreman-maintain packages is-locked [OPTIONS]
+            satellite-maintain packages is-locked [OPTIONS]
 
         Options:
             -y, --assumeyes               Automatically answer yes for all questions
@@ -174,7 +174,7 @@ class Packages(Base):
     def check_update(cls, options=None):
         """
         Usage:
-            foreman-maintain packages check-update [OPTIONS]
+            satellite-maintain packages check-update [OPTIONS]
 
         Options:
             -y, --assumeyes               Automatically answer yes for all questions

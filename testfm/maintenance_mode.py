@@ -19,7 +19,7 @@ from testfm.base import Base
 
 
 class MaintenanceMode(Base):
-    """Manipulates Foreman-maintain's maintenance-mode command"""
+    """Manipulates Satellite-maintain's maintenance-mode command"""
 
     command_base = "maintenance-mode"
 
