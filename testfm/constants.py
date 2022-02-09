@@ -25,83 +25,65 @@ upstream_url = {
     "puppet_repo": "http://yum.puppetlabs.com/el/6.4/x86_64/",
     "releases_repo": "https://yum.theforeman.org/releases/latest/el7/x86_64/",
 }
+
+# Common repositories for Satellite and Capsule
 common_repos = [
     "rhel-7-server-rpms",
     "rhel-server-rhscl-7-rpms",
-    "rhel-7-server-satellite-maintenance-6-rpms",
-]
-sat_64_repos = [
-    "rhel-7-server-ansible-2.6-rpms",
-    "rhel-7-server-satellite-6.4-rpms",
-] + common_repos
-sat_65_repos = [
-    "rhel-7-server-ansible-2.6-rpms",
-    "rhel-7-server-satellite-6.5-rpms",
-] + common_repos
-sat_66_repos = [
-    "rhel-7-server-ansible-2.8-rpms",
-    "rhel-7-server-satellite-6.6-rpms",
-] + common_repos
-sat_67_repos = [
-    "rhel-7-server-ansible-2.8-rpms",
-    "rhel-7-server-satellite-6.7-rpms",
-] + common_repos
-sat_68_repos = [
     "rhel-7-server-ansible-2.9-rpms",
+]
+
+# Satellite repositories
+sat_68_repos = [
     "rhel-7-server-satellite-6.8-rpms",
+    "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
 sat_69_repos = [
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-6.9-rpms",
+    "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
 sat_610_repos = [
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-6.10-rpms",
+    "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
 sat_70_repos = [
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-7.0-rpms",
+    "rhel-7-server-satellite-maintenance-7.0-rpms",
 ] + common_repos
+
+# Satellite Beta repositories
 sat_beta_repo = [
     "rhel-server-7-satellite-6-beta-rpms",
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-maintenance-6-beta-rpms",
-    "rhel-server-rhscl-7-rpms",
-    "rhel-7-server-rpms",
-]
+] + common_repos
+
+# Capsule repositories
 cap_68_repos = [
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-tools-6.8-rpms",
     "rhel-7-server-satellite-capsule-6.8-rpms",
 ] + common_repos
 cap_69_repos = [
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-tools-6.9-rpms",
     "rhel-7-server-satellite-capsule-6.9-rpms",
 ] + common_repos
 cap_610_repos = [
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-tools-6.10-rpms",
     "rhel-7-server-satellite-capsule-6.10-rpms",
 ] + common_repos
 cap_70_repos = [
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-tools-7.0-rpms",
     "rhel-7-server-satellite-capsule-7.0-rpms",
 ] + common_repos
+
+# Capsule Beta repositories
 cap_beta_repo = [
     "rhel-server-7-satellite-capsule-6-beta-rpms",
-    "rhel-7-server-ansible-2.9-rpms",
     "rhel-7-server-satellite-maintenance-6-beta-rpms",
-    "rhel-server-rhscl-7-rpms",
-    "rhel-7-server-rpms",
     "rhel-7-server-satellite-tools-6-beta-rpms",
-]
+] + common_repos
+
+
 sat_repos = {
-    "6.4": sat_64_repos,
-    "6.5": sat_65_repos,
-    "6.6": sat_66_repos,
-    "6.7": sat_67_repos,
     "6.8": sat_68_repos,
     "6.9": sat_69_repos,
     "6.10": sat_610_repos,
