@@ -382,7 +382,7 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
 
     :CaseImportance: Critical
     """
-    for ver in ["6.7", "6.8", "6.9", "6.10"]:
+    for ver in ["6.8", "6.9", "6.10"]:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
             logger.info(result["stdout"])
