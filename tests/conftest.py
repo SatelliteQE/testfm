@@ -307,7 +307,7 @@ def setup_subscribe_to_cdn_dogfood(request, ansible_module):
 def setup_epel_repository(request, ansible_module):
     """Setup/teardown fixture used by test_positive_check_epel_repository
     and test_positive_check_epel_repository_with_invalid_repo"""
-    setup = ansible_module.yum(name=epel_repo, state="present")
+    setup = ansible_module.yum(name=epel_repo, state="present", disable_gpg_check="yes")
     assert setup.values()[0]["rc"] == 0
 
     def teardown_epel_repository():
