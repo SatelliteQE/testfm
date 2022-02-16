@@ -1,7 +1,7 @@
 # copy this file as `testfm.local.yaml` and override any config provided under `conf/*.yaml`
 # or preferably use environment variables instead of this file
 # example:
-# `export TESTFM_TESTFM__HOTFIX_URL=<HOTFIX_URL>`
+# `export TESTFM_SUBSCRIPTION__RHN_PASSWORD=<RHN_PASSWORD>`
 ---
 # copy SUBSCRIPTION section from subscription.yaml or keep subscription.yaml under conf/
 # SUBSCRIPTION:
@@ -12,5 +12,13 @@
   # DOGFOOD_ORG: <DOGFOOD_ORG>
   # DOGFOOD_ACTIVATIONKEY: <DOGFOOD_ACTIVATIONKEY>
   # CAPSULE_DOGFOOD_ACTIVATIONKEY: <CAPSULE_DOGFOOD_ACTIVATIONKEY>
-# TESTFM:
-  # HOTFIX_URL: <HOTFIX_URL>
+
+# copy ROBOTTELO section from robottelo.yaml or keep robottelo.yaml under conf/
+# ROBOTTELO:
+  # - The URL of container hosting repos on SatLab
+  # REPOS_HOSTING_URL: <repo_hosting_url>
+  # Satellite version supported by this branch
+  # Set this via envvar when building robottelo-container for z-stream branches
+  # SATELLITE_VERSION: '7.0'
+  # The Base OS RHEL Version(x.y) where the satellite would be installed
+  # RHEL_VERSION: '7.9'
