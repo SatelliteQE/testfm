@@ -19,7 +19,6 @@ settings = Dynaconf(
             "subscription.dogfood_activationkey",
             "subscription.capsule_dogfood_activationkey",
             "subscription.dogfood_url",
-            "testfm.hotfix_url",
             must_exist=True,
         )
     ],
