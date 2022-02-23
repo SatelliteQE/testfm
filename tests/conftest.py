@@ -155,19 +155,13 @@ def setup_install_pexpect(ansible_module, request):
     test_positive_check_old_foreman_tasks of test_advanced.py and in
     fixture setup_puppet_empty_cert.
     """
-    ansible_module.get_url(url="https://bootstrap.pypa.io/get-pip.py", dest="/root")
-    setup = ansible_module.command("python3 /root/get-pip.py")
-    for result in setup.values():
-        assert result["rc"] == 0
-    setup = ansible_module.command("pip install pexpect")
+    setup = ansible_module.command("python3 -m pip install pexpect")
     for result in setup.values():
         assert result["rc"] == 0
 
     def teardown_uninstall():
-        uninstall_pexpect = ansible_module.command("pip uninstall pexpect -y")
+        uninstall_pexpect = ansible_module.command("python3 -m pip uninstall pexpect -y")
         assert uninstall_pexpect.values()[0]["rc"] == 0
-        uninstall_pip = ansible_module.command("pip uninstall pip -y")
-        assert uninstall_pip.values()[0]["rc"] == 0
 
     request.addfinalizer(teardown_uninstall)
 
