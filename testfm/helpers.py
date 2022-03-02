@@ -19,8 +19,4 @@ def run(command):
 
 def server():
     """Use this to find whether server on which tests are running is capsule or satellite."""
-    result = run("rpm -q satellite")
-    if "rc=0" in result:
-        return "satellite"
-    else:
-        return "capsule"
+    return "satellite" if "rc=0" in run("rpm -q satellite") else "capsule"
