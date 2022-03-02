@@ -64,10 +64,8 @@ def setup_hotfix_check(request, ansible_module):
         pkgs_locked = ansible_module.command(Packages.is_locked()).values()[0]["rc"]
         if pkgs_locked == 0:
             ansible_module.command(Packages.unlock())
-        teardown = ansible_module.command("yum -y reinstall tfm-rubygem-fog-vsphere")
-        for result in teardown.values():
-            assert result["rc"] == 0
-
+        teardown = ansible_module.lineinfile(path=fpath, regexp="#modifying_file", state="absent")
+        assert teardown.values()[0]["changed"] is True
         teardown = ansible_module.file(path="/etc/yum.repos.d/hotfix_repo.repo", state="absent")
         assert teardown.values()[0]["changed"] == 1
         teardown = ansible_module.yum(name=["hotfix-package"], state="absent")
