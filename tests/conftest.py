@@ -70,9 +70,8 @@ def setup_hotfix_check(request, ansible_module):
                 assert result["rc"] == 0
         if pkgs_locked == 0:
             ansible_module.command(Packages.unlock())
-        teardown = ansible_module.command("yum -y reinstall tfm-rubygem-fog-vsphere")
-        for result in teardown.values():
-            assert result["rc"] == 0
+        teardown = ansible_module.lineinfile(path=fpath, regexp="#modifying_file", state="absent")
+        assert teardown.values()[0]["changed"] is True
         if float(product()) >= 6.6:
             teardown = ansible_module.command(Packages.lock())
             for result in teardown.values():
