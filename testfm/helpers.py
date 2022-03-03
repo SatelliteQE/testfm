@@ -14,13 +14,14 @@ def product():
 
 def run(command):
     """Use this helper to execute shell command on Satellite"""
-    return os.popen(f"ansible server -i testfm/inventory -u root -m command -a '{command}'").read()
+    return os.popen(f"ansible server -i testfm/inventory -u root -m shell -a '{command}'").read()
 
 
 def server():
     """Use this to find whether server on which tests are running is capsule or satellite."""
-    result = run("rpm -q satellite")
-    if "rc=0" in result:
-        return "satellite"
-    else:
-        return "capsule"
+    return "satellite" if "rc=0" in run("rpm -q satellite") else "capsule"
+
+
+def rhel7():
+    """Use this helper to find if satellite RHEL version is 7"""
+    return True if "rc=0" in run("rpm -qa rubygem-foreman_maintain | grep el7") else False

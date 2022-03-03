@@ -13,6 +13,7 @@ from testfm.constants import FAKE_YUM0_REPO
 from testfm.constants import fm_hammer_yml
 from testfm.constants import FM_RHN_POOLID
 from testfm.constants import foreman_maintain_yml
+from testfm.constants import gems_path
 from testfm.constants import HOTFIX_URL
 from testfm.constants import katello_ca_consumer
 from testfm.constants import RHN_PASSWORD
@@ -33,14 +34,13 @@ def setup_hotfix_check(request, ansible_module):
     This fixture is used in test_positive_check_hotfix_installed_with_hotfix of test_health.py
     """
     file = ansible_module.find(
-        paths="/opt/theforeman/tfm/root/usr/share/gems/gems/",
+        paths=gems_path,
         patterns="fog-vsphere-*",
         file_type="directory",
     )
     dpath = file.values()[0]["files"][0]["path"]
     fpath = dpath + "/lib/fog/vsphere/requests/compute/list_clusters.rb"
     ansible_module.lineinfile(dest=fpath, insertafter="EOF", line="#modifying_file")
-
     ansible_module.yum_repository(
         name="hotfix_repo",
         description="hotfix_repo",
@@ -64,9 +64,8 @@ def setup_hotfix_check(request, ansible_module):
         pkgs_locked = ansible_module.command(Packages.is_locked()).values()[0]["rc"]
         if pkgs_locked == 0:
             ansible_module.command(Packages.unlock())
-        teardown = ansible_module.command("yum -y reinstall tfm-rubygem-fog-vsphere")
-        for result in teardown.values():
-            assert result["rc"] == 0
+        teardown = ansible_module.lineinfile(path=fpath, regexp="#modifying_file", state="absent")
+        assert teardown.values()[0]["changed"] is True
 
         teardown = ansible_module.file(path="/etc/yum.repos.d/hotfix_repo.repo", state="absent")
         assert teardown.values()[0]["changed"] == 1

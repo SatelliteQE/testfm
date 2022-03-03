@@ -1,4 +1,5 @@
 from testfm import settings
+from testfm.helpers import rhel7
 
 RHN_USERNAME = settings.subscription.rhn_username
 RHN_PASSWORD = settings.subscription.rhn_password
@@ -99,3 +100,4 @@ foreman_maintain_yml = "/etc/foreman-maintain/foreman_maintain.yml"
 epel_repo = "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 satellite_answer_file = "/etc/foreman-installer/scenarios.d/satellite-answers.yaml"
 fm_hammer_yml = "/etc/foreman-maintain/foreman-maintain-hammer.yml"
+gems_path = f"""{f"{'/opt/theforeman/tfm/root' if rhel7() else ''}" + '/usr/share/gems/gems/'}"""
