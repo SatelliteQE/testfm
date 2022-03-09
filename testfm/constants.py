@@ -28,29 +28,47 @@ upstream_url = {
 }
 
 # Common repositories for Satellite and Capsule
-common_repos = [
-    "rhel-7-server-rpms",
-    "rhel-server-rhscl-7-rpms",
-    "rhel-7-server-ansible-2.9-rpms",
-]
+common_repos = (
+    [
+        "rhel-7-server-rpms",
+        "rhel-server-rhscl-7-rpms",
+        "rhel-7-server-ansible-2.9-rpms",
+    ]
+    if rhel7()
+    else [
+        "rhel-8-for-x86_64-baseos-rpms",
+        "rhel-8-for-x86_64-appstream-rpms",
+        "ansible-2.9-for-rhel-8-x86_64-rpms",
+    ]
+)
 
 # Satellite repositories
 sat_68_repos = [
     "rhel-7-server-satellite-6.8-rpms",
     "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
+
 sat_69_repos = [
     "rhel-7-server-satellite-6.9-rpms",
     "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
+
 sat_610_repos = [
     "rhel-7-server-satellite-6.10-rpms",
     "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
-sat_70_repos = [
-    "rhel-7-server-satellite-7.0-rpms",
-    "rhel-7-server-satellite-maintenance-7.0-rpms",
-] + common_repos
+
+sat_70_repos = (
+    [
+        "rhel-7-server-satellite-7.0-rpms",
+        "rhel-7-server-satellite-maintenance-7.0-rpms",
+    ]
+    if rhel7()
+    else [
+        "satellite-7.0-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-7.0-for-rhel-8-x86_64-rpms",
+    ]
+) + common_repos
 
 # Satellite Beta repositories
 sat_beta_repo = [
@@ -60,29 +78,37 @@ sat_beta_repo = [
 
 # Capsule repositories
 cap_68_repos = [
-    "rhel-7-server-satellite-tools-6.8-rpms",
     "rhel-7-server-satellite-capsule-6.8-rpms",
+    "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
+
 cap_69_repos = [
-    "rhel-7-server-satellite-tools-6.9-rpms",
     "rhel-7-server-satellite-capsule-6.9-rpms",
+    "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
+
 cap_610_repos = [
-    "rhel-7-server-satellite-tools-6.10-rpms",
     "rhel-7-server-satellite-capsule-6.10-rpms",
+    "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
-cap_70_repos = [
-    "rhel-7-server-satellite-tools-7.0-rpms",
-    "rhel-7-server-satellite-capsule-7.0-rpms",
-] + common_repos
+
+cap_70_repos = (
+    [
+        "rhel-7-server-satellite-capsule-7.0-rpms",
+        "rhel-7-server-satellite-maintenance-7.0-rpms",
+    ]
+    if rhel7()
+    else [
+        "satellite-capsule-7.0-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-7.0-for-rhel-8-x86_64-rpms",
+    ]
+) + common_repos
 
 # Capsule Beta repositories
 cap_beta_repo = [
     "rhel-server-7-satellite-capsule-6-beta-rpms",
     "rhel-7-server-satellite-maintenance-6-beta-rpms",
-    "rhel-7-server-satellite-tools-6-beta-rpms",
 ] + common_repos
-
 
 sat_repos = {
     "6.8": sat_68_repos,
