@@ -949,3 +949,39 @@ def test_positive_available_space_postgresql12(ansible_module):
 
     :CaseImportance: High
     """
+
+
+def test_positive_check_duplicate_permissions(ansible_module, setup_duplicate_permissions):
+    """Verify duplicate-permissions check
+
+    :id: 192a5943-43cc-4f89-9949-893c8011831a
+
+    :setup:
+        1. foreman-maintain should be installed.
+        2. Setup duplicate permissions in the database
+
+    :steps:
+        1. foreman-maintain health check --label duplicate-permissions
+
+    :expectedresults: Verify if the check passes and removes duplicate permissions.
+
+    :CaseImportance: High
+
+    :BZ: 1849110, 1884024
+
+    """
+    # Verify if check failed because of duplicate permissions
+    contacted = ansible_module.command(
+        Health.check(["--label", "duplicate-permissions", "--assumeyes"])
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" in result["stdout"]
+        assert "Remove duplicate permissions from database" in result["stdout"]
+        assert result["rc"] == 0
+    # Verify the check passed
+    contacted = ansible_module.command(Health.check(["--label", "duplicate-permissions"]))
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
