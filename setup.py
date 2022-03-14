@@ -18,7 +18,7 @@ REQUIREMENTS = [
 setup(
     name="testfm",
     version=VERSION,
-    description="TestFM is a test suite which exercises foreman-maintain tool.",
+    description="TestFM is a test suite which exercises satellite-maintain tool.",
     long_description=LONG_DESCRIPTION,
     url="https://github.com/SatelliteQE/testfm",
     author="Nikhil Kathole",

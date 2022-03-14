@@ -1,6 +1,6 @@
 """
 Usage:
-    foreman-maintain maintenance-mode [OPTIONS] SUBCOMMAND [ARG] ...
+    satellite-maintain maintenance-mode [OPTIONS] SUBCOMMAND [ARG] ...
 
 Parameters:
     SUBCOMMAND                    subcommand
@@ -25,7 +25,7 @@ class MaintenanceMode(Base):
 
     @classmethod
     def start(cls, options=None):
-        """foreman-maintain maintenance-mode start [OPTIONS]"""
+        """satellite-maintain maintenance-mode start [OPTIONS]"""
         cls.command_sub = "start"
 
         if options is None:
@@ -37,7 +37,7 @@ class MaintenanceMode(Base):
 
     @classmethod
     def stop(cls, options=None):
-        """foreman-maintain maintenance-mode stop [OPTIONS]"""
+        """satellite-maintain maintenance-mode stop [OPTIONS]"""
         cls.command_sub = "stop"
 
         if options is None:
@@ -49,7 +49,7 @@ class MaintenanceMode(Base):
 
     @classmethod
     def status(cls, options=None):
-        """foreman-maintain maintenance-mode status [OPTIONS]"""
+        """satellite-maintain maintenance-mode status [OPTIONS]"""
         cls.command_sub = "status"
 
         if options is None:
@@ -61,7 +61,7 @@ class MaintenanceMode(Base):
 
     @classmethod
     def is_enabled(cls, options=None):
-        """foreman-maintain maintenance-mode is-enabled [OPTIONS]"""
+        """satellite-maintain maintenance-mode is-enabled [OPTIONS]"""
         cls.command_sub = "is-enabled"
 
         if options is None:

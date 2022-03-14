@@ -14,7 +14,7 @@ from testfm.helpers import server
 from testfm.log import logger
 
 
-def test_positive_foreman_maintain_service_restart(ansible_module):
+def test_positive_satellite_maintain_service_restart(ansible_module):
     """Restart service using advanced procedure run
 
     :id: 64d3c78e-d602-43d6-bf77-f31135ed019e
@@ -35,7 +35,7 @@ def test_positive_foreman_maintain_service_restart(ansible_module):
         assert "FAIL" not in result["stdout"]
 
 
-def test_positive_foreman_maintain_hammer_setup(change_admin_passwd, ansible_module):
+def test_positive_satellite_maintain_hammer_setup(change_admin_passwd, ansible_module):
     """Hammer setup using advanced procedure
 
     :id: 236171c0-5185-465e-9eec-e15dfefb41c3
@@ -95,7 +95,7 @@ def test_positive_foreman_maintain_hammer_setup(change_admin_passwd, ansible_mod
 
 
 @stubbed
-def test_positive_foreman_maintain_packages_update(ansible_module):
+def test_positive_satellite_maintain_packages_update(ansible_module):
     """Packages update using advanced procedure run
 
     :id: d56523d7-7042-40e1-a96e-db8f33b960e5
@@ -191,7 +191,7 @@ def test_positive_foreman_task_resume(ansible_module):
         1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run
+        1. Run satellite-maintain advanced procedure run
         foreman-tasks-resume
 
     :expectedresults: foreman tasks in paused state should resume.
@@ -210,10 +210,10 @@ def test_positive_foreman_tasks_ui_investigate(setup_install_pexpect, ansible_mo
     :id: 3b4f69c6-c0a1-42e3-a099-8a6e26280d17
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run
+        1. Run satellite-maintain advanced procedure run
         foreman-tasks-ui-investigate
 
     :expectedresults: procedure foreman-tasks-ui-investigate should work.
@@ -236,12 +236,12 @@ def test_positive_sync_plan_disable_enable(setup_sync_plan, ansible_module):
     :id: 865df1e1-1189-437c-8451-22d772ff97d4
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure run
+        1. Run satellite-maintain advanced procedure run
         sync-plans-disable
-        2. Run foreman-maintain advanced procedure run
+        2. Run satellite-maintain advanced procedure run
         sync-plans-enable
 
     :expectedresults: procedure sync-plans-enable should work.
@@ -280,13 +280,13 @@ def test_positive_procedure_by_tag_check_migrations(ansible_module):
     :id: 65cacca0-f142-4a63-a644-01f76120f16c
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure by-tag
+        1. Run satellite-maintain advanced procedure by-tag
         pre-migrations
 
-        2. Run foreman-maintain advanced procedure by-tag
+        2. Run satellite-maintain advanced procedure by-tag
         post-migrations
 
     :expectedresults: procedures of pre-migrations tag and
@@ -319,10 +319,10 @@ def test_positive_procedure_by_tag_restore_confirmation(ansible_module):
     :id: f9e10352-04fb-49ba-8346-5b02e64fd028
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain advanced procedure by-tag
+        1. Run satellite-maintain advanced procedure by-tag
         restore
 
     :expectedresults: procedure restore_confirmation should work.
@@ -343,12 +343,12 @@ def test_positive_sync_plan_with_hammer_defaults(setup_for_hammer_defaults, ansi
     :id: b25734c8-470f-4cad-bc56-5c0f75aa7499
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Setup hammer on system with defaults set
 
-        2. Run foreman-maintain advanced procedure run sync-plans-enable
+        2. Run satellite-maintain advanced procedure run sync-plans-enable
 
     :expectedresults: sync plans should get disabled and enabled.
 
@@ -372,10 +372,10 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
     :id: e32fee2d-2a1f-40ed-9f94-515f75511c5a
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
+        1. Run satellite-maintain advanced procedure run repositories-setup --version 6.y
 
     :BZ: 1684730, 1869731
 
@@ -430,10 +430,10 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
     :id: 88558fb0-2268-469f-86ae-c4d18ccef782
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run 'foreman-maintain advanced procedure run repositories-setup --version 6.y
+        1. Run satellite-maintain advanced procedure run repositories-setup --version 6.y
 
     :BZ: 1684730, 1869731
 

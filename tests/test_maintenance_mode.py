@@ -5,12 +5,12 @@ from testfm.maintenance_mode import MaintenanceMode
 
 
 def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
-    """Test foreman-maintain maintenance-mode subcommand
+    """Test satellite-maintain maintenance-mode subcommand
 
     :id: 51d76219-d3cc-43c0-9894-7bcb75c163c3
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. active sync-plans
         3. set :manage_crond: true in /etc/foreman-maintain/foreman_maintain.yml'
 
@@ -29,7 +29,7 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
         12. Validate maintenance-mode status command's output.
         13. Validate maintenance-mode is-enabled command's output.
 
-    :expectedresults: foreman-maintain maintenance-mode start/stop able
+    :expectedresults: satellite-maintain maintenance-mode start/stop able
         to disable/enable sync-plan, stop/start crond.service and is able to add
         FOREMAN_MAINTAIN chain rule in iptables.
 

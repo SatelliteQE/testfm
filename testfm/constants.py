@@ -122,7 +122,7 @@ cap_repos = {
     "6.10": cap_610_repos,
     "7.0": cap_70_repos,
 }
-foreman_maintain_yml = "/etc/foreman-maintain/foreman_maintain.yml"
+satellite_maintain_yml = "/etc/foreman-maintain/foreman_maintain.yml"
 epel_repo = "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 satellite_answer_file = "/etc/foreman-installer/scenarios.d/satellite-answers.yaml"
 fm_hammer_yml = "/etc/foreman-maintain/foreman-maintain-hammer.yml"

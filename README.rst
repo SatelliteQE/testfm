@@ -45,7 +45,7 @@ There are a few other things you need to do before continuing:
 
 - Make sure ssh-key is copied to the test system.
 
-- Make sure foreman maintain is installed on foreman/satellite server.
+- Make sure satellite maintain is installed on foreman/satellite server.
 
 Running the Tests
 -----------------

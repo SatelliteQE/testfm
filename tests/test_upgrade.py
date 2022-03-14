@@ -8,16 +8,16 @@ from testfm.upgrade import Upgrade
 
 
 @pytest.mark.capsule
-def test_positive_foreman_maintain_upgrade_list(ansible_module):
+def test_positive_satellite_maintain_upgrade_list(ansible_module):
     """List versions this system is upgradable to
 
     :id: 12efec41-4f09-4199-a20c-a4525e773b78
 
     :setup:
 
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
     :steps:
-        1. Run foreman-maintain upgrade list-versions
+        1. Run satellite-maintain upgrade list-versions
 
     :expectedresults: Versions system is upgradable to are listed.
 
@@ -68,10 +68,10 @@ def test_positive_repositories_validate(ansible_module):
     :id: 811698c0-09da-4727-8886-077aebb2b5ed
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain upgrade check.
+        1. Run satellite-maintain upgrade check.
 
     :BZ: 1632111
 
@@ -101,22 +101,22 @@ def test_positive_repositories_validate(ansible_module):
 @pytest.mark.capsule
 @stubbed
 def test_positive_self_update():
-    """Test self-update foreman-maintain package feature.
+    """Test self-update satellite-maintain package feature.
 
     :id: 1c566768-fd73-4fe6-837b-26709a1ebed9
 
     :setup:
-        1. foreman-maintain should be installed.
-        2. foreman-maintain package version should be >= v0.6.x
+        1. satellite-maintain should be installed.
+        2. satellite-maintain package version should be >= v0.6.x
 
     :steps:
-        1. Run foreman-maintain upgrade check/run command.
-        2. Run foreman-maintain upgrade check/run command with disable-self-upgrade option.
+        1. Run satellite-maintain upgrade check/run command.
+        2. Run satellite-maintain upgrade check/run command with disable-self-upgrade option.
 
     :BZ: 1649329
 
     :expectedresults:
-        1. It updates FM to latest version and gives message to re-run command.
+        1. Update satellite-maintain package to latest version and gives message to re-run command.
         2. If disable-self-upgrade option is used then it should skip self-upgrade step.
 
     :CaseImportance: Critical
@@ -131,12 +131,12 @@ def test_positive_check_presence_satellite_or_satellite_capsule():
     :id: 1011ff01-6dfb-422f-92c5-995d38bc163e
 
     :setup:
-        1. foreman-maintain should be installed.
-        2. foreman-maintain package version should be >= v0.6.x
+        1. satellite-maintain should be installed.
+        2. satellite-maintain package version should be >= v0.6.x
 
     :steps:
-        1. Run foreman-maintain upgrade list-versions/check/run command.
-        2. Run foreman-maintain upgrade list-versions/check/run command,
+        1. Run satellite-maintain upgrade list-versions/check/run command.
+        2. Run satellite-maintain upgrade list-versions/check/run command,
             after removing satellite and satellite-capsule packages.
 
     :BZ: 1886031

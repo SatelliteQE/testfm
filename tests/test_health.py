@@ -8,16 +8,16 @@ from testfm.log import logger
 
 
 @pytest.mark.capsule
-def test_positive_foreman_maintain_health_list(ansible_module):
-    """List health check in foreman-maintain
+def test_positive_satellite_maintain_health_list(ansible_module):
+    """List health check in satellite-maintain
 
     :id: 976ef4cd-e028-4545-91bb-72433d40d7ee
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health list
+        1. Run satellite-maintain health list
 
     :expectedresults: Health check list should work.
 
@@ -30,16 +30,16 @@ def test_positive_foreman_maintain_health_list(ansible_module):
 
 
 @pytest.mark.capsule
-def test_positive_foreman_maintain_health_list_tags(ansible_module):
-    """List tags for health check in foreman-maintain
+def test_positive_satellite_maintain_health_list_tags(ansible_module):
+    """List tags for health check in satellite-maintain
 
     :id: d0a6c8c1-8266-464a-bfdf-01d405dd9bd2
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health list-tags
+        1. Run satellite-maintain health list-tags
 
     :expectedresults: Tags for health checks should list.
 
@@ -53,15 +53,15 @@ def test_positive_foreman_maintain_health_list_tags(ansible_module):
 
 @pytest.mark.capsule
 def test_positive_list_health_check_by_tags(ansible_module):
-    """List health check in foreman-maintain by tags
+    """List health check in satellite-maintain by tags
 
     :id: 420d8e62-84d8-4496-8c24-037bd23febe9
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health list --tags default
+        1. Run satellite-maintain health list --tags default
 
     :expectedresults: health checks according to tag should list.
 
@@ -75,16 +75,16 @@ def test_positive_list_health_check_by_tags(ansible_module):
 
 
 @pytest.mark.capsule
-def test_positive_foreman_maintain_health_check(ansible_module):
-    """Verify foreman-maintain health check
+def test_positive_satellite_maintain_health_check(ansible_module):
+    """Verify satellite-maintain health check
 
     :id: bfff93dd-adde-4630-8411-1bb6b74daddd
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check
+        1. Run satellite-maintain health check
 
     :expectedresults: Health check should perform.
 
@@ -99,16 +99,16 @@ def test_positive_foreman_maintain_health_check(ansible_module):
 
 
 @pytest.mark.capsule
-def test_positive_foreman_maintain_health_check_by_tags(ansible_module):
-    """Verify foreman-maintain health check by tags
+def test_positive_satellite_maintain_health_check_by_tags(ansible_module):
+    """Verify satellite-maintain health check by tags
 
     :id: 518e19af-2dd4-4fb0-8c90-208cbd354107
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --tags tag_name
+        1. Run satellite-maintain health check --tags tag_name
 
     :expectedresults: Health check should perform.
 
@@ -132,10 +132,10 @@ def test_positive_check_server_ping(ansible_module):
     :id: b1eec8cb-9f94-439a-b5e7-8621cb35501f
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --label server-ping
+        1. Run satellite-maintain health check --label server-ping
 
     :expectedresults: Health check should perform.
 
@@ -153,11 +153,11 @@ def test_negative_check_server_ping(setup_katello_service_stop, ansible_module):
     :id: ecdc5bfb-2adf-49f6-948d-995dae34bcd3
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Run Katello-service stop
-        2. Run foreman-maintain health check --label server-ping
+        2. Run satellite-maintain health check --label server-ping
         3. Run Katello-service start
 
     :expectedresults: Health check should perform.
@@ -177,10 +177,10 @@ def test_positive_pre_upgrade_health_check(ansible_module):
     :id: f52bd43e-79cd-488b-adbb-3c9e5bac32cc
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --tags pre-upgrade
+        1. Run satellite-maintain health check --tags pre-upgrade
 
     :expectedresults: Pre-upgrade health checks should perform.
 
@@ -199,10 +199,10 @@ def test_positive_check_upstream_repository(setup_upstream_repository, ansible_m
     :id: 349fcf33-2d25-4628-a6af-cff53e624b25
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --label check-upstream-repository
+        1. Run satellite-maintain health check --label check-upstream-repository
 
     :expectedresults: Health check should perform.
 
@@ -224,10 +224,10 @@ def test_positive_available_space(ansible_module):
     :id: 7d8798ca-3334-4dda-a9b0-dc3d7c0903e9
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --label available-space
+        1. Run satellite-maintain health check --label available-space
 
     :expectedresults: Health check should perform.
 
@@ -246,10 +246,10 @@ def test_positive_available_space_candlepin(ansible_module):
     :id: 382a2bf3-a3da-4e46-b370-a443450f93b7
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --label available-space-cp
+        1. Run satellite-maintain health check --label available-space-cp
 
     :expectedresults: Health check should perform.
 
@@ -269,12 +269,12 @@ def test_positive_automate_bz1632768(setup_hammer_defaults, ansible_module):
     :id: 27a8b49b-8cb8-4004-ba41-36ed084c4740
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Setup hammer on system with defaults set
 
-        2. Run foreman-maintain health check
+        2. Run satellite-maintain health check
 
     :expectedresults: Health check should perform.
 
@@ -296,10 +296,10 @@ def test_positive_puppet_check_no_empty_cert_requests(ansible_module):
     :id: aad69254-9978-41e7-83a9-122e342a8dc5
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health check --label puppet-check-no-empty-cert-requests
+        1. Run satellite-maintain health check --label puppet-check-no-empty-cert-requests
 
     :expectedresults: Health check should perform.
 
@@ -321,11 +321,11 @@ def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansi
     :id: d4b9f725-d764-475a-9fc0-8db4aa1cb6ce
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. have some empty files in ${puppet-check-no-empty-cert-requests}
 
     :steps:
-        1. Run foreman-maintain health check --label puppet-check-no-empty-cert-requests
+        1. Run satellite-maintain health check --label puppet-check-no-empty-cert-requests
 
     :expectedresults: Health check should perform.
 
@@ -354,12 +354,12 @@ def test_positive_check_hotfix_installed(setup_hotfix_check, ansible_module):
     :id: d9023293-4173-4223-bbf5-328b41cf87cd
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
         2. modify some files of satellite.
 
     :steps:
-        1. Run foreman-maintain health check --label check-hotfix-installed
+        1. Run satellite-maintain health check --label check-hotfix-installed
 
     :expectedresults: check-hotfix-installed check should detect modified file
         and installed hotfix.
@@ -386,11 +386,11 @@ def test_positive_check_hotfix_installed_without_hotfix(ansible_module):
     :id: 3b6fbf3a-5c78-4283-996e-ca8da88a5d1b
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
         2. Install python-kitchen, yum-utils packages.
     :steps:
-        1. Run foreman-maintain health check --label check-hotfix-installed
+        1. Run satellite-maintain health check --label check-hotfix-installed
 
     :expectedresults: Health check should perform.
 
@@ -414,11 +414,11 @@ def test_positive_check_validate_yum_config(ansible_module):
     :id: b50c8866-6175-4286-8106-561945726023
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. configure yum exclude.
-        2. Run foreman-maintain health check --label validate-yum-config
+        2. Run satellite-maintain health check --label validate-yum-config
         3. Assert that excluded packages are listed in output.
         4. remove yum exclude configured in step 1.
 
@@ -465,11 +465,11 @@ def test_positive_check_epel_repository(setup_epel_repository, ansible_module):
     :id: ce2d7278-d7b7-4f76-9923-79be831c0368
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Configure epel repository.
-        2. Run foreman-maintain health check --label check-non-redhat-repository.
+        2. Run satellite-maintain health check --label check-non-redhat-repository.
         3. Assert that EPEL repos are enabled on system.
 
     :BZ: 1755755
@@ -496,11 +496,11 @@ def test_positive_check_epel_repository_with_invalid_repo(
     :id: e41648f4-ada6-4e7e-9112-45146d308410
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Configure epel repository and a repository with invalid baseurl.
-        2. Run foreman-maintain health check --label check-non-redhat-repository.
+        2. Run satellite-maintain health check --label check-non-redhat-repository.
         3. Assert that EPEL repos are enabled on system.
 
     :BZ: 1755755
@@ -523,12 +523,12 @@ def test_positive_check_old_foreman_tasks(setup_old_foreman_tasks, ansible_modul
     :id: 156350c4-b55b-40b3-b8f2-202bd5ed9fb6
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. Run setup_old_foreman_tasks from conftest.py
 
     :steps:
         1. Configure epel repository.
-        2. Run foreman-maintain health check --label check-non-redhat-repository.
+        2. Run satellite-maintain health check --label check-non-redhat-repository.
         3. Assert that old tasks are found on system.
         4. Assert that old tasks are deleted from system.
 
@@ -563,14 +563,14 @@ def test_positive_check_tmout_variable(ansible_module):
     :id: e0eea928-0ffb-4692-adb9-fc4bf041f301
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. export TMOUT environment variable.
 
     :steps:
-        1. Run foreman-maintain health check --label check-tmout-variable.
+        1. Run satellite-maintain health check --label check-tmout-variable.
         2. Assert that check-tmout-variable pass.
         3. export TMOUT environment variable.
-        4. Run foreman-maintain health check --label check-tmout-variable.
+        4. Run satellite-maintain health check --label check-tmout-variable.
         5. Assert that check-tmout-variable fails.
 
     :expectedresults: check-tmout-variable should work.
@@ -603,15 +603,15 @@ def test_positive_check_tftp_storage(ansible_module, setup_tftp_storage):
     :id: 9a900bc7-65ff-4280-bf8a-8974a7cb76c6
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Create test files in /var/lib/tftpboot/boot/
-        2. Run foreman-maintain health check --label check-tftp-storage.
+        2. Run satellite-maintain health check --label check-tftp-storage.
         3. Assert that check-tftp-storage fails.
         4. Assert that check deletes files older than token_duration setting.
         5. Delete all files from /var/lib/tftpboot/boot/
-        6. Run foreman-maintain health check --label check-tftp-storage.
+        6. Run satellite-maintain health check --label check-tftp-storage.
         7. Assert that check-tftp-storage pass.
 
     :expectedresults: check-tftp-storage should work.
@@ -664,22 +664,22 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
     :id: 963a5b47-168a-4443-9fdf-bba59c9b0e97
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. Have an invalid /etc/foreman-installer/custom-hiera.yaml file
-        2. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        2. Run satellite-maintain health check --label check-postgresql-checkpoint-segments.
         3. Assert that check-postgresql-checkpoint-segments gives proper
            error message saying an invalid yaml file
         4. Make /etc/foreman-installer/custom-hiera.yaml file valid
         5. Add config_entries section in /etc/foreman-installer/custom-hiera.yaml
-        6. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        6. Run satellite-maintain health check --label check-postgresql-checkpoint-segments.
         7. Assert that check-postgresql-checkpoint-segments fails.
         8. Add checkpoint_segments parameter in /etc/foreman-installer/custom-hiera.yaml
-        9. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        9. Run satellite-maintain health check --label check-postgresql-checkpoint-segments.
         10. Assert that check-postgresql-checkpoint-segments fails.
         11. Remove config_entries section from /etc/foreman-installer/custom-hiera.yaml
-        12. Run foreman-maintain health check --label check-postgresql-checkpoint-segments.
+        12. Run satellite-maintain health check --label check-postgresql-checkpoint-segments.
         13. Assert that check-postgresql-checkpoint-segments pass.
 
     :BZ: 1894149, 1899322
@@ -764,13 +764,13 @@ def test_positive_check_env_proxy(ansible_module):
     :id: f8c44b40-3ce5-4179-8d6b-1156c0032450
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
         1. export HTTP_PROXY environment variable.
-        2. Run foreman-maintain health check --label env-proxy.
+        2. Run satellite-maintain health check --label env-proxy.
         3. Assert that check env-proxy fail.
-        4. Run foreman-maintain health check --label env-proxy.
+        4. Run satellite-maintain health check --label env-proxy.
         5. Assert that check env-proxy pass.
 
     :expectedresults: check env-proxy should work.
@@ -802,15 +802,15 @@ def test_positive_check_foreman_proxy_verify_dhcp_config_syntax(ansible_module):
     :id: 43ca5cc7-9888-490d-b1ba-f3298e737039
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. Satellite instance configured with external DHCP like Infoblox,
            which has `:use_provider: dhcp_infoblox` set in /etc/foreman-proxy/settings.d/dhcp.yml
         3. Satellite instance which is DHCP enabled and has `:use_provider: dhcp_isc`
            set in /etc/foreman-proxy/settings.d/dhcp.yml
 
     :steps:
-        1. foreman-maintain health list | grep foreman-proxy-verify-dhcp-config-syntax
-        2. foreman-maintain health check --label foreman-proxy-verify-dhcp-config-syntax
+        1. satellite-maintain health list | grep foreman-proxy-verify-dhcp-config-syntax
+        2. satellite-maintain health check --label foreman-proxy-verify-dhcp-config-syntax
 
     :BZ: 1847889
 
@@ -828,11 +828,11 @@ def test_positive_remove_job_file(setup_subscribe_to_cdn_dogfood, ansible_module
     :id: eed224f9-a2ec-4d15-9047-cede0b823866
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain health list --tags pre-upgrade
-        2. Run foreman-maintain health check --label disk-performance
+        1. Run satellite-maintain health list --tags pre-upgrade
+        2. Run satellite-maintain health check --label disk-performance
 
     :expectedresults: `disk-performance` shouldn't exist under pre-upgrade tag and
             /var/lib/pulp/job1.0.0 file should not exist after check execution
@@ -859,12 +859,12 @@ def test_positive_corrupted_roles(ansible_module, setup_corrupted_role):
     :id: 69d9ac9e-772c-42e8-94b6-e8561c70c5c0
 
      :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. Run "hammer filter list --search role=test_role" to Check the role,
            resource type, and permissions assigned.
 
     :steps:
-        1. Run foreman-maintain health check --label corrupted-roles
+        1. Run satellite-maintain health check --label corrupted-roles
         2. Run "hammer filter list --search role=test_role" again to check if corrupted roles
            are fixed and verify if new filter is created for updated resource_type
 
@@ -902,11 +902,11 @@ def test_positive_check_non_rh_packages(setup_custom_package, ansible_module):
     :id: 2b7a25bb-902c-4a87-bb71-f460dcce655c
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. Configure custom repository and install custom package
 
     :steps:
-        1. Run foreman-maintain health check --label non-rh-packages.
+        1. Run satellite-maintain health check --label non-rh-packages.
         2. Verify presense of non-RH/custom package installed on system.
 
     :BZ: 1869865
@@ -932,13 +932,13 @@ def test_positive_available_space_postgresql12(ansible_module):
     :id: 283e627d-6afc-49cb-afdb-5b77a91bbd1e
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. Have some data under /var/lib/pgsql (upgrade templates have ~565Mib data)
         3. Create dir /var/opt/rh/rh-postgresql12/ and mount a partition of ~300Mib
            to this dir (less than /var/lib/pgsql).
 
     :steps:
-        1. foreman-maintain health check --label available-space-for-postgresql12
+        1. satellite-maintain health check --label available-space-for-postgresql12
         2. Verify Warning or Error is displayed when enough space is not
            available under /var/opt/rh/rh-postgresql12/
 

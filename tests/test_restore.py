@@ -17,10 +17,10 @@ def test_positive_restore_online_backup(ansible_module):
 
     :setup:
 
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. Take online backup of server.
     :steps:
-        1. Run foreman-maintain restore /backup_dir/
+        1. Run satellite-maintain restore /backup_dir/
 
     :expectedresults: Restore successful.
 
@@ -59,10 +59,10 @@ def test_positive_restore_offline_backup(ansible_module):
 
     :setup:
 
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
         2. Take offline backup of server.
     :steps:
-        1. Run foreman-maintain restore /backup_dir/
+        1. Run satellite-maintain restore /backup_dir/
 
     :expectedresults: Restore successful.
 
@@ -100,10 +100,10 @@ def test_negative_restore_nodir(ansible_module):
     :id: c0eeb8fb-e6ca-40c7-8c25-b5a4e3cb7827
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain restore without providing
+        1. Run satellite-maintain restore without providing
         directory
 
     :expectedresults: restore aborted, relevant message is
@@ -125,10 +125,10 @@ def test_negative_restore_baddir(ansible_module):
     :id: 1ea94c42-6c33-4fd5-9fe5-c53036023418
 
     :setup:
-        1. foreman-maintain should be installed.
+        1. satellite-maintain should be installed.
 
     :steps:
-        1. Run foreman-maintain restore providing
+        1. Run satellite-maintain restore providing
         invalid directory
 
     :expectedresults: restore aborted, relevant message is
