@@ -12,13 +12,13 @@ from testfm.constants import epel_repo
 from testfm.constants import FAKE_YUM0_REPO
 from testfm.constants import fm_hammer_yml
 from testfm.constants import FM_RHN_POOLID
-from testfm.constants import foreman_maintain_yml
 from testfm.constants import gems_path
 from testfm.constants import HOTFIX_URL
 from testfm.constants import katello_ca_consumer
 from testfm.constants import RHN_PASSWORD
 from testfm.constants import RHN_USERNAME
 from testfm.constants import satellite_answer_file
+from testfm.constants import satellite_maintain_yml
 from testfm.constants import upstream_url
 from testfm.helpers import product
 from testfm.helpers import server
@@ -138,7 +138,7 @@ def setup_katello_service_stop(request, ansible_module):
 @pytest.fixture(scope="function")
 def setup_install_pexpect(ansible_module, request):
     """This fixture is used to install pexpect on host.
-    It is used by test test_positive_foreman_maintain_hammer_setup,
+    It is used by test test_positive_satellite_maintain_hammer_setup,
     test_positive_foreman_tasks_ui_investigate,
     test_positive_check_old_foreman_tasks of test_advanced.py and in
     fixture setup_puppet_empty_cert.
@@ -161,7 +161,7 @@ def setup_sync_plan(request, ansible_module):
     """
     sync_plan_name = gen_string("alpha")
     ansible_module.lineinfile(
-        dest=foreman_maintain_yml, insertafter="EOF", line=":manage_crond: true"
+        dest=satellite_maintain_yml, insertafter="EOF", line=":manage_crond: true"
     )
 
     def sync_plan():
@@ -207,7 +207,7 @@ def setup_sync_plan(request, ansible_module):
         for path in ["/tmp/sync_id.yaml", "/tmp/orgs.yaml"]:
             ansible_module.file(path=path, state="absent")
         ansible_module.lineinfile(
-            dest=foreman_maintain_yml, state="absent", line=":manage_crond: true"
+            dest=satellite_maintain_yml, state="absent", line=":manage_crond: true"
         )
 
     return sync_plan
@@ -555,7 +555,7 @@ def setup_custom_package(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def change_admin_passwd(request, setup_install_pexpect, ansible_module):
-    """Setup/Teardown for test_advanced.test_positive_foreman_maintain_hammer_setup"""
+    """Setup/Teardown for test_advanced.test_positive_satellite_maintain_hammer_setup"""
     setup = ansible_module.command(
         "hammer -u admin -p changeme user update --login admin --password admin"
     )

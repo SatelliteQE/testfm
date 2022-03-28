@@ -1,6 +1,6 @@
 """
 Usage:
-    foreman-maintain backup [OPTIONS] SUBCOMMAND [ARG] ...
+    satellite-maintain backup [OPTIONS] SUBCOMMAND [ARG] ...
 
 Parameters:
     SUBCOMMAND                    subcommand
@@ -20,13 +20,13 @@ from testfm.base import Base
 
 
 class Backup(Base):
-    """Manipulates Foreman-maintain's backup command"""
+    """Manipulates Satellite-maintain's backup command"""
 
     command_base = "backup"
 
     @classmethod
     def run_online_backup(cls, options=None):
-        """Build foreman-maintain backup online"""
+        """Build satellite-maintain backup online"""
 
         cls.command_sub = "online"
 
@@ -38,7 +38,7 @@ class Backup(Base):
 
     @classmethod
     def run_offline_backup(cls, options=None):
-        """Build foreman-maintain backup offline"""
+        """Build satellite-maintain backup offline"""
 
         cls.command_sub = "offline"
 
@@ -50,7 +50,7 @@ class Backup(Base):
 
     @classmethod
     def run_snapshot_backup(cls, options=None):
-        """Build foreman-maintain backup snapshot"""
+        """Build satellite-maintain backup snapshot"""
 
         cls.command_sub = "snapshot"
 

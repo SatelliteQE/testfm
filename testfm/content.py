@@ -20,13 +20,13 @@ from testfm.base import Base
 
 
 class Content(Base):
-    """Manipulates Foreman-maintain's content command"""
+    """Manipulates Satellite-maintain's content command"""
 
     command_base = "content"
 
     @classmethod
     def prepare(cls, options=None):
-        """Build foreman-maintain content prepare"""
+        """Build satellite-maintain content prepare"""
 
         cls.command_sub = "prepare"
 
@@ -39,7 +39,7 @@ class Content(Base):
 
     @classmethod
     def prepare_abort(cls, options=None):
-        """Build foreman-maintain content prepare-abort"""
+        """Build satellite-maintain content prepare-abort"""
 
         cls.command_sub = "prepare-abort"
 
@@ -52,7 +52,7 @@ class Content(Base):
 
     @classmethod
     def migration_stats(cls, options=None):
-        """Build foreman-maintain content migration-stats"""
+        """Build satellite-maintain content migration-stats"""
 
         cls.command_sub = "migration-stats"
 
@@ -65,7 +65,7 @@ class Content(Base):
 
     @classmethod
     def migration_reset(cls, options=None):
-        """Build foreman-maintain content migration-reset"""
+        """Build satellite-maintain content migration-reset"""
 
         cls.command_sub = "migration-reset"
 
@@ -78,7 +78,7 @@ class Content(Base):
 
     @classmethod
     def remove_pulp2(cls, options=None):
-        """Build foreman-maintain content remove-pulp2"""
+        """Build satellite-maintain content remove-pulp2"""
 
         cls.command_sub = "remove-pulp2"
 

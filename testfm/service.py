@@ -1,6 +1,6 @@
 """
 Usage:
-    foreman-maintain service [OPTIONS] SUBCOMMAND [ARG] ...
+    satellite-maintain service [OPTIONS] SUBCOMMAND [ARG] ...
 
 Parameters:
     SUBCOMMAND                    subcommand
@@ -22,13 +22,13 @@ from testfm.base import Base
 
 
 class Service(Base):
-    """Manipulates Foreman-maintain's service command"""
+    """Manipulates Satellite-maintain's service command"""
 
     command_base = "service"
 
     @classmethod
     def service_start(cls, options=None):
-        """Build foreman-maintain service start"""
+        """Build satellite-maintain service start"""
 
         cls.command_sub = "start"
 
@@ -41,7 +41,7 @@ class Service(Base):
 
     @classmethod
     def service_stop(cls, options=None):
-        """Build foreman-maintain service stop"""
+        """Build satellite-maintain service stop"""
 
         cls.command_sub = "stop"
 
@@ -54,7 +54,7 @@ class Service(Base):
 
     @classmethod
     def service_restart(cls, options=None):
-        """Build foreman-maintain service"""
+        """Build satellite-maintain service"""
 
         cls.command_sub = "restart"
 
@@ -67,7 +67,7 @@ class Service(Base):
 
     @classmethod
     def service_status(cls, options=None):
-        """Build foreman-maintain service status"""
+        """Build satellite-maintain service status"""
 
         cls.command_sub = "status"
 
@@ -80,7 +80,7 @@ class Service(Base):
 
     @classmethod
     def service_enable(cls, options=None):
-        """Build foreman-maintain service enable"""
+        """Build satellite-maintain service enable"""
 
         cls.command_sub = "enable"
 
@@ -93,7 +93,7 @@ class Service(Base):
 
     @classmethod
     def service_disable(cls, options=None):
-        """Build foreman-maintain service disable"""
+        """Build satellite-maintain service disable"""
 
         cls.command_sub = "disable"
 
@@ -106,7 +106,7 @@ class Service(Base):
 
     @classmethod
     def service_list(cls, options=None):
-        """Build foreman-maintain service list"""
+        """Build satellite-maintain service list"""
 
         cls.command_sub = "list"
 

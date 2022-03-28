@@ -6,7 +6,7 @@ from testfm.upgrade import Upgrade
 def check_health():
     """
     Usage:
-    foreman-maintain health check [OPTIONS]
+    satellite-maintain health check [OPTIONS]
 
     Options:
         --label label                 Limit only for a specific label.
@@ -30,7 +30,7 @@ def check_health():
 def list_versions():
     """
     Usage:
-    foreman-maintain upgrade list-versions [OPTIONS]
+    satellite-maintain upgrade list-versions [OPTIONS]
 
     Options:
         -h, --help                    print help
@@ -42,7 +42,7 @@ def list_versions():
 def advanced_procedure_run_service_restart():
     """
     Usage:
-    foreman-maintain advanced procedure run katello-service-restart [OPTIONS]
+    satellite-maintain advanced procedure run katello-service-restart [OPTIONS]
 
     Options:
         --only ONLY                   A comma-separated list of services to

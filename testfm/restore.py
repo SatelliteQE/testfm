@@ -1,6 +1,6 @@
 """
 Usage:
-    foreman-maintain restore [OPTIONS] BACKUP_DIR
+    satellite-maintain restore [OPTIONS] BACKUP_DIR
 
 Parameters:
     BACKUP_DIR                    Path to backup directory to restore
@@ -18,6 +18,6 @@ from testfm.base import Base
 
 
 class Restore(Base):
-    """Manipulates Foreman-maintain's restore command"""
+    """Manipulates Satellite-maintain's restore command"""
 
     command_base = "restore"
