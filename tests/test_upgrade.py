@@ -27,10 +27,10 @@ def test_positive_satellite_maintain_upgrade_list(ansible_module):
         satellite_version = ansible_module.command(
             "rpm -q 'satellite' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if satellite_version.startswith("7.0"):
-            versions = ["7.0.z"]
+        if satellite_version.startswith("6.11"):
+            versions = ["6.11.z"]
         elif satellite_version.startswith("6.10"):
-            versions = ["6.10.z", "7.0"]
+            versions = ["6.10.z", "6.11"]
         elif satellite_version.startswith("6.9"):
             versions = ["6.9.z", "6.10"]
         elif satellite_version.startswith("6.8"):
@@ -41,10 +41,10 @@ def test_positive_satellite_maintain_upgrade_list(ansible_module):
         capsule_version = ansible_module.command(
             "rpm -q 'satellite-capsule' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if capsule_version.startswith("7.0"):
-            versions = ["7.0.z"]
+        if capsule_version.startswith("6.11"):
+            versions = ["6.11.z"]
         elif capsule_version.startswith("6.10"):
-            versions = ["6.10.z", "7.0"]
+            versions = ["6.10.z", "6.11"]
         elif capsule_version.startswith("6.9"):
             versions = ["6.9.z", "6.10"]
         elif capsule_version.startswith("6.8"):
