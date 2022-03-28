@@ -58,15 +58,15 @@ sat_610_repos = [
     "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
 
-sat_70_repos = (
+sat_611_repos = (
     [
-        "rhel-7-server-satellite-7.0-rpms",
-        "rhel-7-server-satellite-maintenance-7.0-rpms",
+        "rhel-7-server-satellite-6.11-rpms",
+        "rhel-7-server-satellite-maintenance-6.11-rpms",
     ]
     if rhel7()
     else [
-        "satellite-7.0-for-rhel-8-x86_64-rpms",
-        "satellite-maintenance-7.0-for-rhel-8-x86_64-rpms",
+        "satellite-6.11-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-6.11-for-rhel-8-x86_64-rpms",
     ]
 ) + common_repos
 
@@ -92,15 +92,15 @@ cap_610_repos = [
     "rhel-7-server-satellite-maintenance-6-rpms",
 ] + common_repos
 
-cap_70_repos = (
+cap_611_repos = (
     [
-        "rhel-7-server-satellite-capsule-7.0-rpms",
-        "rhel-7-server-satellite-maintenance-7.0-rpms",
+        "rhel-7-server-satellite-capsule-6.11-rpms",
+        "rhel-7-server-satellite-maintenance-6.11-rpms",
     ]
     if rhel7()
     else [
-        "satellite-capsule-7.0-for-rhel-8-x86_64-rpms",
-        "satellite-maintenance-7.0-for-rhel-8-x86_64-rpms",
+        "satellite-capsule-6.11-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-6.11-for-rhel-8-x86_64-rpms",
     ]
 ) + common_repos
 
@@ -114,13 +114,13 @@ sat_repos = {
     "6.8": sat_68_repos,
     "6.9": sat_69_repos,
     "6.10": sat_610_repos,
-    "7.0": sat_70_repos,
+    "6.11": sat_611_repos,
 }
 cap_repos = {
     "6.8": cap_68_repos,
     "6.9": cap_69_repos,
     "6.10": cap_610_repos,
-    "7.0": cap_70_repos,
+    "6.11": cap_611_repos,
 }
 satellite_maintain_yml = "/etc/foreman-maintain/foreman_maintain.yml"
 epel_repo = "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"

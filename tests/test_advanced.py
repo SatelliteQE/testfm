@@ -412,13 +412,13 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
             for repo in sat_beta_repo:
                 assert repo in result["stdout"]
 
-    # 7.0 till not GA
-    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "7.0"}))
+    # 6.11 till not GA
+    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.11"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
-        for repo in sat_repos["7.0"]:
+        for repo in sat_repos["6.11"]:
             assert repo in result["stdout"]
 
 
@@ -469,11 +469,11 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
             for repo in cap_beta_repo:
                 assert repo in result["stdout"]
 
-    # 7.0 till not GA
-    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "7.0"}))
+    # 6.11 till not GA
+    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.11"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
-        for repo in cap_repos["7.0"]:
+        for repo in cap_repos["6.11"]:
             assert repo in result["stdout"]
