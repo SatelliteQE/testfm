@@ -631,3 +631,15 @@ def setup_rpmsave_file(request, ansible_module):
             assert result["changed"] is True
 
     request.addfinalizer(teardown_rpmsave_file)
+
+
+@pytest.fixture(scope="function")
+def setup_duplicate_permissions(request, ansible_module):
+    """This fixture is used to create duplicate permissions in the database"""
+    name = r"'\''view_ansible_variables'\''"
+    resource_type = r"'\''AnsibleVariable'\''"
+    setup = ansible_module.shell(
+        f'''sudo su - postgres -c "psql -d foreman -c 'INSERT INTO permissions(name, resource_type)
+        VALUES({name}, {resource_type});'"'''
+    )
+    assert setup.values()[0]["rc"] == 0
