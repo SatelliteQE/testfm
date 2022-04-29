@@ -23,7 +23,6 @@ from testfm.constants import upstream_url
 from testfm.helpers import product
 from testfm.helpers import server
 from testfm.log import logger
-from testfm.maintenance_mode import MaintenanceMode
 from testfm.packages import Packages
 from testfm.service import Service
 
@@ -201,9 +200,6 @@ def setup_sync_plan(request, ansible_module):
         return list(set(sync_ids)), sat_hostname
 
     def teardown_sync_plan():
-        teardown = ansible_module.command(MaintenanceMode.stop())
-        for result in teardown.values():
-            assert result["rc"] == 0
         for path in ["/tmp/sync_id.yaml", "/tmp/orgs.yaml"]:
             ansible_module.file(path=path, state="absent")
         ansible_module.lineinfile(
