@@ -1,5 +1,6 @@
 import yaml
 
+from testfm.helpers import rhel7
 from testfm.log import logger
 from testfm.maintenance_mode import MaintenanceMode
 
@@ -18,13 +19,13 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
         1. Verify that maintenance-mode is Off.
         2. Start maintenance-mode.
         3. Verify that active sync-plans got disabled or not.
-        4. Verify that FOREMAN_MAINTAIN is mentioned in iptables list.
+        4. Verify that FOREMAN_MAINTAIN is mentioned in iptables/nftables list.
         5. Verify that crond.service is stopped.
         6. Validate maintenance-mode status command's output.
         7. Validate maintenance-mode is-enabled command's output.
         8. Stop maintenance-mode.
         9. Verify that disabled sync-plans got re-enabled or not.
-        10. Verify that FOREMAN_MAINTAIN is not mentioned in iptables list.
+        10. Verify that FOREMAN_MAINTAIN is not mentioned in iptables/nftables list.
         11. Verify that crond.service is running.
         12. Validate maintenance-mode status command's output.
         13. Validate maintenance-mode is-enabled command's output.
@@ -35,16 +36,17 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
 
     :CaseImportance: Critical
     """
+    iptables_nftables = "iptables -L" if rhel7() else "nft list tables"
     sync_ids, sat_hostname = setup_sync_plan()
     maintenance_mode_off = [
         "Status of maintenance-mode: Off",
-        "Iptables chain: absent",
+        "Iptables chain: absent" if rhel7() else "Nftables table: absent",
         "sync plans: enabled",
         "cron jobs: running",
     ]
     maintenance_mode_on = [
         "Status of maintenance-mode: On",
-        "Iptables chain: present",
+        "Iptables chain: present" if rhel7() else "Nftables table: present",
         "sync plans: disabled",
         "cron jobs: not running",
     ]
@@ -77,10 +79,11 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
         data_yml = yaml.safe_load(f)
     assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":disabled"])
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":disabled"])
-    check_iptables = ansible_module.command("iptables -L")
-    for rules in check_iptables.values():
+    check_iptables_nftables = ansible_module.command(iptables_nftables)
+    for rules in check_iptables_nftables.values():
         logger.info(rules["stdout"])
-        assert "FOREMAN_MAINTAIN" in rules["stdout"]  # Assert FOREMAN_MAINTAIN is listed iptables
+        # Assert FOREMAN_MAINTAIN is listed in iptables/nftables
+        assert "FOREMAN_MAINTAIN" in rules["stdout"]
     # Assert crond.service is stopped
     contacted = ansible_module.service_facts()
     state = contacted.values()[0]["ansible_facts"]["services"]["crond.service"]["state"]
@@ -115,10 +118,10 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
         data_yml = yaml.safe_load(f)
     assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":enabled"])
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":enabled"])
-    check_iptables = ansible_module.command("iptables -L")
-    for rules in check_iptables.values():
+    check_iptables_nftables = ansible_module.command(iptables_nftables)
+    for rules in check_iptables_nftables.values():
         logger.info(rules["stdout"])
-        # Assert FOREMAN_MAINTAIN not listed in iptables
+        # Assert FOREMAN_MAINTAIN not listed in iptables/nftables
         assert "FOREMAN_MAINTAIN" not in rules["stdout"]
     # Assert crond.service is running
     contacted = ansible_module.service_facts()
