@@ -294,21 +294,20 @@ def test_positive_procedure_by_tag_check_migrations(ansible_module):
 
     :CaseImportance: Critical
     """
-    iptables_nftables = "iptables -L" if rhel7() else "nft list tables"
     contacted = ansible_module.command(AdvancedByTag.pre_migrations())
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
-    check_iptables_nftables = ansible_module.command(iptables_nftables)
-    for rules in check_iptables_nftables.values():
+    check_iptables = ansible_module.command("iptables -L")
+    for rules in check_iptables.values():
         logger.info(rules["stdout"])
         assert "FOREMAN_MAINTAIN" in rules["stdout"]
     teardown = ansible_module.command(AdvancedByTag.post_migrations())
     for result in teardown.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
-    check_iptables_nftables = ansible_module.command(iptables_nftables)
-    for rules in check_iptables_nftables.values():
+    check_iptables = ansible_module.command("iptables -L")
+    for rules in check_iptables.values():
         logger.info(rules["stdout"])
         assert "FOREMAN_MAINTAIN" not in rules["stdout"]
 
