@@ -428,7 +428,6 @@ def test_positive_check_validate_yum_config(ansible_module):
     """
     file = "/etc/yum.conf"
     yum_exclude = "exclude='cat* bear*'"
-    yum_clean_requirements = "clean_requirements_on_remove=1"
     failure_message = "Unset this configuration as it is risky while yum update or upgrade!"
     ansible_module.blockinfile(path=file, block=yum_exclude)
     contacted = ansible_module.command(Health.check({"label": "validate-yum-config"}))
@@ -438,19 +437,7 @@ def test_positive_check_validate_yum_config(ansible_module):
         assert failure_message in result["stdout"]
         assert result["rc"] == 1
 
-    ansible_module.blockinfile(path=file, block=f"{yum_exclude} \n{yum_clean_requirements}")
-
-    contacted = ansible_module.command(Health.check({"label": "validate-yum-config"}))
-    for result in contacted.values():
-        logger.info(result["stdout"])
-        assert yum_exclude in result["stdout"]
-        assert yum_clean_requirements in result["stdout"]
-        assert failure_message in result["stdout"]
-        assert result["rc"] == 1
-
-    ansible_module.blockinfile(
-        path=file, block=f"{yum_exclude} \n{yum_clean_requirements}", state="absent"
-    )
+    ansible_module.blockinfile(path=file, block=yum_exclude, state="absent")
     contacted = ansible_module.command(Health.check({"label": "validate-yum-config"}))
     for result in contacted.values():
         logger.info(result["stdout"])
