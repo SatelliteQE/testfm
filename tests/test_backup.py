@@ -73,9 +73,9 @@ def test_positive_backup_online(setup_backup_tests, ansible_module):
         assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
@@ -111,9 +111,9 @@ def test_positive_backup_online_skip_pulp_content(setup_backup_tests, ansible_mo
         assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
@@ -142,7 +142,9 @@ def test_positive_backup_online_preserve_directory(setup_backup_tests, ansible_m
     """
     subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     ansible_module.file(
-        path="{}".format(subdir), state="directory", owner="postgres",
+        path=f"{subdir}",
+        state="directory",
+        owner="postgres",
     )
     contacted = ansible_module.command(
         Backup.run_online_backup(["-y", "--preserve-directory", subdir])
@@ -152,7 +154,7 @@ def test_positive_backup_online_preserve_directory(setup_backup_tests, ansible_m
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
-    contacted = ansible_module.command("ls -a {}".format(subdir))
+    contacted = ansible_module.command(f"ls -a {subdir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
@@ -187,9 +189,9 @@ def test_positive_backup_online_split_pulp_tar(setup_backup_tests, ansible_modul
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
 
@@ -224,12 +226,10 @@ def test_positive_backup_online_incremental(setup_backup_tests, ansible_module):
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     source_dir = contacted.values()[0]["stdout_lines"][0]
     contacted = ansible_module.command(
-        Backup.run_online_backup(
-            ["-y", "--incremental", "{}/{}".format(subdir, source_dir), dest_dir]
-        )
+        Backup.run_online_backup(["-y", "--incremental", f"{subdir}/{source_dir}", dest_dir])
     )
     for result in contacted.values():
         logger.info(result["stdout"])
@@ -269,9 +269,9 @@ def test_positive_backup_online_caspule_features(setup_backup_tests, ansible_mod
         assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = ONLINE_BACKUP_FILES
     # capsule-specific file list
@@ -305,13 +305,13 @@ def test_positive_backup_online_all(setup_backup_tests, ansible_module):
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     source_dir = contacted.values()[0]["stdout_lines"][0]
     contacted = ansible_module.command(
         Backup.run_online_backup(
             [
                 "-y -f -s -p -t 10M -i",
-                "{}/{}".format(subdir, source_dir),
+                f"{subdir}/{source_dir}",
                 "--features dns,tfp,dhcp,openscap",
                 subdir,
             ]
@@ -347,9 +347,9 @@ def test_positive_backup_offline(setup_backup_tests, ansible_module):
         assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
@@ -385,9 +385,9 @@ def test_positive_backup_offline_skip_pulp_content(setup_backup_tests, ansible_m
         assert result["rc"] == 0
 
     # getting created files
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
@@ -417,7 +417,9 @@ def test_positive_backup_offline_preserve_directory(setup_backup_tests, ansible_
     """
     subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     ansible_module.file(
-        path="{}".format(subdir), state="directory", owner="postgres",
+        path=f"{subdir}",
+        state="directory",
+        owner="postgres",
     )
     contacted = ansible_module.command(
         Backup.run_offline_backup(["-y", "--preserve-directory", subdir])
@@ -427,7 +429,7 @@ def test_positive_backup_offline_preserve_directory(setup_backup_tests, ansible_
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
-    contacted = ansible_module.command("ls -a {}".format(subdir))
+    contacted = ansible_module.command(f"ls -a {subdir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
@@ -463,9 +465,9 @@ def test_positive_backup_offline_split_pulp_tar(setup_backup_tests, ansible_modu
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
@@ -500,12 +502,10 @@ def test_positive_backup_offline_incremental(setup_backup_tests, ansible_module)
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     source_dir = contacted.values()[0]["stdout_lines"][0]
     contacted = ansible_module.command(
-        Backup.run_offline_backup(
-            ["-y", "--incremental", "{}/{}".format(subdir, source_dir), dest_dir]
-        )
+        Backup.run_offline_backup(["-y", "--incremental", f"{subdir}/{source_dir}", dest_dir])
     )
     for result in contacted.values():
         logger.info(result["stdout"])
@@ -545,9 +545,9 @@ def test_positive_backup_offline_capsule_features(setup_backup_tests, ansible_mo
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES
 
@@ -582,9 +582,9 @@ def test_positive_backup_offline_logical(setup_backup_tests, ansible_module):
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-    contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+    contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
     files_list = contacted.values()[0]["stdout_lines"]
     expected_files = OFFLINE_BACKUP_FILES + ONLINE_BACKUP_FILES
 
@@ -620,13 +620,13 @@ def test_positive_backup_offline_all(setup_backup_tests, ansible_module):
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
-    contacted = ansible_module.command("ls {}".format(subdir))
+    contacted = ansible_module.command(f"ls {subdir}")
     source_dir = contacted.values()[0]["stdout_lines"][0]
     contacted = ansible_module.command(
         Backup.run_offline_backup(
             [
                 "-y -f -s -p -t 10M -i",
-                "{}/{}".format(subdir, source_dir),
+                f"{subdir}/{source_dir}",
                 "--features dns,tfp,dhcp,openscap",
                 "--include-db-dumps",
                 subdir,
@@ -736,7 +736,7 @@ def test_positive_backup_stopped_dynflowd(setup_backup_tests, ansible_module):
     """
     subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     try:
-        setup = ansible_module.command(Service.service_stop({u"only": "dynflowd"}))
+        setup = ansible_module.command(Service.service_stop({"only": "dynflowd"}))
         for result in setup.values():
             logger.info(result)
             assert result["rc"] == 0
@@ -747,9 +747,9 @@ def test_positive_backup_stopped_dynflowd(setup_backup_tests, ansible_module):
             assert result["rc"] == 0
 
         # getting created files
-        contacted = ansible_module.command("ls {}".format(subdir))
+        contacted = ansible_module.command(f"ls {subdir}")
         timestamped_dir = contacted.values()[0]["stdout_lines"][0]
-        contacted = ansible_module.command("ls -a {}/{}".format(subdir, timestamped_dir))
+        contacted = ansible_module.command(f"ls -a {subdir}/{timestamped_dir}")
         files_list = contacted.values()[0]["stdout_lines"]
         expected_files = ONLINE_BACKUP_FILES
 
@@ -783,7 +783,7 @@ def test_positive_backup_stopped_foreman_tasks(setup_backup_tests, ansible_modul
     """
     subdir = "{}backup-{}".format(BACKUP_DIR, gen_string("alpha"))
     try:
-        setup = ansible_module.command(Service.service_stop({u"only": "foreman-tasks"}))
+        setup = ansible_module.command(Service.service_stop({"only": "foreman-tasks"}))
         for result in setup.values():
             logger.info(result)
             assert result["rc"] == 0

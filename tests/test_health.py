@@ -102,18 +102,18 @@ def test_positive_foreman_maintain_health_check(ansible_module):
 def test_positive_foreman_maintain_health_check_by_tags(ansible_module):
     """Verify foreman-maintain health check by tags
 
-        :id: 518e19af-2dd4-4fb0-8c90-208cbd354107
+    :id: 518e19af-2dd4-4fb0-8c90-208cbd354107
 
-        :setup:
-            1. foreman-maintain should be installed.
+    :setup:
+        1. foreman-maintain should be installed.
 
-        :steps:
-            1. Run foreman-maintain health check --tags tag_name
+    :steps:
+        1. Run foreman-maintain health check --tags tag_name
 
-        :expectedresults: Health check should perform.
+    :expectedresults: Health check should perform.
 
-        :CaseImportance: Critical
-        """
+    :CaseImportance: Critical
+    """
     contacted = ansible_module.command(Health.list_tags())
     for result in contacted.values():
         output = result["stdout"]
@@ -342,7 +342,7 @@ def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansi
         assert result["rc"] == 0
     puppet_ssldir_path = ansible_module.command("puppet config print ssldir").values()[0]["stdout"]
     contacted = ansible_module.find(
-        paths="{}/ca/requests/".format(puppet_ssldir_path), file_type="file", size="0"
+        paths=f"{puppet_ssldir_path}/ca/requests/", file_type="file", size="0"
     )
     assert contacted.values()[0]["matched"] == 0
 
@@ -430,7 +430,8 @@ def test_positive_check_validate_yum_config(ansible_module):
     yum_clean_requirements = "clean_requirements_on_remove=1"
     failure_message = "Unset this configuration as it is risky while yum update or upgrade!"
     ansible_module.blockinfile(
-        path=file, block=yum_exclude,
+        path=file,
+        block=yum_exclude,
     )
     contacted = ansible_module.command(Health.check({"label": "validate-yum-config"}))
     for result in contacted.values():
@@ -440,7 +441,8 @@ def test_positive_check_validate_yum_config(ansible_module):
         assert result["rc"] == 1
 
     ansible_module.blockinfile(
-        path=file, block=f"{yum_exclude} \n{yum_clean_requirements}",
+        path=file,
+        block=f"{yum_exclude} \n{yum_clean_requirements}",
     )
 
     contacted = ansible_module.command(Health.check({"label": "validate-yum-config"}))
@@ -694,7 +696,10 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
     custom_hiera = "/etc/foreman-installer/custom-hiera.yaml"
     # Create invalid yaml file
     ansible_module.lineinfile(
-        path=custom_hiera, regexp="---", line="----", state="present",
+        path=custom_hiera,
+        regexp="---",
+        line="----",
+        state="present",
     )
     contacted = ansible_module.command(
         Health.check(["--label", "check-postgresql-checkpoint-segments"])
@@ -706,11 +711,15 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
         assert result["rc"] == 1
     # Make yaml file valid
     ansible_module.lineinfile(
-        path=custom_hiera, regexp="----", line="---", state="present",
+        path=custom_hiera,
+        regexp="----",
+        line="---",
+        state="present",
     )
     # Add config_entries section
     ansible_module.blockinfile(
-        path=custom_hiera, block="postgresql::server::config_entries:",
+        path=custom_hiera,
+        block="postgresql::server::config_entries:",
     )
     # Run check-postgresql-checkpoint-segments check.
     contacted = ansible_module.command(
@@ -724,7 +733,8 @@ def test_positive_check_postgresql_checkpoint_segments(ansible_module):
         assert result["rc"] == 1
     # Add checkpoint_segments
     ansible_module.blockinfile(
-        path=custom_hiera, block="postgresql::server::config_entries: \n  checkpoint_segments: 32",
+        path=custom_hiera,
+        block="postgresql::server::config_entries: \n  checkpoint_segments: 32",
     )
     # Run check-postgresql-checkpoint-segments check.
     contacted = ansible_module.command(
@@ -842,9 +852,7 @@ def test_positive_remove_job_file(setup_subscribe_to_cdn_dogfood, ansible_module
         assert "disk-performance" not in result["stdout"]
 
     # Verify job1.0.0 file not exist after check completion
-    contacted = ansible_module.command(
-        Health.check(["--label", "disk-performance", "--assumeyes"])
-    )
+    contacted = ansible_module.command(Health.check(["--label", "disk-performance", "--assumeyes"]))
     contacted = ansible_module.find(paths="/var/lib/pulp", file_type="file")
     for file in contacted.values()[0]["files"]:
         assert "job" not in file["path"]
