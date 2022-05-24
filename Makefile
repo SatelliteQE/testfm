@@ -19,4 +19,13 @@ uuid-check:  ## list duplicated or empty uuids
 uuid-fix:
 	@scripts/fix_uuids.sh
 
+vault-login:
+	@scripts/vault_login.py --login
+
+vault-status:
+	@scripts/vault_login.py --status
+
+vault-logout:
+	@scripts/vault_login.py --logout
+
 .PHONY: help test-docstrings uuid-check

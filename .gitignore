@@ -23,3 +23,6 @@ dist/
 # Dynaconf local files
 /conf/*
 !/conf/testfm.sample.yaml
+
+# Dynaconfs .env file
+/.env
