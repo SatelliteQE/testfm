@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Usage:
     foreman-maintain advanced procedure run [OPTIONS] SUBCOMMAND [ARG] ...
@@ -40,7 +39,7 @@ class Advanced(Base):
     @classmethod
     def run_service_restart(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         service-restart"""
+        service-restart"""
 
         cls.command_sub = "service-restart"
 
@@ -54,7 +53,7 @@ class Advanced(Base):
     @classmethod
     def run_katello_service_stop(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         service-stop"""
+        service-stop"""
 
         cls.command_sub = "service-stop"
 
@@ -68,7 +67,7 @@ class Advanced(Base):
     @classmethod
     def run_service_start(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         service-start"""
+        service-start"""
 
         cls.command_sub = "service-start"
 
@@ -82,7 +81,7 @@ class Advanced(Base):
     @classmethod
     def run_packages_update(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         packages-update"""
+        packages-update"""
 
         cls.command_sub = "packages-update"
 
@@ -96,7 +95,7 @@ class Advanced(Base):
     @classmethod
     def run_disable_maintenance_mode(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         maintenance-mode-disable"""
+        maintenance-mode-disable"""
 
         cls.command_sub = "maintenance-mode-disable"
 
@@ -110,7 +109,7 @@ class Advanced(Base):
     @classmethod
     def run_enable_maintenance_mode(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         maintenance-mode-enable"""
+        maintenance-mode-enable"""
 
         cls.command_sub = "maintenance-mode-enable"
 
@@ -124,7 +123,7 @@ class Advanced(Base):
     @classmethod
     def run_foreman_tasks_delete(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         foreman-tasks-delete"""
+        foreman-tasks-delete"""
 
         cls.command_sub = "foreman-tasks-delete"
 
@@ -138,7 +137,7 @@ class Advanced(Base):
     @classmethod
     def run_foreman_tasks_resume(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         foreman-tasks-resume"""
+        foreman-tasks-resume"""
 
         cls.command_sub = "foreman-tasks-resume"
 
@@ -152,7 +151,7 @@ class Advanced(Base):
     @classmethod
     def run_sync_plans_enable(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         sync-plans-enable"""
+        sync-plans-enable"""
 
         cls.command_sub = "sync-plans-enable"
 
@@ -166,7 +165,7 @@ class Advanced(Base):
     @classmethod
     def run_sync_plans_disable(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         sync-plans-disable"""
+        sync-plans-disable"""
 
         cls.command_sub = "sync-plans-disable"
 
@@ -180,7 +179,7 @@ class Advanced(Base):
     @classmethod
     def run_foreman_tasks_ui_investigate(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         foreman-tasks-ui-investigate"""
+        foreman-tasks-ui-investigate"""
 
         cls.command_sub = "foreman-tasks-ui-investigate"
 
@@ -194,7 +193,7 @@ class Advanced(Base):
     @classmethod
     def run_hammer_setup(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         hammer-setup"""
+        hammer-setup"""
 
         cls.command_sub = "hammer-setup"
 
@@ -208,7 +207,7 @@ class Advanced(Base):
     @classmethod
     def run_repositories_setup(cls, options=None):
         """Build foreman-maintain advanced procedure run
-         repositories-setup"""
+        repositories-setup"""
 
         cls.command_sub = "repositories-setup"
 

@@ -193,7 +193,7 @@ def setup_sync_plan(request, ansible_module):
             sat_hostname = facts[0]
         setup = ansible_module.shell("hammer --output json organization list > /tmp/orgs.yaml")
         ansible_module.fetch(src="/tmp/orgs.yaml", dest="./")
-        with open("./{}/tmp/orgs.yaml".format(sat_hostname)) as f:
+        with open(f"./{sat_hostname}/tmp/orgs.yaml") as f:
             org_yml = yaml.safe_load(f)
         for id in org_yml:
             org_ids.append(id["Id"])
@@ -203,7 +203,7 @@ def setup_sync_plan(request, ansible_module):
                 "sed -n '1!p' >> /tmp/sync_id.yaml".format(id)
             )
         ansible_module.fetch(src="/tmp/sync_id.yaml", dest="./")
-        with open("./{}/tmp/sync_id.yaml".format(sat_hostname)) as f:
+        with open(f"./{sat_hostname}/tmp/sync_id.yaml") as f:
             sync_yml = yaml.safe_load(f)
             for id in sync_yml:
                 if id["Enabled"]:
@@ -217,7 +217,8 @@ def setup_sync_plan(request, ansible_module):
             assert result["rc"] == 0
         for path in ["/tmp/sync_id.yaml", "/tmp/orgs.yaml"]:
             ansible_module.file(
-                path=path, state="absent",
+                path=path,
+                state="absent",
             )
         ansible_module.lineinfile(
             dest=foreman_maintain_yml, state="absent", line=":manage_crond: true"
@@ -234,9 +235,7 @@ def setup_puppet_empty_cert(setup_install_pexpect, ansible_module):
     """
     fname = gen_string("alpha")
     puppet_ssldir_path = ansible_module.command("puppet config print ssldir").values()[0]["stdout"]
-    setup = ansible_module.file(
-        path="{}/ca/requests/{}".format(puppet_ssldir_path, fname), state="touch"
-    )
+    setup = ansible_module.file(path=f"{puppet_ssldir_path}/ca/requests/{fname}", state="touch")
     assert setup.values()[0]["changed"] == 1
 
 
@@ -350,7 +349,7 @@ def setup_invalid_repository(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_bz_1696862(request, ansible_module):
-    """ This fixture is used by test test_positive_fm_service_restart_bz_1696862
+    """This fixture is used by test test_positive_fm_service_restart_bz_1696862
     for setup/teardown.
     """
     if float(product()) >= 6.6:
@@ -368,11 +367,11 @@ def setup_bz_1696862(request, ansible_module):
             backup="yes",
         )
     ansible_module.command("mv .hammer/cli.modules.d/foreman.yml /tmp/foreman.yml")
-    ansible_module.command("mv {} /tmp/foreman-maintain-hammer.yml".format(fm_hammer_yml))
+    ansible_module.command(f"mv {fm_hammer_yml} /tmp/foreman-maintain-hammer.yml")
 
     def teardown_bz_1696862():
         ansible_module.command("mv /tmp/foreman.yml .hammer/cli.modules.d/foreman.yml")
-        ansible_module.command("mv /tmp/foreman-maintain-hammer.yml {}".format(fm_hammer_yml))
+        ansible_module.command(f"mv /tmp/foreman-maintain-hammer.yml {fm_hammer_yml}")
         ansible_module.command(
             "mv {} {}".format(contacted.values()[0]["backup"], satellite_answer_file)
         )
@@ -382,7 +381,7 @@ def setup_bz_1696862(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_hammer_defaults(request, ansible_module):
-    """ This fixture is used by test test_positive_automate_bz1632768
+    """This fixture is used by test test_positive_automate_bz1632768
     for setup/teardown.
     """
     ansible_module.command("hammer defaults add --param-name organization_id --param-value 1")
@@ -399,7 +398,7 @@ def setup_hammer_defaults(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_old_foreman_tasks(ansible_module):
-    """ This fixture is for creating old foreman task."""
+    """This fixture is for creating old foreman task."""
     rake_command = "foreman-rake console <<< "
     find_task = '\'t = ForemanTasks::Task.where(state: "stopped").first;'
     update_task = "t.started_at = t.started_at - 31.day;t.save(:validate => false)'"
@@ -408,7 +407,7 @@ def setup_old_foreman_tasks(ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_backup_tests(request, ansible_module):
-    """ Teardown for backup/restore tests."""
+    """Teardown for backup/restore tests."""
     setup = ansible_module.shell("rm -rf /tmp/backup-*; rm -rf /mnt/satellite-backup-*")
     assert setup.values()[0]["rc"] == 0
     ansible_module.command(Service.service_start())
@@ -423,7 +422,7 @@ def setup_backup_tests(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_packages_lock_tests(request, ansible_module, setup_subscribe_to_cdn_dogfood):
-    """ Setup/Teardown for Packages lock tests."""
+    """Setup/Teardown for Packages lock tests."""
     # Test whether packages are locked or not
     contacted = ansible_module.command("satellite-installer --lock-package-versions")
     for result in contacted.values():
@@ -466,7 +465,7 @@ def setup_packages_lock_tests(request, ansible_module, setup_subscribe_to_cdn_do
 
 @pytest.fixture(scope="function")
 def setup_tftp_storage(request, ansible_module):
-    """ Setup/Teardown for test_positive_check_tftp_storage"""
+    """Setup/Teardown for test_positive_check_tftp_storage"""
     setup = ansible_module.command("hammer settings set --name token_duration --value 2")
     assert setup.values()[0]["rc"] == 0
 
@@ -479,7 +478,7 @@ def setup_tftp_storage(request, ansible_module):
 
 @pytest.fixture(scope="function")
 def setup_yum_content(request, ansible_module):
-    """ Setup/Teardown cusom yum repo for test_positive_content_migrate."""
+    """Setup/Teardown cusom yum repo for test_positive_content_migrate."""
     prod_name = gen_string("alpha")
     repo_name = gen_string("alpha")
     repo_url = FAKE_YUM0_REPO
@@ -508,9 +507,7 @@ def setup_yum_content(request, ansible_module):
 def setup_rpmsave_file(request, ansible_module):
     """This fixture is used to create a .rpmsave file"""
     file_name = gen_string("alpha")
-    setup = ansible_module.file(
-        path=f"/etc/foreman/dynflow/{file_name}.yml.rpmsave", state="touch"
-    )
+    setup = ansible_module.file(path=f"/etc/foreman/dynflow/{file_name}.yml.rpmsave", state="touch")
     for result in setup.values():
         assert result["changed"] is True
 

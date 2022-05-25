@@ -67,7 +67,7 @@ def test_positive_automate_bz1624699(ansible_module):
 
     :CaseImportance: Critical
     """
-    setup = ansible_module.command(Service.service_stop({u"only": "smart_proxy_dynflow_core"}))
+    setup = ansible_module.command(Service.service_stop({"only": "smart_proxy_dynflow_core"}))
     for result in setup.values():
         assert result["rc"] == 0
         assert "FAIL" not in result["stdout"]
@@ -97,13 +97,13 @@ def test_positive_foreman_service(ansible_module):
     :CaseImportance: Critical
     """
     try:
-        setup = ansible_module.command(Service.service_stop({u"only": "foreman"}))
+        setup = ansible_module.command(Service.service_stop({"only": "foreman"}))
         for result in setup.values():
             assert result["rc"] == 0
             assert "FAIL" not in result["stdout"]
             assert "foreman" in result["stdout"]
 
-        httpd_service = ansible_module.command(Service.service_status({u"only": "httpd"}))
+        httpd_service = ansible_module.command(Service.service_status({"only": "httpd"}))
         for result in httpd_service.values():
             logger.info(result)
             assert result["rc"] == 0
@@ -115,7 +115,7 @@ def test_positive_foreman_service(ansible_module):
             assert "foreman" in result["stdout"]
 
     finally:
-        teardown = ansible_module.command(Service.service_start({u"only": "foreman"}))
+        teardown = ansible_module.command(Service.service_start({"only": "foreman"}))
         for result in teardown.values():
             assert result["rc"] == 0
 

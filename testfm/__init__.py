@@ -10,6 +10,7 @@ settings = Dynaconf(
     includes=["conf/testfm.local.yaml"],
     envless_mode=True,
     lowercase_read=True,
+    load_dotenv=True,
     validators=[
         Validator(
             "subscription.rhn_username",

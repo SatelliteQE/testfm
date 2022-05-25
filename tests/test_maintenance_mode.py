@@ -71,9 +71,9 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
-        assert "Total {} sync plans are now disabled.".format(len(sync_ids)) in result["stdout"]
+        assert f"Total {len(sync_ids)} sync plans are now disabled." in result["stdout"]
     ansible_module.fetch(src="/var/lib/foreman-maintain/data.yml", dest="./")
-    with open("./{}/var/lib/foreman-maintain/data.yml".format(sat_hostname)) as f:
+    with open(f"./{sat_hostname}/var/lib/foreman-maintain/data.yml") as f:
         data_yml = yaml.safe_load(f)
     assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":disabled"])
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":disabled"])
@@ -109,9 +109,9 @@ def test_positive_maintenance_mode(setup_sync_plan, ansible_module):
         logger.info(result["stdout"])
         assert result["rc"] == 0
         assert "FAIL" not in result["stdout"]
-        assert "Total {} sync plans are now enabled.".format(len(sync_ids)) in result["stdout"]
+        assert f"Total {len(sync_ids)} sync plans are now enabled." in result["stdout"]
     ansible_module.fetch(src="/var/lib/foreman-maintain/data.yml", dest="./")
-    with open("./{}/var/lib/foreman-maintain/data.yml".format(sat_hostname)) as f:
+    with open(f"./{sat_hostname}/var/lib/foreman-maintain/data.yml") as f:
         data_yml = yaml.safe_load(f)
     assert len(sync_ids) == len(data_yml[":default"][":sync_plans"][":enabled"])
     assert sorted(sync_ids) == sorted(data_yml[":default"][":sync_plans"][":enabled"])
