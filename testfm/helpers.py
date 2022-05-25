@@ -1,15 +1,12 @@
 # helpers required for TestFM
 import os
 
+from testfm import settings
+
 
 def product():
-    """This helper provides Satellite/Capsule version"""
-    server_version = os.popen(
-        "ansible -i testfm/inventory server --user root -m shell "
-        '-a "rpm -q satellite > /dev/null && rpm -q satellite --queryformat=%{VERSION}'
-        ' || rpm -q satellite-capsule --queryformat=%{VERSION}" -o'
-    ).read()
-    return server_version.splitlines()[0].split(" ")[-1][:3]
+    """Use this helper to fetch x.y version of Satellite/Capsule from x.y.z.v.w"""
+    return ".".join(settings.server.version.release.split(".")[:2])
 
 
 def run(command):
