@@ -294,21 +294,18 @@ def test_positive_procedure_by_tag_check_migrations(ansible_module):
 
     :CaseImportance: Critical
     """
-    iptables_nftables = "iptables -L" if rhel7() else "nft list tables"
     contacted = ansible_module.command(AdvancedByTag.pre_migrations())
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
-    check_iptables_nftables = ansible_module.command(iptables_nftables)
-    for rules in check_iptables_nftables.values():
+    for rules in ansible_module.command("nft list tables").values():
         logger.info(rules["stdout"])
         assert "FOREMAN_MAINTAIN" in rules["stdout"]
     teardown = ansible_module.command(AdvancedByTag.post_migrations())
     for result in teardown.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
-    check_iptables_nftables = ansible_module.command(iptables_nftables)
-    for rules in check_iptables_nftables.values():
+    for rules in ansible_module.command("nft list tables").values():
         logger.info(rules["stdout"])
         assert "FOREMAN_MAINTAIN" not in rules["stdout"]
 
@@ -384,7 +381,7 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
 
     :CaseImportance: Critical
     """
-    supported_versions = ["6.8", "6.9", "6.10"] if rhel7() else []
+    supported_versions = ["6.9", "6.10", "6.11"] if rhel7() else ["6.11"]
     for ver in supported_versions:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
@@ -398,28 +395,27 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
                 assert repo in result["stdout"]
 
     # Verify that all required beta repositories gets enabled
-    if rhel7():
-        export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
-        contacted = ansible_module.shell(
-            export_command + Advanced.run_repositories_setup({"version": "6.10"})
-        )
-        for result in contacted.values():
-            logger.info(result["stdout"])
-            assert "FAIL" not in result["stdout"]
-            assert result["rc"] == 0
-        contacted = ansible_module.command("yum repolist")
-        for result in contacted.values():
-            logger.info(result["stdout"])
-            for repo in sat_beta_repo:
-                assert repo in result["stdout"]
+    export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
+    contacted = ansible_module.shell(
+        export_command + Advanced.run_repositories_setup({"version": "6.11"})
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command("yum repolist")
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        for repo in sat_beta_repo:
+            assert repo in result["stdout"]
 
-    # 6.11 till not GA
-    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.11"}))
+    # 6.12 till not GA
+    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.12"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
-        for repo in sat_repos["6.11"]:
+        for repo in sat_repos["6.12"]:
             assert repo in result["stdout"]
 
 
@@ -442,7 +438,7 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
 
     :CaseImportance: Critical
     """
-    supported_versions = ["6.8", "6.9", "6.10"] if rhel7() else []
+    supported_versions = ["6.9", "6.10", "6.11"] if rhel7() else ["6.11"]
     for ver in supported_versions:
         contacted = ansible_module.command(Advanced.run_repositories_setup({"version": ver}))
         for result in contacted.values():
@@ -455,26 +451,25 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
             for repo in cap_repos[ver]:
                 assert repo in result["stdout"]
     # Verify that all required beta repositories gets enabled
-    if rhel7():
-        export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
-        contacted = ansible_module.shell(
-            export_command + Advanced.run_repositories_setup({"version": "6.10"})
-        )
-        for result in contacted.values():
-            logger.info(result["stdout"])
-            assert "FAIL" not in result["stdout"]
-            assert result["rc"] == 0
-        contacted = ansible_module.command("yum repolist")
-        for result in contacted.values():
-            logger.info(result["stdout"])
-            for repo in cap_beta_repo:
-                assert repo in result["stdout"]
+    export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
+    contacted = ansible_module.shell(
+        export_command + Advanced.run_repositories_setup({"version": "6.11"})
+    )
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+    contacted = ansible_module.command("yum repolist")
+    for result in contacted.values():
+        logger.info(result["stdout"])
+        for repo in cap_beta_repo:
+            assert repo in result["stdout"]
 
-    # 6.11 till not GA
-    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.11"}))
+    # 6.12 till not GA
+    contacted = ansible_module.shell(Advanced.run_repositories_setup({"version": "6.12"}))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" in result["stdout"]
         assert result["rc"] == 1
-        for repo in cap_repos["6.11"]:
+        for repo in cap_repos["6.12"]:
             assert repo in result["stdout"]

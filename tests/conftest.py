@@ -12,7 +12,6 @@ from testfm.constants import epel_repo
 from testfm.constants import FAKE_YUM0_REPO
 from testfm.constants import fm_hammer_yml
 from testfm.constants import FM_RHN_POOLID
-from testfm.constants import gems_path
 from testfm.constants import HOTFIX_URL
 from testfm.constants import katello_ca_consumer
 from testfm.constants import RHN_PASSWORD
@@ -34,7 +33,7 @@ def setup_hotfix_check(request, ansible_module):
     This fixture is used in test_positive_check_hotfix_installed_with_hotfix of test_health.py
     """
     file = ansible_module.find(
-        paths=gems_path,
+        paths="/usr/share/gems/gems/",
         patterns="fog-vsphere-*",
         file_type="directory",
     )

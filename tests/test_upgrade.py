@@ -27,28 +27,28 @@ def test_positive_satellite_maintain_upgrade_list(ansible_module):
         satellite_version = ansible_module.command(
             "rpm -q 'satellite' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if satellite_version.startswith("6.11"):
-            versions = ["6.11.z"]
+        if satellite_version.startswith("6.12"):
+            versions = ["6.12.z"]
+        elif satellite_version.startswith("6.11"):
+            versions = ["6.11.z", "6.12"]
         elif satellite_version.startswith("6.10"):
             versions = ["6.10.z", "6.11"]
         elif satellite_version.startswith("6.9"):
             versions = ["6.9.z", "6.10"]
-        elif satellite_version.startswith("6.8"):
-            versions = ["6.8.z", "6.9"]
         else:
             versions = ["unsupported satellite version"]
     else:
         capsule_version = ansible_module.command(
             "rpm -q 'satellite-capsule' --queryformat='%{VERSION}'"
         ).values()[0]["stdout"]
-        if capsule_version.startswith("6.11"):
-            versions = ["6.11.z"]
+        if capsule_version.startswith("6.12"):
+            versions = ["6.12.z"]
+        elif capsule_version.startswith("6.11"):
+            versions = ["6.11.z", "6.12"]
         elif capsule_version.startswith("6.10"):
             versions = ["6.10.z", "6.11"]
         elif capsule_version.startswith("6.9"):
             versions = ["6.9.z", "6.10"]
-        elif capsule_version.startswith("6.8"):
-            versions = ["6.8.z", "6.9"]
         else:
             versions = ["unsupported capsule version"]
 
