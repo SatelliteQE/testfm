@@ -1,10 +1,10 @@
-# CI stages to execute against master branch on PR merge
+# CI stages to execute against 6.11.z branch on PR merge
 name: TestFM - IMAGE
 
 on:
   push:
     branches:
-      - master
+      - 6.11.z
 
 jobs:
   codechecks:
