@@ -43,11 +43,6 @@ common_repos = (
 )
 
 # Satellite repositories
-sat_68_repos = [
-    "rhel-7-server-satellite-6.8-rpms",
-    "rhel-7-server-satellite-maintenance-6-rpms",
-] + common_repos
-
 sat_69_repos = [
     "rhel-7-server-satellite-6.9-rpms",
     "rhel-7-server-satellite-maintenance-6-rpms",
@@ -70,18 +65,25 @@ sat_611_repos = (
     ]
 ) + common_repos
 
-# Satellite Beta repositories
-sat_beta_repo = [
-    "rhel-server-7-satellite-6-beta-rpms",
-    "rhel-7-server-satellite-maintenance-6-beta-rpms",
+sat_612_repos = [
+    "satellite-6.12-for-rhel-8-x86_64-rpms",
+    "satellite-maintenance-6.12-for-rhel-8-x86_64-rpms",
 ] + common_repos
+
+# Satellite Beta repositories
+sat_beta_repo = (
+    [
+        "rhel-server-7-satellite-6-beta-rpms",
+        "rhel-7-server-satellite-maintenance-6-beta-rpms",
+    ]
+    if rhel7()
+    else [
+        "satellite-6-beta-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-6-beta-for-rhel-8-x86_64-rpms",
+    ]
+) + common_repos
 
 # Capsule repositories
-cap_68_repos = [
-    "rhel-7-server-satellite-capsule-6.8-rpms",
-    "rhel-7-server-satellite-maintenance-6-rpms",
-] + common_repos
-
 cap_69_repos = [
     "rhel-7-server-satellite-capsule-6.9-rpms",
     "rhel-7-server-satellite-maintenance-6-rpms",
@@ -104,26 +106,37 @@ cap_611_repos = (
     ]
 ) + common_repos
 
-# Capsule Beta repositories
-cap_beta_repo = [
-    "rhel-server-7-satellite-capsule-6-beta-rpms",
-    "rhel-7-server-satellite-maintenance-6-beta-rpms",
+cap_612_repos = [
+    "satellite-capsule-6.12-for-rhel-8-x86_64-rpms",
+    "satellite-maintenance-6.12-for-rhel-8-x86_64-rpms",
 ] + common_repos
 
+# Capsule Beta repositories
+cap_beta_repo = (
+    [
+        "rhel-server-7-satellite-capsule-6-beta-rpms",
+        "rhel-7-server-satellite-maintenance-6-beta-rpms",
+    ]
+    if rhel7()
+    else [
+        "satellite-capsule-6-beta-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-6-beta-for-rhel-8-x86_64-rpms",
+    ]
+) + common_repos
+
 sat_repos = {
-    "6.8": sat_68_repos,
     "6.9": sat_69_repos,
     "6.10": sat_610_repos,
     "6.11": sat_611_repos,
+    "6.12": sat_612_repos,
 }
 cap_repos = {
-    "6.8": cap_68_repos,
     "6.9": cap_69_repos,
     "6.10": cap_610_repos,
     "6.11": cap_611_repos,
+    "6.12": cap_612_repos,
 }
 satellite_maintain_yml = "/etc/foreman-maintain/foreman_maintain.yml"
 epel_repo = "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 satellite_answer_file = "/etc/foreman-installer/scenarios.d/satellite-answers.yaml"
 fm_hammer_yml = "/etc/foreman-maintain/foreman-maintain-hammer.yml"
-gems_path = f"""{f"{'/opt/theforeman/tfm/root' if rhel7() else ''}" + '/usr/share/gems/gems/'}"""
