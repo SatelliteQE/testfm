@@ -71,10 +71,17 @@ sat_611_repos = (
 ) + common_repos
 
 # Satellite Beta repositories
-sat_beta_repo = [
-    "rhel-server-7-satellite-6-beta-rpms",
-    "rhel-7-server-satellite-maintenance-6-beta-rpms",
-] + common_repos
+sat_beta_repo = (
+    [
+        "rhel-server-7-satellite-6-beta-rpms",
+        "rhel-7-server-satellite-maintenance-6-beta-rpms",
+    ]
+    if rhel7()
+    else [
+        "satellite-6-beta-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-6-beta-for-rhel-8-x86_64-rpms",
+    ]
+) + common_repos
 
 # Capsule repositories
 cap_68_repos = [
@@ -105,10 +112,17 @@ cap_611_repos = (
 ) + common_repos
 
 # Capsule Beta repositories
-cap_beta_repo = [
-    "rhel-server-7-satellite-capsule-6-beta-rpms",
-    "rhel-7-server-satellite-maintenance-6-beta-rpms",
-] + common_repos
+cap_beta_repo = (
+    [
+        "rhel-server-7-satellite-capsule-6-beta-rpms",
+        "rhel-7-server-satellite-maintenance-6-beta-rpms",
+    ]
+    if rhel7()
+    else [
+        "satellite-capsule-6-beta-for-rhel-8-x86_64-rpms",
+        "satellite-maintenance-6-beta-for-rhel-8-x86_64-rpms",
+    ]
+) + common_repos
 
 sat_repos = {
     "6.8": sat_68_repos,
