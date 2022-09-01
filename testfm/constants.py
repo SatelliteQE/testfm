@@ -1,5 +1,6 @@
 from testfm import settings
 from testfm.helpers import rhel7
+from testfm.helpers import server
 
 RHN_USERNAME = settings.subscription.rhn_username
 RHN_PASSWORD = settings.subscription.rhn_password
@@ -38,7 +39,6 @@ common_repos = (
     else [
         "rhel-8-for-x86_64-baseos-rpms",
         "rhel-8-for-x86_64-appstream-rpms",
-        "ansible-2.9-for-rhel-8-x86_64-rpms",
     ]
 )
 
@@ -79,7 +79,6 @@ sat_beta_repo = (
     if rhel7()
     else [
         "satellite-6-beta-for-rhel-8-x86_64-rpms",
-        "satellite-maintenance-6-beta-for-rhel-8-x86_64-rpms",
     ]
 ) + common_repos
 
@@ -118,12 +117,17 @@ cap_beta_repo = (
         "rhel-7-server-satellite-maintenance-6-beta-rpms",
     ]
     if rhel7()
+    else []
+) + common_repos
+
+missing_beta_el8_repos = (
+    ["satellite-maintenance-6-beta-for-rhel-8-x86_64-rpms"]
+    if server() == "satellite"
     else [
         "satellite-capsule-6-beta-for-rhel-8-x86_64-rpms",
         "satellite-maintenance-6-beta-for-rhel-8-x86_64-rpms",
     ]
-) + common_repos
-
+)
 sat_repos = {
     "6.9": sat_69_repos,
     "6.10": sat_610_repos,
