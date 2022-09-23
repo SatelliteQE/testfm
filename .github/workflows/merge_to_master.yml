@@ -28,7 +28,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Pre Commit Checks
-        uses: pre-commit/action@v2.0.0
+        uses: pre-commit/action@v3.0.0
 
       - name: Make Docstrings
         run: make test-docstrings
