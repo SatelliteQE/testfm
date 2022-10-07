@@ -1,13 +1,15 @@
 import pytest
 
 from testfm.decorators import stubbed
+from testfm.helpers import server
 from testfm.log import logger
 from testfm.packages import Packages
 
 
 @pytest.mark.capsule
-def test_positive_fm_packages_lock(ansible_module):
-    """Verify whether satellite related packages get locked
+def test_positive_fm_packages_lock_unlock(ansible_module):
+    """Verify whether packages get locked and unlocked for satellite and capsule
+    using foreman_maintain
 
     :id: d387d8be-10ad-4a62-aeff-3bc6a82e6bae
 
@@ -18,16 +20,17 @@ def test_positive_fm_packages_lock(ansible_module):
         1. Run satellite-maintain packages lock
         2. Run satellite-maintain packages status
         3. Run satellite-maintain packages is-locked
-        4. check 'satellite' is mentioned in /etc/yum/pluginconf.d/versionlock.list
-        5. Run satellite-maintain packages unlock
-        6. Run satellite-maintain packages status
-        7. Run satellite-maintain packages is-locked
-        8. check 'satellite' is not mentioned in /etc/yum/pluginconf.d/versionlock.list
+        4. Run satellite-maintain packages unlock
+        5. Run satellite-maintain packages status
+        6. Run satellite-maintain packages is-locked
 
-    :expectedresults: expected packages get locked and unlocked.
+    :expectedresults: Packages get locked and unlocked using foreman_maintain
 
     :CaseImportance: Critical
     """
+    # Packages locking in enabled in installer for satellite, and disabled for capsule by default
+    installer_state = "disabled" if server() == "capsule" else "enabled"
+
     # Test Package lock command
     contacted = ansible_module.command(Packages.lock(["--assumeyes"]))
     for result in contacted.values():
@@ -38,7 +41,10 @@ def test_positive_fm_packages_lock(ansible_module):
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "Packages are locked." in result["stdout"]
-        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
+        assert (
+            f"Automatic locking of package versions is {installer_state} in installer."
+            in result["stdout"]
+        )
         assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
@@ -57,24 +63,30 @@ def test_positive_fm_packages_lock(ansible_module):
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
         assert "Packages are not locked." in result["stdout"]
-        assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
+        assert (
+            f"Automatic locking of package versions is {installer_state} in installer."
+            in result["stdout"]
+        )
         assert result["rc"] == 0
     contacted = ansible_module.command(Packages.is_locked())
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "Packages are not locked" in result["stdout"]
         assert result["rc"] == 1
-    # lock packages
-    teardown = ansible_module.command(Packages.lock())
-    for result in teardown.values():
-        logger.info(result["stdout"])
-        assert "FAIL" not in result["stdout"]
-        assert result["rc"] == 0
+
+    # Teardown: lock packages of satellite, for capsule its unlocked by default
+    if server() == "satellite":
+        teardown = ansible_module.command(Packages.lock())
+        for result in teardown.values():
+            logger.info(result["stdout"])
+            assert "FAIL" not in result["stdout"]
+            assert result["rc"] == 0
 
 
 @pytest.mark.capsule
-def test_positive_lock_package_versions(ansible_module):
-    """Verify whether satellite related packages get locked
+def test_positive_lock_package_versions(request, ansible_module):
+    """Verify whether packages get locked and unlocked for satellite and capsule
+    using satellite-installer
 
     :id: 9218a718-038c-48bb-b4a4-d4cb74859ddb
 
@@ -90,7 +102,7 @@ def test_positive_lock_package_versions(ansible_module):
         6. Run satellite-maintain packages is-locked
         7. Teardown (Run satellite-installer --lock-package-versions)
 
-    :expectedresults: expected packages get locked and unlocked.
+    :expectedresults: Packages get locked and unlocked using satellite-installer
 
     :CaseImportance: Critical
     """
@@ -128,11 +140,13 @@ def test_positive_lock_package_versions(ansible_module):
         logger.info(result["stdout"])
         assert "Packages are not locked" in result["stdout"]
         assert result["rc"] == 1
-    # lock packages
-    teardown = ansible_module.command("satellite-installer --lock-package-versions")
-    for result in teardown.values():
-        logger.info(result["stdout"])
-        assert result["rc"] == 0
+
+    # Teardown: lock packages of satellite, for capsule its unlocked by default
+    if server() == "satellite":
+        teardown = ansible_module.command("satellite-installer --lock-package-versions")
+        for result in teardown.values():
+            logger.info(result["stdout"])
+            assert result["rc"] == 0
 
 
 @pytest.mark.capsule
@@ -155,8 +169,7 @@ def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests)
         8. Try to install package in unlocked state.
         9. Teardown (Run satellite-installer --lock-package-versions)
 
-
-    :expectedresults: expected packages get locked and unlocked.
+    :expectedresults: Packages get install/update,  unlocked.
 
     :CaseImportance: Critical
     """
@@ -165,18 +178,18 @@ def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests)
         assert result["rc"] == 1
         assert "Use foreman-maintain packages install/update <package>" in result["stdout"]
     # Test whether satellite-maintain packages install/ update command works as expected.
-    contacted = ansible_module.raw(
-        Packages.install(["--assumeyes", "zsh-5.0.2-31.el7.x86_64 elinks"])
-    )
+    contacted = ansible_module.command(Packages.install(["--assumeyes", "zsh"]))
     for result in contacted.values():
         logger.info(result["stdout"])
+        assert result["rc"] == 0
         assert "FAIL" not in result["stdout"]
         assert "Nothing to do" not in result["stdout"]
         assert "Packages are locked." in result["stdout"]
         assert "Automatic locking of package versions is enabled in installer." in result["stdout"]
-    contacted = ansible_module.raw(Packages.update(["--assumeyes", "zsh"]))
+    contacted = ansible_module.command(Packages.update(["--assumeyes", "zsh"]))
     for result in contacted.values():
         logger.info(result["stdout"])
+        assert result["rc"] == 0
         assert "FAIL" not in result["stdout"]
         assert "Nothing to do" not in result["stdout"]
         assert "Packages are locked." in result["stdout"]
@@ -189,6 +202,7 @@ def test_positive_fm_packages_install(ansible_module, setup_packages_lock_tests)
     contacted = ansible_module.command(Packages.status())
     for result in contacted.values():
         logger.info(result["stdout"])
+        assert result["rc"] == 0
         assert "FAIL" not in result["stdout"]
         assert "Packages are not locked." in result["stdout"]
         assert "Automatic locking of package versions is disabled in installer." in result["stdout"]
@@ -236,7 +250,7 @@ def test_positive_fm_packages_update(ansible_module, setup_packages_update):
         assert result["rc"] == 0
         assert "walrus" in result["stdout"]
     # Run satellite-maintain packages update
-    contacted = ansible_module.raw(Packages.update(["--assumeyes", "walrus"]))
+    contacted = ansible_module.command(Packages.update(["--assumeyes", "walrus"]))
     for result in contacted.values():
         logger.info(result["stdout"])
         assert "FAIL" not in result["stdout"]
