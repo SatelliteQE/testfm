@@ -90,12 +90,12 @@ def test_positive_satellite_maintain_health_check(ansible_module):
 
     :CaseImportance: Critical
     """
-    contacted = ansible_module.command(
-        Health.check(["-w", "puppet-check-no-empty-cert-requests,check-tftp-storage", "-y"])
-    )
+    contacted = ansible_module.command(Health.check(["-y"]))
     for result in contacted.values():
         logger.info(result["stdout"])
-        assert "FAIL" not in result["stdout"]
+        assert result["rc"] == 0
+        if "paused tasks in the system" not in result["stdout"]:
+            assert "FAIL" not in result["stdout"]
 
 
 @pytest.mark.capsule
@@ -213,7 +213,7 @@ def test_positive_check_upstream_repository(setup_upstream_repository, ansible_m
     )
     for result in contacted.values():
         logger.info(result["stdout"])
-        assert "FAIL" in result["stdout"]
+        assert "FAIL" not in result["stdout"]
         assert result["rc"] == 0
 
 
@@ -290,6 +290,7 @@ def test_positive_automate_bz1632768(setup_hammer_defaults, ansible_module):
 
 
 @pytest.mark.capsule
+@pytest.mark.skip(reason="Needs a puppet enabled satellite")
 def test_positive_puppet_check_no_empty_cert_requests(ansible_module):
     """Verify puppet-check-no-empty-cert-requests
 
@@ -315,6 +316,7 @@ def test_positive_puppet_check_no_empty_cert_requests(ansible_module):
 
 
 @pytest.mark.capsule
+@pytest.mark.skip(reason="Needs a puppet enabled satellite")
 def test_positive_puppet_check_empty_cert_requests(setup_puppet_empty_cert, ansible_module):
     """Verify puppet-check-no-empty-cert-requests
 

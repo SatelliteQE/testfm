@@ -6,6 +6,7 @@ from testfm.advanced_by_tag import AdvancedByTag
 from testfm.constants import cap_beta_repo
 from testfm.constants import cap_repos
 from testfm.constants import fm_hammer_yml
+from testfm.constants import missing_beta_el8_repos
 from testfm.constants import sat_beta_repo
 from testfm.constants import sat_repos
 from testfm.decorators import stubbed
@@ -398,14 +399,17 @@ def test_positive_satellite_repositories_setup(setup_subscribe_to_cdn_dogfood, a
                 assert repo in result["stdout"]
 
     # Verify that all required beta repositories gets enabled
+    # maintain beta repo is unavailable for EL8 https://bugzilla.redhat.com/show_bug.cgi?id=2106750
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
         export_command + Advanced.run_repositories_setup({"version": "6.11"})
     )
     for result in contacted.values():
         logger.info(result["stdout"])
-        assert "FAIL" not in result["stdout"]
-        assert result["rc"] == 0
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] != 0
+        for repo in missing_beta_el8_repos:
+            assert f"Error: '{repo}' does not match a valid repository ID" in result["stdout"]
     contacted = ansible_module.command("yum repolist")
     for result in contacted.values():
         logger.info(result["stdout"])
@@ -445,14 +449,17 @@ def test_positive_capsule_repositories_setup(setup_subscribe_to_cdn_dogfood, ans
             for repo in cap_repos[ver]:
                 assert repo in result["stdout"]
     # Verify that all required beta repositories gets enabled
+    # maintain beta repo is unavailable for EL8 https://bugzilla.redhat.com/show_bug.cgi?id=2106750
     export_command = "export FOREMAN_MAINTAIN_USE_BETA=1;"
     contacted = ansible_module.shell(
         export_command + Advanced.run_repositories_setup({"version": "6.11"})
     )
     for result in contacted.values():
         logger.info(result["stdout"])
-        assert "FAIL" not in result["stdout"]
-        assert result["rc"] == 0
+        assert "FAIL" in result["stdout"]
+        assert result["rc"] != 0
+        for repo in missing_beta_el8_repos:
+            assert f"Error: '{repo}' does not match a valid repository ID" in result["stdout"]
     contacted = ansible_module.command("yum repolist")
     for result in contacted.values():
         logger.info(result["stdout"])
