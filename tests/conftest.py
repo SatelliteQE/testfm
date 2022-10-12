@@ -35,11 +35,11 @@ def setup_hotfix_check(request, ansible_module):
     """
     file = ansible_module.find(
         paths=gems_path,
-        patterns="fog-vsphere-*",
+        patterns="foreman_maintain-*",
         file_type="directory",
     )
     dpath = file.values()[0]["files"][0]["path"]
-    fpath = dpath + "/lib/fog/vsphere/requests/compute/list_clusters.rb"
+    fpath = dpath + "/definitions/scenarios/self_upgrade.rb"
     ansible_module.lineinfile(dest=fpath, insertafter="EOF", line="#modifying_file")
     ansible_module.yum_repository(
         name="hotfix_repo",
@@ -338,29 +338,19 @@ def setup_invalid_repository(request, ansible_module):
 @pytest.fixture(scope="function")
 def setup_bz_1696862(request, ansible_module):
     """Setup/teardown fixture used by test test_positive_fm_service_restart_bz_1696862"""
-    if float(product()) >= 6.6:
-        contacted = ansible_module.lineinfile(
-            dest=satellite_answer_file,
-            regexp="  initial_admin_password:",
-            line="  initial_admin_password: invalid_password",
-            backup="yes",
-        )
-    else:
-        contacted = ansible_module.lineinfile(
-            dest=satellite_answer_file,
-            regexp="  admin_password:",
-            line="  admin_password: invalid_password",
-            backup="yes",
-        )
+    contacted = ansible_module.lineinfile(
+        dest=satellite_answer_file,
+        regexp="  initial_admin_password:",
+        line="  initial_admin_password: invalid_password",
+        backup="yes",
+    )
     ansible_module.command("mv .hammer/cli.modules.d/foreman.yml /tmp/foreman.yml")
     ansible_module.command(f"mv {fm_hammer_yml} /tmp/foreman-maintain-hammer.yml")
 
     def teardown_bz_1696862():
         ansible_module.command("mv /tmp/foreman.yml .hammer/cli.modules.d/foreman.yml")
         ansible_module.command(f"mv /tmp/foreman-maintain-hammer.yml {fm_hammer_yml}")
-        ansible_module.command(
-            "mv {} {}".format(contacted.values()[0]["backup"], satellite_answer_file)
-        )
+        ansible_module.command(f"mv {contacted.values()[0]['backup']} {satellite_answer_file}")
 
     request.addfinalizer(teardown_bz_1696862)
 
@@ -424,25 +414,18 @@ def setup_packages_lock_tests(request, ansible_module, setup_subscribe_to_cdn_do
         logger.info(result["stdout"])
         assert "Packages are locked" in result["stdout"]
         assert result["rc"] == 0
-    contacted = ansible_module.yum(name="zsh", state="absent")
-    for result in contacted.values():
-        assert result["rc"] == 0
-    contacted = ansible_module.yum(name="elinks", state="absent")
-    for result in contacted.values():
-        assert result["rc"] == 0
 
     def teardown_packages_lock_tests():
         contacted = ansible_module.yum(name="zsh", state="absent")
         for result in contacted.values():
             assert result["rc"] == 0
-        contacted = ansible_module.yum(name="elinks", state="absent")
-        for result in contacted.values():
-            assert result["rc"] == 0
-        # lock packages
-        teardown = ansible_module.command("satellite-installer --lock-package-versions")
-        for result in teardown.values():
-            logger.info(result["stdout"])
-            assert result["rc"] == 0
+
+        # Teardown: lock packages of satellite, for capsule its unlocked by default
+        if server() == "satellite":
+            teardown = ansible_module.command("satellite-installer --lock-package-versions")
+            for result in teardown.values():
+                logger.info(result["stdout"])
+                assert result["rc"] == 0
 
     request.addfinalizer(teardown_packages_lock_tests)
 
